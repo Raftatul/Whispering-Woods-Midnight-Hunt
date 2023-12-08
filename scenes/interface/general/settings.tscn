@@ -1,6 +1,11 @@
-[gd_scene format=3 uid="uid://dljig2uc5soay"]
+[gd_scene load_steps=4 format=3 uid="uid://dljig2uc5soay"]
+
+[ext_resource type="PackedScene" uid="uid://bh7cmkp3rdtpv" path="res://scenes/interface/general/input_action_remapping.tscn" id="1_8a3wp"]
+[ext_resource type="Script" path="res://scripts/interface/general/settings/Settings.cs" id="1_ljkiw"]
+[ext_resource type="Script" path="res://scripts/interface/general/settings/Graphics.cs" id="2_yhhk4"]
 
 [node name="Settings" type="CanvasLayer"]
+script = ExtResource("1_ljkiw")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -37,21 +42,26 @@ text = "Settings"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Graphics" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Graphics" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer" node_paths=PackedStringArray("_screenOptionButton", "_resolutionOptionButton", "_qualityOptionButton", "_vsyncCheckButton")]
+layout_mode = 2
+script = ExtResource("2_yhhk4")
+_screenOptionButton = NodePath("VBoxContainer/HBoxContainer/ScreenOptionButton")
+_resolutionOptionButton = NodePath("VBoxContainer/HBoxContainer2/ResolutionOptionButton")
+_qualityOptionButton = NodePath("VBoxContainer/HBoxContainer3/QualityOptionButton")
+_vsyncCheckButton = NodePath("VBoxContainer/CheckButton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
 layout_mode = 2
 
-[node name="MarginContainer2" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2/HBoxContainer"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Screen mode "
+text = "Screen mode :"
 
-[node name="OptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2/HBoxContainer"]
+[node name="ScreenOptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 2
@@ -60,18 +70,15 @@ popup/item_0/id = 0
 popup/item_1/text = "Windowed"
 popup/item_1/id = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Screen size"
+text = "Screen size :"
 
-[node name="OptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer/HBoxContainer"]
+[node name="ResolutionOptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 2
@@ -80,73 +87,91 @@ popup/item_0/id = 0
 popup/item_1/text = "2560x1440"
 popup/item_1/id = 1
 
-[node name="MarginContainer3" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer"]
 layout_mode = 2
 
-[node name="CheckButton" type="CheckButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer3"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Quality :"
+
+[node name="QualityOptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CheckButton" type="CheckButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/VBoxContainer"]
 layout_mode = 2
 text = "V-Sync"
 
-[node name="Audio" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Audio" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 size_flags_stretch_ratio = 0.5
 text = "Master Volume :"
 
-[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+max_value = 1.0
+step = 0.1
 
-[node name="MarginContainer2" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2/HBoxContainer"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 size_flags_stretch_ratio = 0.5
 text = "Music Volume :"
 
-[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+max_value = 1.0
+step = 0.1
 
-[node name="MarginContainer3" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3/HBoxContainer"]
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 size_flags_stretch_ratio = 0.5
 text = "Effect Volume :"
 
-[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3/HBoxContainer"]
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
+max_value = 1.0
+step = 0.1
 
-[node name="Controls" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Controls" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Controls"]
+layout_mode = 2
+
+[node name="InputActionRemapping" parent="Control/MarginContainer/VBoxContainer/TabContainer/Controls/VBoxContainer" instance=ExtResource("1_8a3wp")]
+layout_mode = 2
+
+[node name="InputActionRemapping2" parent="Control/MarginContainer/VBoxContainer/TabContainer/Controls/VBoxContainer" instance=ExtResource("1_8a3wp")]
 layout_mode = 2
 
 [node name="Button" type="Button" parent="Control/MarginContainer/VBoxContainer"]

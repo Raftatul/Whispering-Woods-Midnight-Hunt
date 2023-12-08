@@ -12,5 +12,3 @@ export_presets.cfg
 data_*/
 
 .vscode/
-*.csproj
-*.sln 

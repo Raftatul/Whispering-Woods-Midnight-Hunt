@@ -12,6 +12,9 @@ public partial class Audio : Control
     [Export]
     private Slider _sfxVolumeSlider;
 
+    [Export]
+    private CheckButton _recordAudioCheckButton;
+
     public override void _Ready()
     {
         _mainVolumeSlider.Value = Mathf.DbToLinear(AudioServer.GetBusVolumeDb(AudioServer.GetBusIndex("Master")));
@@ -21,6 +24,8 @@ public partial class Audio : Control
         _mainVolumeSlider.ValueChanged += OnMainVolumeSliderValueChanged;
         _musicVolumeSlider.ValueChanged += OnMusicVolumeSliderValueChanged;
         _sfxVolumeSlider.ValueChanged += OnSfxVolumeSliderValueChanged;
+
+        _recordAudioCheckButton.ButtonPressed = true;
     }
 
     private void OnMainVolumeSliderValueChanged(double value)

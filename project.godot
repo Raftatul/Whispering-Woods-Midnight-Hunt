@@ -15,9 +15,30 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[audio]
+
+driver/enable_input=true
+
+[display]
+
+window/stretch/mode="canvas_items"
+
 [dotnet]
 
 project/assembly_name="DbD"
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "purple",
+"res://datas/": "orange",
+"res://scenes/": "blue",
+"res://scripts/": "red"
+}
+
+[gui]
+
+theme/custom="res://assets/theme/main_theme.tres"
 
 [input]
 

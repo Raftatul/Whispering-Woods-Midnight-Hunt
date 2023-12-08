@@ -1,0 +1,109 @@
+[gd_scene load_steps=3 format=3 uid="uid://i1g4s60qpvyj"]
+
+[ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
+[ext_resource type="Theme" uid="uid://dxlop408sfwqv" path="res://assets/theme/main_theme.tres" id="1_dvplk"]
+
+[node name="MainMenu" type="CanvasLayer"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_dvplk")
+
+[node name="StartMenu" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/StartMenu"]
+layout_mode = 2
+offset_left = 50.0
+offset_top = 260.0
+offset_right = 300.0
+offset_bottom = 388.0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/StartMenu/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/StartMenu/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="IPInput" type="LineEdit" parent="Control/StartMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "IP :"
+
+[node name="StartButton" type="Button" parent="Control/StartMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start"
+
+[node name="JoinButton" type="Button" parent="Control/StartMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "join"
+
+[node name="Lobby" type="Control" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Control/Lobby"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -119.0
+offset_top = -100.0
+offset_bottom = 102.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Lobby/PanelContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="PlayerList" type="VBoxContainer" parent="Control/Lobby/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="PlayerCard2" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+layout_mode = 2
+
+[node name="PlayerCard3" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+layout_mode = 2
+
+[node name="PlayerCard4" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+layout_mode = 2
+
+[node name="PlayerCard5" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+layout_mode = 2
+
+[node name="PlayerCard6" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Control/Lobby"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -41.0
+offset_top = -94.0
+offset_right = 41.0
+offset_bottom = -41.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Back"

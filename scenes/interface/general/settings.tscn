@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://dljig2uc5soay"]
+
+[node name="Settings" type="CanvasLayer"]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -203.0
+offset_right = 280.0
+offset_bottom = 203.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"Title"
+text = "Settings"
+
+[node name="TabContainer" type="TabContainer" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Graphics" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Screen mode "
+
+[node name="OptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+popup/item_0/text = "Fullscreen"
+popup/item_0/id = 0
+popup/item_1/text = "Windowed"
+popup/item_1/id = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Screen size"
+
+[node name="OptionButton" type="OptionButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 2
+popup/item_0/text = "1920x1080"
+popup/item_0/id = 0
+popup/item_1/text = "2560x1440"
+popup/item_1/id = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics"]
+layout_mode = 2
+
+[node name="CheckButton" type="CheckButton" parent="Control/MarginContainer/VBoxContainer/TabContainer/Graphics/MarginContainer3"]
+layout_mode = 2
+text = "V-Sync"
+
+[node name="Audio" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 0.5
+text = "Master Volume :"
+
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 0.5
+text = "Music Volume :"
+
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 0.5
+text = "Effect Volume :"
+
+[node name="HSlider" type="HSlider" parent="Control/MarginContainer/VBoxContainer/TabContainer/Audio/MarginContainer3/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="Controls" type="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Back"

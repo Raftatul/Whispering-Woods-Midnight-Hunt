@@ -8,3 +8,5 @@ MarginContainer/constants/margin_bottom = 15
 MarginContainer/constants/margin_left = 15
 MarginContainer/constants/margin_right = 15
 MarginContainer/constants/margin_top = 12
+Title/base_type = &"Label"
+Title/font_sizes/font_size = 32

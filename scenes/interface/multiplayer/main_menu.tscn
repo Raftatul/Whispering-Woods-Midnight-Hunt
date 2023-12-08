@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://i1g4s60qpvyj"]
+[gd_scene load_steps=2 format=3 uid="uid://i1g4s60qpvyj"]
 
 [ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
-[ext_resource type="Theme" uid="uid://dxlop408sfwqv" path="res://assets/theme/main_theme.tres" id="1_dvplk"]
 
 [node name="MainMenu" type="CanvasLayer"]
 
@@ -12,7 +11,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_dvplk")
 
 [node name="StartMenu" type="Control" parent="Control"]
 layout_mode = 1

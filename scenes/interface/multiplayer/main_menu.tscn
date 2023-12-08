@@ -159,6 +159,7 @@ layout_mode = 1
 [node name="Button" parent="Control/Settings/MarginContainer/VBoxContainer" index="2" node_paths=PackedStringArray("_nodeToShow")]
 _nodeToShow = NodePath("../../../../StartMenu")
 
+[connection signal="pressed" from="Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton" to="Control/StartMenu" method="StartGame"]
 [connection signal="pressed" from="Control/StartMenu/VBoxContainer/Button" to="Control/StartMenu" method="QuitGame"]
 
 [editable path="Control/Settings"]

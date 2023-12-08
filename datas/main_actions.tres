@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="InputAction" load_steps=2 format=3 uid="uid://bb3usmh1lwjh4"]
+
+[ext_resource type="Script" path="res://scripts/datas/InputAction.cs" id="1_4b5lf"]
+
+[resource]
+script = ExtResource("1_4b5lf")
+Actions = ["move_left", "move_right", "move_up", "move_down", "jump"]

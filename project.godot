@@ -27,6 +27,7 @@ project/assembly_name="DbD"
 
 folder_colors={
 "res://assets/": "purple",
+"res://datas/": "orange",
 "res://scenes/": "blue",
 "res://scripts/": "red"
 }

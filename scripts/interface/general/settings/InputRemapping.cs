@@ -37,7 +37,13 @@ public partial class InputRemapping : Control
 
     private void UpdateText()
     {
-        _button.Text = InputMap.ActionGetEvents(_action)[0].AsText();
         _label.Text = _action;
+        _button.Text = InputMap.ActionGetEvents(_action)[0].AsText();
+    }
+
+    public void SetAction(string action)
+    {
+        _action = action;
+        UpdateText();
     }
 }

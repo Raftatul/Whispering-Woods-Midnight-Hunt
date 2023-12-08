@@ -26,15 +26,18 @@ public partial class Audio : Control
     private void OnMainVolumeSliderValueChanged(double value)
     {
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Master"), Mathf.LinearToDb((float)value));
+        AudioServer.SetBusMute(AudioServer.GetBusIndex("Master"), value < 0.05);
     }
 
     private void OnMusicVolumeSliderValueChanged(double value)
     {
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("Music"), Mathf.LinearToDb((float)value));
+        AudioServer.SetBusMute(AudioServer.GetBusIndex("Music"), value < 0.05);
     }
 
     private void OnSfxVolumeSliderValueChanged(double value)
     {
         AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex("SFX"), Mathf.LinearToDb((float)value));
+        AudioServer.SetBusMute(AudioServer.GetBusIndex("SFX"), value < 0.05);
     }
 }

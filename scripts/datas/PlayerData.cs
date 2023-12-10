@@ -18,4 +18,13 @@ public partial class PlayerData : Resource
 
     [Export]
     public float Gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
+
+    [Export]
+    public float MaxStamina = 100f;
+
+    [Export]
+    public float StaminaRegenRate = 10f;
+
+    [Export]
+    public float StaminaDepletionRate = 20f;
 }

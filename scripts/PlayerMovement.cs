@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 public partial class PlayerMovement : CharacterBody3D
 {
@@ -25,9 +26,16 @@ public partial class PlayerMovement : CharacterBody3D
 
     private bool _isGrounded = false;
 
-    private bool _crouching;
-
     private Vector3 _targetVelocity = Vector3.Zero;
+
+    private float _stamina;
+
+    public enum PlayerState
+    {
+        Idle, Walk, Run, Crouch
+    }
+
+    private PlayerState _playerState;
 
     private Vector3 GetDirectionInput()
     {
@@ -38,7 +46,7 @@ public partial class PlayerMovement : CharacterBody3D
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
-        _moveSpeed = _playerData.WalkSpeed;
+        SwitchState(PlayerState.Idle);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -59,9 +67,75 @@ public partial class PlayerMovement : CharacterBody3D
             _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
             _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
         }
+
+        switch(_playerState)
+        {
+            case PlayerState.Run:
+                DepleteStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            case PlayerState.Idle:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() > 0f)
+                    SwitchState(PlayerState.Walk);
+                break;
+            case PlayerState.Walk:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            default:
+                RegenStamina((float)delta);
+                break;
+        }
         
+        GD.Print(_stamina);
+        GD.Print("Player State :", _playerState);
+
         Velocity = _targetVelocity;
         MoveAndSlide();
+    }
+
+    private void SwitchState(PlayerState newState)
+    {
+        _playerState = newState;
+
+        switch (_playerState)
+        {
+            case PlayerState.Idle:
+                _moveSpeed = 0f;
+                break;
+            case PlayerState.Walk:
+                _moveSpeed = _playerData.WalkSpeed;
+                break;
+            case PlayerState.Run:
+                _moveSpeed = _playerData.RunSpeed;
+                break;
+            case PlayerState.Crouch:
+                _moveSpeed = _playerData.CrouchSpeed;
+                break;
+        }
+    }
+
+    private void RegenStamina(float delta)
+    {
+        _stamina = Mathf.MoveToward(_stamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
+    }
+
+    private void DepleteStamina(float delta)
+    {
+        _stamina = Mathf.MoveToward(_stamina, 0f, _playerData.StaminaDepletionRate * delta);
+
+        if (_stamina <= 0f)
+            StopRun();
+    }
+
+    private void CameraRotation(Vector2 mouseMotion)
+    {
+        RotateY(Mathf.DegToRad(-mouseMotion.X * 0.1f));
+        _camera3D.RotateX(Mathf.DegToRad(-mouseMotion.Y * 0.1f));
+        _camera3D.RotationDegrees = new Vector3(Mathf.Clamp(_camera3D.RotationDegrees.X, -90f, 90f), _camera3D.RotationDegrees.Y, _camera3D.RotationDegrees.Z);
     }
 
     private void Jump()
@@ -70,38 +144,66 @@ public partial class PlayerMovement : CharacterBody3D
         GD.Print("JUMP");   
     }
 
-    private void ToogleCrouch()
+    private void Crouch()
     {
-        if (_crouchRayCastChecker.IsColliding())
+        SwitchState(PlayerState.Crouch);
+
+        _standUpCollider.Disabled = true;
+
+        Tween cameraTween = CreateTween();
+        cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch, _crouchTransitionTime);
+    }
+
+    private bool CanUnCrouch()
+    {
+        return !_crouchRayCastChecker.IsColliding();
+    }
+
+    private void UnCrouch()
+    {
+        if (!CanUnCrouch())
             return;
         
-        Tween cameraTween = CreateTween();
+        SwitchState(PlayerState.Idle);
+        
+        _standUpCollider.Disabled = false;
 
-        switch(_crouching)
+        Tween cameraTween = CreateTween();
+        cameraTween.TweenProperty(_camera3D, "position", _cameraUp, _crouchTransitionTime);
+    }
+
+    private void ToogleCrouch()
+    {
+        switch(_playerState)
         {
-            case true:
-                cameraTween.TweenProperty(_camera3D, "position", _cameraUp, _crouchTransitionTime);
-                _crouching = false;
-                _moveSpeed = Input.IsActionPressed("run") ? _playerData.RunSpeed : _playerData.WalkSpeed;
+            case PlayerState.Crouch:
+                UnCrouch();
                 break;
-            case false:
-                cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch, _crouchTransitionTime);
-                _crouching = true;
-                _moveSpeed = _playerData.CrouchSpeed;
+            default:
+                Crouch();
                 break;
         }
         
-        _standUpCollider.Disabled = _crouching;
         GD.Print("CROUCH");
+    }
+
+    private void StartRun()
+    {
+        UnCrouch();
+
+        SwitchState(PlayerState.Run);
+    }
+
+    private void StopRun()
+    {
+        SwitchState(_targetVelocity.Length() > 0f ? PlayerState.Walk : PlayerState.Idle);
     }
 
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventMouseMotion mouseMotion)
         {
-            RotateY(Mathf.DegToRad(-mouseMotion.Relative.X * 0.1f));
-            _camera3D.RotateX(Mathf.DegToRad(-mouseMotion.Relative.Y * 0.1f));
-            _camera3D.RotationDegrees = new Vector3(Mathf.Clamp(_camera3D.RotationDegrees.X, -90f, 90f), _camera3D.RotationDegrees.Y, _camera3D.RotationDegrees.Z);
+            CameraRotation(mouseMotion.Relative);
         }
 
         if (@event.IsActionPressed("jump") && IsOnFloor())
@@ -112,13 +214,13 @@ public partial class PlayerMovement : CharacterBody3D
         {
             ToogleCrouch();
         }
-        else if (@event.IsActionPressed("run") && !_crouching)
+        else if (@event.IsActionPressed("run") && CanUnCrouch())
         {
-            _moveSpeed = _playerData.RunSpeed;
+            StartRun();
         }
-        else if (@event.IsActionReleased("run") && !_crouching)
+        else if (@event.IsActionReleased("run") && _playerState == PlayerState.Run)
         {
-            _moveSpeed = _playerData.WalkSpeed;
+            StopRun();
         }
     }
 }

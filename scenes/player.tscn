@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://cj8vo15g1p7td"]
+[gd_scene load_steps=8 format=3 uid="uid://cj8vo15g1p7td"]
 
 [ext_resource type="Script" path="res://scripts/PlayerMovement.cs" id="1_vsh0o"]
+[ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
 [ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_ltj03"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_at2ia"]
@@ -20,6 +21,7 @@ script = ExtResource("1_vsh0o")
 _camera3D = NodePath("Camera3D")
 _standUpCollider = NodePath("StandUpCollider")
 _crouchRayCastChecker = NodePath("CrouchRaycastChecker")
+_playerData = ExtResource("2_dqpa7")
 
 [node name="StandUpCollider" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_at2ia")

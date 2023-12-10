@@ -7,6 +7,12 @@ public partial class PlayerMovement : CharacterBody3D
     private Camera3D _camera3D;
 
     [Export]
+    private AnimationTree _animationTree;
+
+    [Export]
+    private Node3D _mesh;
+
+    [Export]
     private float _moveSpeed = 5f;
 
     [Export]
@@ -27,6 +33,11 @@ public partial class PlayerMovement : CharacterBody3D
     public override void _Ready()
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;
+
+        if (IsMultiplayerAuthority())
+        {
+            // _mesh.Visible = false;
+        }
     }
 
     public override void _PhysicsProcess(double delta)
@@ -47,6 +58,22 @@ public partial class PlayerMovement : CharacterBody3D
             _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
             _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
         }
+
+        Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
+        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X, 0.1f);
+        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, inputAxis.Z, 0.1f);
+
+        _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
+
+        if (IsOnFloor() && !_isGrounded)
+        {
+            _isGrounded = true;
+            OnGrounded();
+        }
+        else if (!IsOnFloor() && _isGrounded)
+        {
+            _isGrounded = false;
+        }
         
         Velocity = _targetVelocity;
         MoveAndSlide();
@@ -64,7 +91,13 @@ public partial class PlayerMovement : CharacterBody3D
         if (@event.IsActionPressed("jump") && IsOnFloor())
         {
             _targetVelocity.Y = _jumpForce;
+            _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Fire));
             GD.Print("JUMP");
         }
+    }
+
+    private void OnGrounded()
+    {
+        _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Abort));
     }
 }

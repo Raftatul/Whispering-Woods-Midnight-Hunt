@@ -18,7 +18,16 @@ public partial class PlayerMovement : CharacterBody3D
     private RayCast3D _crouchRayCastChecker;
 
     [Export]
-    private float _moveSpeed = 5f;
+    private float _moveSpeed;
+
+    [Export]
+    private float _walkSpeed = 5f;
+
+    [Export]
+    private float _crouchSpeed = 2f;
+
+    [Export]
+    private float _runSpeed = 10f;
 
     [Export]
     private float _jumpForce = 5f;
@@ -38,6 +47,8 @@ public partial class PlayerMovement : CharacterBody3D
     public override void _Ready()
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;
+
+        _moveSpeed = _walkSpeed;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -61,7 +72,6 @@ public partial class PlayerMovement : CharacterBody3D
         
         Velocity = _targetVelocity;
         MoveAndSlide();
-        GD.Print(_standUpCollider.Shape.Get("height"));
     }
 
     private void ToogleCrouch()
@@ -76,10 +86,12 @@ public partial class PlayerMovement : CharacterBody3D
             case true:
                 cameraTween.TweenProperty(_camera3D, "position", _cameraUp, _crouchTransitionTime);
                 _crouching = false;
+                _moveSpeed = Input.IsActionPressed("run") ? _runSpeed : _walkSpeed;
                 break;
             case false:
                 cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch, _crouchTransitionTime);
                 _crouching = true;
+                _moveSpeed = _crouchSpeed;
                 break;
         }
         
@@ -104,6 +116,14 @@ public partial class PlayerMovement : CharacterBody3D
         else if (@event.IsActionPressed("crouch") && IsOnFloor())
         {
             ToogleCrouch();
+        }
+        else if (@event.IsActionPressed("run") && !_crouching)
+        {
+            _moveSpeed = _runSpeed;
+        }
+        else if (@event.IsActionReleased("run") && !_crouching)
+        {
+            _moveSpeed = _walkSpeed;
         }
     }
 }

@@ -6,6 +6,17 @@ public partial class PlayerMovement : CharacterBody3D
     [Export]
     private Camera3D _camera3D;
 
+    private Vector3 _cameraUp = new Vector3(0f, 0.5f, 0f);
+    private Vector3 _cameraCrouch = Vector3.Zero;
+    private float _crouchTransitionTime = 0.15f;
+    private bool _crouching;
+
+    [Export]
+    private CollisionShape3D _standUpCollider;
+
+    [Export]
+    private RayCast3D _crouchRayCastChecker;
+
     [Export]
     private float _moveSpeed = 5f;
 
@@ -50,6 +61,30 @@ public partial class PlayerMovement : CharacterBody3D
         
         Velocity = _targetVelocity;
         MoveAndSlide();
+        GD.Print(_standUpCollider.Shape.Get("height"));
+    }
+
+    private void ToogleCrouch()
+    {
+        if (_crouchRayCastChecker.IsColliding())
+            return;
+        
+        Tween cameraTween = CreateTween();
+
+        switch(_crouching)
+        {
+            case true:
+                cameraTween.TweenProperty(_camera3D, "position", _cameraUp, _crouchTransitionTime);
+                _crouching = false;
+                break;
+            case false:
+                cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch, _crouchTransitionTime);
+                _crouching = true;
+                break;
+        }
+        
+        _standUpCollider.Disabled = _crouching;
+        GD.Print("CROUCH");
     }
 
     public override void _Input(InputEvent @event)
@@ -65,6 +100,10 @@ public partial class PlayerMovement : CharacterBody3D
         {
             _targetVelocity.Y = _jumpForce;
             GD.Print("JUMP");
+        }
+        else if (@event.IsActionPressed("crouch") && IsOnFloor())
+        {
+            ToogleCrouch();
         }
     }
 }

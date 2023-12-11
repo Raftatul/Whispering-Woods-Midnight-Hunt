@@ -1,158 +1,106 @@
 using Godot;
 using System;
 using Steamworks;
+using Steamworks.Data;
 
 public partial class SteamworksHelper : Node
 {
   public static SteamworksHelper Instance { get; private set; }
 
-  protected Callback<GameOverlayActivated_t> gameOverlayActivated; 
-
-  private CallResult<NumberOfCurrentPlayers_t> numberOfCurrentPlayers;
-
-  private SteamAPIWarningMessageHook_t steamAPIWarningMessageHook;
-
-  private static uint appId = 480;
-
-  private bool isSteamInitialized = false;
-
-  public bool IsSteamInitialized
+  public static uint AppId { get; private set; } = 480;
+  public string PlayerName { get; set; }
+  public SteamId PlayerId { get; set; }
+  public bool connectedToSteam { get; set; }
+  public SteamworksHelper()
   {
-    get { return Instance.isSteamInitialized; }
-  }
+    if (Instance == null)
+    {
+      Instance = this;
+    }
+    try
+    {
+      SteamClient.Init(AppId, true);
 
-  //get steam name of current user
-  public string GetSteamName()
-  {
-    if (!isSteamInitialized) return "Steamworks not initialized";
-    return SteamFriends.GetPersonaName();
+      if (!SteamClient.IsValid)
+      {
+        GD.PrintErr("Steamworks not initialized");
+        throw new Exception("Steamworks not initialized");
+      }
+      PlayerName = SteamClient.Name;
+      PlayerId = SteamClient.SteamId;
+      connectedToSteam = true;
+      GD.Print("Steamworks initialized! Player name: " + PlayerName + " Player ID: " + PlayerId);
+    }
+    catch (Exception e)
+    {
+      GD.PrintErr("Steamworks not initialized" + e.Message);
+      connectedToSteam = false;
+    }
     
   }
 
 
-#region Steam Callbacks
-  private void OnGameOverlayActivated(GameOverlayActivated_t pCallback) 
+  #region Steam Callbacks
+  private void OnLobbyGameCreated(Lobby lobby, uint ip, ushort port, SteamId steamId)
   {
-    if (pCallback.m_bActive != 0) 
-    {
-      GD.Print("Steam Overlay has been activated");
-    }
-    else 
-    {
-      GD.Print("Steam Overlay has been closed");
-    }
+    GD.Print("Firing callback for on lobby game created with ip " + ip + " port " + port + " steamId " + steamId);
   }
-
-  private void OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t pCallback, bool bIOFailure) 
-  {
-    if (pCallback.m_bSuccess != 1 || bIOFailure) 
-    {
-      GD.Print("There was an error retrieving the NumberOfCurrentPlayers.");
-    }
-    else 
-    {
-      GD.Print("The number of players playing your game: " + pCallback.m_cPlayers);
-    }
-  }
-
-  private void OnSteamAPIWarningMessageHook(int nSeverity, System.Text.StringBuilder pchDebugText) 
-  {
-    GD.Print(pchDebugText);
-  }
-
-#endregion Steam Callbacks
-
-#region Godot Methods
-    public override void _EnterTree() 
-  {
-    Instance = this;
-    try
-    {
-      if (SteamAPI.RestartAppIfNecessary((AppId_t)appId)) 
-      {
-        GD.Print("Steamworks: restarting app...");
-        GetTree().Quit();
-        return;
-      }
-    }
-    catch (System.DllNotFoundException e)
-    {
-      GD.PushError("[Steamworks.NET] Could not load [lib]steam_api.dll/so/dylib. It's likely not in the correct location. Refer to the README for more details.\n" + e,this);
-      GetTree().Quit();
-    }
-    isSteamInitialized = SteamAPI.Init();
-    if (!isSteamInitialized) 
-    {
-      GD.Print("Steamworks: SteamAPI.Init() failed!");
-      return;
-    }
-    if (steamAPIWarningMessageHook == null) 
-    {
-      steamAPIWarningMessageHook = new SteamAPIWarningMessageHook_t(OnSteamAPIWarningMessageHook);
-      SteamClient.SetWarningMessageHook(steamAPIWarningMessageHook);
-    }
-  }
-
-  public override void _Ready() 
-  {
-    if (Instance != this) 
-    {
-      GD.Print("Steamworks: There is more than one SteamworksHelper in the scene!");
-      return;
-    }
-    if (!Packsize.Test()) 
-    {
-      GD.Print("Steamworks: Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.");
-    }
-    if (!DllCheck.Test()) 
-    {
-      GD.Print("Steamworks: DllCheck Test returned false, One or more of the Steamworks binaries seems to be the wrong version.");
-    }
-    if (SteamAPI.Init()) 
-    {
-      gameOverlayActivated = Callback<GameOverlayActivated_t>.Create(OnGameOverlayActivated);
-      numberOfCurrentPlayers = CallResult<NumberOfCurrentPlayers_t>.Create(OnNumberOfCurrentPlayers);
-    }
   
-  }
-
-    public override void _PhysicsProcess(double delta)
-    {
-      if (!isSteamInitialized) return;
-
-
-
-      if (Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.Tab))
-      {
-        GD.Print("Steamworks: checking if Steam Overlay is enabled...");
-        bool bIsOverlayEnabled = SteamUtils.IsOverlayEnabled();
-        GD.Print("Steamworks: Steam Overlay is " + (bIsOverlayEnabled ? "enabled" : "disabled"));
-      }
-
-      if (Input.IsKeyPressed(Key.Space))
-      {
-        SteamAPICall_t handle = SteamUserStats.GetNumberOfCurrentPlayers();
-        numberOfCurrentPlayers.Set(handle);
-        GD.Print("Steamworks: checking how many players are playing our game...");
-      }
-
-      SteamAPI.RunCallbacks();
-    }
-
-    public override void _ExitTree() 
+  private void OnLobbyCreated(Result result, Lobby lobby)
   {
-    // Tell Steam we're done.
-    GD.Print("Steamworks: shutting down...");
-    try {
-      SteamAPI.Shutdown();
-      GD.Print("Steamworks shutdown succeeded!");
+    if (result != Result.OK)
+    {
+      GD.PrintErr("Failed to create lobby");
+      return;
     }
-    catch (Exception e) {
-      GD.Print("Steamworks shutdown threw an exception :O");
-      GD.Print(e);
-    }
+    GD.Print($"Lobby created with id {lobby.Id}");
   }
-#endregion Godot Methods
+
+  private void OnLobbyMemberJoined(Lobby lobby, Friend friend)
+  {
+    GD.Print("User joined lobby " + friend.Name);
+  }
+
+  private void OnLobbyMemberDisconnected(Lobby lobby, Friend friend)
+  {
+    GD.Print("User disconnected from lobby " + friend.Name);
+  }
+
+  private void OnLobbyMemberLeave(Lobby lobby, Friend friend)
+  {
+    GD.Print("User left lobby " + friend.Name);
+  }
+  #endregion Steam Callbacks
+
+
+
+  #region Godot Methods
+
+  public override void _Ready()
+  {
+    SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
+    SteamMatchmaking.OnLobbyCreated += OnLobbyCreated; 
+    SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
+    SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
+    SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
+  }
+
+    public override void _Process(double delta)
+    {
+      SteamClient.RunCallbacks();
+    }
+
+    public override void _Notification(int what)
+    {
+      base._Notification(what);
+      if (what == NotificationWMCloseRequest)
+      {
+        SteamClient.Shutdown();
+        GetTree().Quit();
+      }
+    }
+
+    #endregion Godot Methods
 }
 
 

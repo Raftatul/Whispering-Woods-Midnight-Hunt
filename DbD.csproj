@@ -10,12 +10,17 @@
   </PropertyGroup>
   <ItemGroup>
   
-    <Reference Include="Steamworks.NET">
-      <HintPath>Steamworks\Windows-x64\Steamworks.NET.dll</HintPath>
+    <Reference Include="Facepunch.Steamworks.Win64">
+      <HintPath>DLL\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
 
     <!-- copy steam_api64 to output -->
     <Content Include="steam_api64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <!-- copy steam_api to output -->
+    <Content Include="steam_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

@@ -1,0 +1,54 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhlt6u7j7oolf"]
+
+[ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_epyu8"]
+[ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="1_fi7rk"]
+
+[node name="TestMulti" type="Node2D" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "LobbyListContainer")]
+script = ExtResource("1_epyu8")
+CreateLobbyButton = NodePath("Control/buttons/create")
+GetallLobbiesButton = NodePath("Control/buttons/getalls")
+InviteFriendButton = NodePath("Control/buttons/invite_friends")
+LobbyElementScene = ExtResource("1_fi7rk")
+LobbyListContainer = NodePath("Control/lobbies")
+metadata/_edit_horizontal_guides_ = [-118.0]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="buttons" type="VBoxContainer" parent="Control"]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 31.0
+offset_right = 325.0
+offset_bottom = 141.0
+metadata/_edit_group_ = true
+
+[node name="create" type="Button" parent="Control/buttons"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "create"
+
+[node name="getalls" type="Button" parent="Control/buttons"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "get all"
+
+[node name="invite_friends" type="Button" parent="Control/buttons"]
+layout_mode = 2
+text = "invite friends
+"
+
+[node name="lobbies" type="VBoxContainer" parent="Control"]
+layout_mode = 0
+offset_left = 500.0
+offset_right = 1089.0
+offset_bottom = 31.0

@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyjexb66xuosq"]
+
+[ext_resource type="Script" path="res://scripts/LobbyElements.cs" id="1_bko8x"]
+
+[node name="LobbyElement" type="Control" node_paths=PackedStringArray("JoinLobbyButton", "LobbyIdLabel", "LobbyNameLabel")]
+custom_minimum_size = Vector2(300, 27)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 618.0
+offset_bottom = 39.0
+script = ExtResource("1_bko8x")
+JoinLobbyButton = NodePath("JoinButton")
+LobbyIdLabel = NodePath("ID")
+LobbyNameLabel = NodePath("LobbyName")
+
+[node name="ID" type="Label" parent="."]
+layout_mode = 1
+offset_right = 117.0
+offset_bottom = 33.0
+size_flags_horizontal = 3
+text = "ID
+"
+
+[node name="LobbyName" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -99.5
+offset_right = 52.5
+offset_bottom = 33.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+text = "LobbyName"
+
+[node name="JoinButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -166.0
+offset_bottom = 33.0
+grow_horizontal = 0
+size_flags_horizontal = 3
+text = "join
+"

@@ -16,9 +16,13 @@ config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [audio]
+
 driver/enable_input=true
+
 [autoload]
+
 SteamworksHelper="*res://scripts/autoload/SteamworksHelper.cs"
+
 [display]
 
 window/stretch/mode="canvas_items"

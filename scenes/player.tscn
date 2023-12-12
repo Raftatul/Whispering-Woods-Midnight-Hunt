@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://cj8vo15g1p7td"]
+[gd_scene load_steps=30 format=3 uid="uid://cj8vo15g1p7td"]
 
 [ext_resource type="Script" path="res://scripts/PlayerMovement.cs" id="1_vsh0o"]
 [ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
@@ -19,9 +19,9 @@
 radius = 0.3
 height = 1.8
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_oitv7"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_6xvjk"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8oaih"]
+radius = 0.3
+height = 1.0
 
 [sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_trbrd"]
 
@@ -75,7 +75,7 @@ min_space = Vector2(-2, -2)
 max_space = Vector2(2, 2)
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_odead"]
-graph_offset = Vector2(-412.336, 150.054)
+graph_offset = Vector2(-393, 33)
 nodes/Jump/node = SubResource("AnimationNodeAnimation_4qrxj")
 nodes/Jump/position = Vector2(-200, 400)
 nodes/OneShot/node = SubResource("AnimationNodeOneShot_d4ww7")
@@ -85,32 +85,24 @@ nodes/Walk/position = Vector2(-200, 200)
 nodes/output/position = Vector2(400, 200)
 node_connections = [&"OneShot", 0, &"Walk", &"OneShot", 1, &"Jump", &"output", 0, &"OneShot"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_camera3D", "_animationTree", "_mesh")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_camera3D", "_standUpCollider", "_crouchRayCastChecker")]
 collision_layer = 0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
 script = ExtResource("1_vsh0o")
 _camera3D = NodePath("Camera3D")
-_animationTree = NodePath("Root Scene/AnimationTree")
-_mesh = NodePath("Root Scene")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 _standUpCollider = NodePath("StandUpCollider")
-_crouchRayCastChecker = NodePath("CrouchRaycastChecker")
+_crouchRayCastChecker = NodePath("UnCrouchRaycast")
 _playerData = ExtResource("2_dqpa7")
 
 [node name="StandUpCollider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_at2ia")
 
 [node name="CrouchCollider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-shape = SubResource("SphereShape3D_oitv7")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-visible = false
-mesh = SubResource("CapsuleMesh_6xvjk")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_8oaih")
 
 [node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("_audioStreamPlayer3D", "_audioStreamRecorder", "_sendRecordingTimer")]
 script = ExtResource("2_ltj03")
@@ -138,18 +130,18 @@ current = true
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="GeneralSkeleton" parent="Root Scene/RootNode" index="0"]
-bones/0/position = Vector3(-0.00461119, 1.03431, 0.0232014)
-bones/0/rotation = Quaternion(-0.0321382, -0.0474188, -0.0267147, 0.998001)
-bones/1/rotation = Quaternion(0.0290238, 0.0137519, 0.0251846, 0.999167)
-bones/2/rotation = Quaternion(0.0100888, 0.00375215, 0.0142144, 0.999841)
-bones/3/rotation = Quaternion(0.0097473, 0.00368768, 0.0140622, 0.999847)
-bones/4/rotation = Quaternion(0.0488323, -0.00150211, 0.00460252, 0.998795)
-bones/5/rotation = Quaternion(-0.0695998, 0.0103382, -0.000592187, 0.997521)
+bones/0/position = Vector3(-0.00400331, 1.0344, 0.0216543)
+bones/0/rotation = Quaternion(-0.0341355, -0.0451122, -0.0266507, 0.998043)
+bones/1/rotation = Quaternion(0.0262178, 0.0141327, 0.0247942, 0.999249)
+bones/2/rotation = Quaternion(0.0095484, 0.00370324, 0.0142308, 0.999846)
+bones/3/rotation = Quaternion(0.00904206, 0.00354355, 0.013959, 0.999855)
+bones/4/rotation = Quaternion(0.0458122, -0.00141174, 0.00476912, 0.998938)
+bones/5/rotation = Quaternion(-0.0678657, 0.0116279, -0.00219524, 0.997624)
 bones/5/scale = Vector3(1.00048, 1.00048, 1.00048)
-bones/7/rotation = Quaternion(0.477239, -0.477454, -0.636295, -0.373375)
-bones/8/rotation = Quaternion(-0.148811, 0.827908, -0.496107, 0.215179)
-bones/9/rotation = Quaternion(0.0413604, 0.705896, -0.0413601, 0.705896)
-bones/10/rotation = Quaternion(0.0424791, -0.571039, 0.0359353, 0.819035)
+bones/7/rotation = Quaternion(0.477653, -0.47759, -0.634356, -0.375964)
+bones/8/rotation = Quaternion(-0.150396, 0.827776, -0.495007, 0.217107)
+bones/9/rotation = Quaternion(0.0411232, 0.70591, -0.041123, 0.70591)
+bones/10/rotation = Quaternion(0.042162, -0.571492, 0.0361021, 0.818728)
 bones/11/rotation = Quaternion(-0.0367837, 0.0144657, 0.00205623, 0.999216)
 bones/12/rotation = Quaternion(-0.121712, -0.819574, 0.0371682, 0.558662)
 bones/13/rotation = Quaternion(0.0455454, 0.0460794, 0.161693, 0.984712)
@@ -169,10 +161,10 @@ bones/26/rotation = Quaternion(-5.96046e-08, -5.96046e-08, -5.96046e-08, 1)
 bones/27/rotation = Quaternion(0.228493, 0.00340284, 0.0429808, 0.97259)
 bones/28/rotation = Quaternion(0.151548, 1.49012e-08, 0.0123456, 0.988373)
 bones/29/rotation = Quaternion(0.143773, 4.47035e-08, 0.011712, 0.989541)
-bones/31/rotation = Quaternion(0.458696, 0.499266, 0.629956, -0.378797)
-bones/32/rotation = Quaternion(0.126735, 0.802141, -0.570364, -0.123265)
-bones/33/rotation = Quaternion(0.0101407, -0.707034, 0.0101408, 0.707034)
-bones/34/rotation = Quaternion(0.0519057, 0.478535, -0.014277, 0.876417)
+bones/31/rotation = Quaternion(0.45882, 0.499656, 0.628106, -0.381198)
+bones/32/rotation = Quaternion(0.123793, 0.799668, -0.573966, -0.125578)
+bones/33/rotation = Quaternion(0.0100273, -0.707036, 0.0100274, 0.707036)
+bones/34/rotation = Quaternion(0.0535314, 0.480843, -0.0169087, 0.875008)
 bones/35/rotation = Quaternion(-0.0420415, -0.0049842, -0.0190791, 0.998921)
 bones/36/rotation = Quaternion(-0.152845, 0.81215, -0.014813, 0.562877)
 bones/37/rotation = Quaternion(0.0400129, -0.0528763, -0.128588, 0.989479)
@@ -193,13 +185,13 @@ bones/51/rotation = Quaternion(0.233867, -0.00350587, -0.0490091, 0.971026)
 bones/52/rotation = Quaternion(0.151258, -2.5332e-07, -0.0155007, 0.988373)
 bones/53/rotation = Quaternion(0.143498, -1.3411e-07, -0.0147054, 0.989541)
 bones/54/rotation = Quaternion(1.49012e-08, -1.49012e-08, -4.47035e-08, 1)
-bones/55/rotation = Quaternion(-0.0925471, -0.00898119, 0.995291, -0.0273827)
-bones/56/rotation = Quaternion(0.0343892, 0.993696, -0.066898, -0.083127)
-bones/57/rotation = Quaternion(0.0122318, 0.679342, -0.733213, -0.0272836)
-bones/58/rotation = Quaternion(-5.444e-08, 0.998111, 0.061433, -4.06453e-11)
-bones/60/rotation = Quaternion(0.136379, 0.0714021, 0.985249, -0.0747418)
-bones/61/rotation = Quaternion(-0.0389604, 0.994181, -0.0994122, 0.0142397)
-bones/62/rotation = Quaternion(-0.0418119, 0.714025, -0.69712, 0.0494269)
+bones/55/rotation = Quaternion(-0.0928686, -0.00991141, 0.995269, -0.0267782)
+bones/56/rotation = Quaternion(0.0343117, 0.993739, -0.0663395, -0.0830928)
+bones/57/rotation = Quaternion(0.0106941, 0.679657, -0.732877, -0.0290333)
+bones/58/rotation = Quaternion(-6.55862e-08, 0.998136, 0.0610361, 7.27283e-09)
+bones/60/rotation = Quaternion(0.135041, 0.0701305, 0.985578, -0.0740379)
+bones/61/rotation = Quaternion(-0.0391139, 0.994324, -0.0980052, 0.0135841)
+bones/62/rotation = Quaternion(-0.0417171, 0.714845, -0.696298, 0.0492376)
 bones/63/rotation = Quaternion(-8.69504e-08, 0.999075, 0.0429962, 3.86257e-09)
 
 [node name="AnimationPlayer" parent="Root Scene" index="1"]
@@ -235,5 +227,8 @@ parameters/OneShot/active = false
 parameters/OneShot/internal_active = false
 parameters/OneShot/request = 0
 parameters/Walk/blend_position = Vector2(0, 0)
+
+[node name="UnCrouchRaycast" type="RayCast3D" parent="."]
+target_position = Vector3(0, 1, 0)
 
 [editable path="Root Scene"]

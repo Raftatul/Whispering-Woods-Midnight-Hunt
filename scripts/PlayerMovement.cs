@@ -12,6 +12,14 @@ public partial class PlayerMovement : CharacterBody3D
     private Vector3 _cameraCrouch = Vector3.Zero;
 
     [Export]
+    private AnimationTree _animationTree;
+
+    [Export]
+    private Node3D _mesh;
+
+    [Export]
+    private float _moveSpeed = 5f;
+
     private CollisionShape3D _standUpCollider;
 
     [Export]
@@ -46,6 +54,10 @@ public partial class PlayerMovement : CharacterBody3D
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
+        if (IsMultiplayerAuthority())
+        {
+            // _mesh.Visible = false;
+        }
         SwitchState(PlayerState.Idle);
     }
 
@@ -68,6 +80,20 @@ public partial class PlayerMovement : CharacterBody3D
             _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
         }
 
+        Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
+        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X, 0.1f);
+        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, inputAxis.Z, 0.1f);
+
+        _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
+
+        if (IsOnFloor() && !_isGrounded)
+        {
+            _isGrounded = true;
+            OnGrounded();
+        }
+        else if (!IsOnFloor() && _isGrounded)
+            _isGrounded = false;
+            
         switch(_playerState)
         {
             case PlayerState.Run:
@@ -141,7 +167,8 @@ public partial class PlayerMovement : CharacterBody3D
     private void Jump()
     {
         _targetVelocity.Y = _playerData.JumpForce;
-        GD.Print("JUMP");   
+        GD.Print("JUMP");
+        _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Fire));
     }
 
     private void Crouch()
@@ -222,5 +249,10 @@ public partial class PlayerMovement : CharacterBody3D
         {
             StopRun();
         }
+    }
+
+    private void OnGrounded()
+    {
+        _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Abort));
     }
 }

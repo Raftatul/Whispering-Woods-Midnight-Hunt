@@ -1,4 +1,5 @@
 using Godot;
+using Steamworks;
 using Steamworks.Data;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,13 @@ public partial class SceneManager : Node2D
 	public PackedScene LobbyElementScene { get; set; }
 
 	[Export]
+	public PackedScene PlayerCardScene { get; set; }
+
+	[Export]
 	public VBoxContainer LobbyListContainer { get; set; }
+
+	[Export]
+	public VBoxContainer PlayerListContainer { get; set; }
 
 	public override void _Ready()
 	{
@@ -26,6 +33,8 @@ public partial class SceneManager : Node2D
 		CreateLobbyButton.Pressed += CreateLobbyButtonPressed;
 		GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
 		InviteFriendButton.Pressed += InviteFriendButtonPressed;
+		SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
+		SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
 	}
 
 	private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -37,6 +46,19 @@ public partial class SceneManager : Node2D
 			LobbyListContainer.AddChild(lobbyElement);
 		}
 		
+	}
+
+	private void OnPlayerJoinedLobbyCallback(Friend friend)
+	{
+		var playerCard = PlayerCardScene.Instantiate() as PlayerCard;
+		ImageTexture avatar = ImageTexture.CreateFromImage(SteamManager.GetImageFromSteamImage(friend.GetMediumAvatarAsync().Result.Value));
+		playerCard.SetLabels(friend.Name, avatar);
+		PlayerListContainer.AddChild(playerCard);
+	}
+
+	private void OnPlayerLeftLobbyCallback(Friend friend)
+	{
+		GD.Print("Player left lobby: " + friend.Name);
 	}
 
 	public void CreateLobbyButtonPressed()

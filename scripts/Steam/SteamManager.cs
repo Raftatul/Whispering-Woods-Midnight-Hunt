@@ -22,6 +22,10 @@ public partial class SteamManager : Node
   private List<Lobby> availableLobbies { get; set; } = new List<Lobby>();
 
   public static event Action<List<Lobby>> OnLobbyListRefreshedCompleted;
+
+  public static event Action<Friend> OnPlayerJoinedLobby;
+
+  public static event Action<Friend> OnPlayerLeftLobby;
   public SteamManager()
   {
     if (Instance == null)
@@ -67,19 +71,27 @@ public partial class SteamManager : Node
     GD.Print("Lobby created !");
   }
 
-  private void OnLobbyMemberJoined(Lobby lobby, Friend friend)
+  private async void OnLobbyMemberJoined(Lobby lobby, Friend friend)
   {
     GD.Print("User joined lobby " + friend.Name);
+    OnPlayerJoinedLobby(friend);  
+  }
+
+  public static Godot.Image GetImageFromSteamImage(Steamworks.Data.Image steamImage)
+  {
+    return Godot.Image.CreateFromData((int)steamImage.Width, (int)steamImage.Height, false, Godot.Image.Format.Rgba8, steamImage.Data);
   }
 
   private void OnLobbyMemberDisconnected(Lobby lobby, Friend friend)
   {
     GD.Print("User disconnected from lobby " + friend.Name);
+    OnPlayerLeftLobby(friend);
   }
 
   private void OnLobbyMemberLeave(Lobby lobby, Friend friend)
   {
     GD.Print("User left lobby " + friend.Name);
+    OnPlayerLeftLobby(friend);
   }
   
   private void OnLobbyEntered(Lobby lobby)

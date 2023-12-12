@@ -171,6 +171,7 @@ public async Task<bool> GetMultiplayerLobbyList()
     Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithSlotsAvailable(1).RequestAsync();
     if (lobbies != null)
     {
+      availableLobbies.Clear();
       foreach (Lobby lobby in lobbies)
       {
         GD.Print("Lobby found with id " + lobby.Id);

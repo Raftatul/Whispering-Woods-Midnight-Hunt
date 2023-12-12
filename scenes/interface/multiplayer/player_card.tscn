@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2hio1hj1x2iu"]
+[gd_scene load_steps=3 format=3 uid="uid://b2hio1hj1x2iu"]
 
+[ext_resource type="Texture2D" uid="uid://c8g8sunhgwad6" path="res://assets/sprites/interface/15fc57c7c13a785d18606452ea27cbfe.webp" id="1_1cl8k"]
 [ext_resource type="Script" path="res://scripts/interface/multiplayer/PlayerCard.cs" id="1_kt76m"]
 
 [node name="PlayerCard" type="HBoxContainer" node_paths=PackedStringArray("PlayerNameLabel", "PlayerAvatar")]
 offset_right = 89.0
 offset_bottom = 23.0
-size_flags_horizontal = 6
+scale = Vector2(0.996725, 1.02262)
+size_flags_horizontal = 3
 script = ExtResource("1_kt76m")
 PlayerNameLabel = NodePath("Label")
 PlayerAvatar = NodePath("TextureRect")
@@ -13,12 +15,15 @@ PlayerAvatar = NodePath("TextureRect")
 [node name="TextureRect" type="TextureRect" parent="."]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
+size_flags_horizontal = 0
+texture = ExtResource("1_1cl8k")
 expand_mode = 2
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 1
 text = "Raftatul"
 vertical_alignment = 1
 visible_characters = 16

@@ -43,10 +43,8 @@ text = "Settings"
 [node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 1
 
 [node name="Graphics" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer" node_paths=PackedStringArray("_screenOptionButton", "_resolutionOptionButton", "_qualityOptionButton", "_vsyncCheckButton")]
-visible = false
 layout_mode = 2
 script = ExtResource("2_yhhk4")
 _screenOptionButton = NodePath("VBoxContainer/HBoxContainer/ScreenOptionButton")
@@ -107,12 +105,14 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "V-Sync"
 
-[node name="Audio" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer" node_paths=PackedStringArray("_mainVolumeSlider", "_musicVolumeSlider", "_sfxVolumeSlider")]
+[node name="Audio" type="MarginContainer" parent="MarginContainer/VBoxContainer/TabContainer" node_paths=PackedStringArray("_mainVolumeSlider", "_musicVolumeSlider", "_sfxVolumeSlider", "_recordAudioCheckButton")]
+visible = false
 layout_mode = 2
 script = ExtResource("3_q46jy")
 _mainVolumeSlider = NodePath("VBoxContainer/HBoxContainer/MainVolumeSlider")
 _musicVolumeSlider = NodePath("VBoxContainer/HBoxContainer2/MusicVolumeSlider")
 _sfxVolumeSlider = NodePath("VBoxContainer/HBoxContainer3/SFXVolumeSlider")
+_recordAudioCheckButton = NodePath("VBoxContainer/RecordVoiceButton")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Audio"]
 layout_mode = 2

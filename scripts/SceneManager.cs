@@ -4,7 +4,7 @@ using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 
-public partial class SceneManager : Node2D
+public partial class SceneManager : Node
 {
 	[Export]
 	public Button CreateLobbyButton { get; set; }
@@ -39,6 +39,11 @@ public partial class SceneManager : Node2D
 
 	private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
 	{
+		foreach (var item in LobbyListContainer.GetChildren())
+		{
+			item.QueueFree();
+		}
+
 		foreach (var item in lobbies)
 		{
 			LobbyElements lobbyElement = LobbyElementScene.Instantiate() as LobbyElements;

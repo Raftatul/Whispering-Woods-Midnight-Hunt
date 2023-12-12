@@ -1,12 +1,23 @@
-[gd_scene load_steps=6 format=3 uid="uid://i1g4s60qpvyj"]
+[gd_scene load_steps=9 format=3 uid="uid://i1g4s60qpvyj"]
 
 [ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
+[ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_jk5bo"]
 [ext_resource type="Script" path="res://scripts/interface/multiplayer/StartMenu.cs" id="1_ncc4i"]
 [ext_resource type="Texture2D" uid="uid://cffqlgd20cf0y" path="res://assets/sprites/interface/cogwheel.png" id="2_4yofa"]
+[ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="2_6p8nt"]
 [ext_resource type="Script" path="res://scripts/interface/general/TransitionButton.cs" id="3_y82su"]
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
+[ext_resource type="Script" path="res://scripts/interface/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
 
-[node name="MainMenu" type="CanvasLayer"]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "LobbyListContainer", "PlayerListContainer")]
+script = ExtResource("1_jk5bo")
+CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton")
+GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/RefreshLobbiesList")
+InviteFriendButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/InviteFriendButton")
+LobbyElementScene = ExtResource("2_6p8nt")
+PlayerCardScene = ExtResource("1_2wl7p")
+LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
+PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerList")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -91,7 +102,41 @@ script = ExtResource("3_y82su")
 _nodeToHide = NodePath("../../..")
 _nodeToShow = NodePath("../../../../Settings")
 
-[node name="Lobby" type="Control" parent="Control"]
+[node name="LobbiesPanel" type="PanelContainer" parent="Control/StartMenu"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 62.0
+offset_top = -256.0
+offset_right = 428.0
+offset_bottom = 256.0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/StartMenu/LobbiesPanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/StartMenu/LobbiesPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Lobbies :"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LobbiesContainer" type="VBoxContainer" parent="Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RefreshLobbiesList" type="Button" parent="Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Refresh"
+
+[node name="LobbyMenu" type="Control" parent="Control"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -99,8 +144,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("7_eqlnh")
 
-[node name="PanelContainer" type="PanelContainer" parent="Control/Lobby"]
+[node name="PanelContainer" type="PanelContainer" parent="Control/LobbyMenu"]
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -108,35 +154,28 @@ anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
 offset_left = -119.0
-offset_top = -100.0
-offset_bottom = 102.0
+offset_top = -12.0
+offset_bottom = 15.0
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/Lobby/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Control/LobbyMenu/PanelContainer"]
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="PlayerList" type="VBoxContainer" parent="Control/Lobby/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/LobbyMenu/PanelContainer/MarginContainer"]
 layout_mode = 2
+
+[node name="PlayerList" type="VBoxContainer" parent="Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 15
 
-[node name="PlayerCard2" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
+[node name="InviteFriendButton" type="Button" parent="Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+text = "Invite"
 
-[node name="PlayerCard3" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
-layout_mode = 2
-
-[node name="PlayerCard4" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
-layout_mode = 2
-
-[node name="PlayerCard5" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
-layout_mode = 2
-
-[node name="PlayerCard6" parent="Control/Lobby/PanelContainer/MarginContainer/PlayerList" instance=ExtResource("1_2wl7p")]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="Control/Lobby"]
+[node name="Button" type="Button" parent="Control/LobbyMenu"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -159,7 +198,6 @@ layout_mode = 1
 [node name="Button" parent="Control/Settings/MarginContainer/VBoxContainer" index="2" node_paths=PackedStringArray("_nodeToShow")]
 _nodeToShow = NodePath("../../../../StartMenu")
 
-[connection signal="pressed" from="Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton" to="Control/StartMenu" method="StartGame"]
 [connection signal="pressed" from="Control/StartMenu/VBoxContainer/Button" to="Control/StartMenu" method="QuitGame"]
 
 [editable path="Control/Settings"]

@@ -69,6 +69,7 @@ public partial class SteamManager : Node
       return;
     }
     GD.Print("Lobby created !");
+    OnPlayerJoinedLobby(lobby.Owner);
   }
 
   private async void OnLobbyMemberJoined(Lobby lobby, Friend friend)

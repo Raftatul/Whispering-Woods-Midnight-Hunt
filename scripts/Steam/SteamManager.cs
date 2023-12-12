@@ -69,7 +69,6 @@ public partial class SteamManager : Node
       return;
     }
     GD.Print("Lobby created !");
-    OnPlayerJoinedLobby(lobby.Owner);
   }
 
   private async void OnLobbyMemberJoined(Lobby lobby, Friend friend)
@@ -101,6 +100,11 @@ public partial class SteamManager : Node
     {
       GD.Print($"You have entered {lobby.Owner.Name}'s lobby");
       hostedLobby = lobby;
+      foreach (Friend friend in lobby.Members)
+      {
+        OnPlayerJoinedLobby(friend);
+      }
+      hostedLobby.SetGameServer(lobby.Owner.Id);
     }
     else
     {
@@ -148,6 +152,10 @@ private async void OnGameLobbyJoinRequested(Lobby lobby, SteamId steamIDFriend)
   else
   {
     hostedLobby = lobby;
+    foreach (Friend friend in lobby.Members)
+    {
+      OnPlayerJoinedLobby(friend);
+    }
   }
 }
 
@@ -205,6 +213,11 @@ public async Task<bool> GetMultiplayerLobbyList()
         SteamClient.Shutdown();
         GetTree().Quit();
       }
+    }
+
+    public override void _ExitTree()
+    {
+      SteamClient.Shutdown();
     }
 
     #endregion Godot Methods

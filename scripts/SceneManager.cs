@@ -51,6 +51,7 @@ public partial class SceneManager : Node2D
 	private void OnPlayerJoinedLobbyCallback(Friend friend)
 	{
 		var playerCard = PlayerCardScene.Instantiate() as PlayerCard;
+		playerCard.Name = friend.Id.AccountId.ToString();
 		ImageTexture avatar = ImageTexture.CreateFromImage(SteamManager.GetImageFromSteamImage(friend.GetMediumAvatarAsync().Result.Value));
 		playerCard.SetLabels(friend.Name, avatar);
 		PlayerListContainer.AddChild(playerCard);

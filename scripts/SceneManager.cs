@@ -42,7 +42,7 @@ public partial class SceneManager : Node2D
 		foreach (var item in lobbies)
 		{
 			LobbyElements lobbyElement = LobbyElementScene.Instantiate() as LobbyElements;
-			lobbyElement.SetLabels(item.Id.ToString(), item.GetData("ownerNameDataString") + " lobby", item);
+			lobbyElement.SetLabels(item.GetData("ownerNameDataString") + " lobby", item);
 			LobbyListContainer.AddChild(lobbyElement);
 		}
 		
@@ -59,7 +59,9 @@ public partial class SceneManager : Node2D
 
 	private void OnPlayerLeftLobbyCallback(Friend friend)
 	{
-		GD.Print("Player left lobby: " + friend.Name);
+		var player = PlayerListContainer.GetNode(friend.Id.AccountId.ToString());
+		PlayerListContainer.RemoveChild(player);
+		player.QueueFree();
 	}
 
 	public void CreateLobbyButtonPressed()

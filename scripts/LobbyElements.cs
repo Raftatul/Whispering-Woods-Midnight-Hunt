@@ -8,9 +8,6 @@ public partial class LobbyElements : Control
 	public Button JoinLobbyButton { get; set; }
 
 	[Export]
-	public Label LobbyIdLabel { get; set; }
-
-	[Export]
 	public Label LobbyNameLabel { get; set; }
 	// Called when the node enters the scene tree for the first time.
 
@@ -18,12 +15,17 @@ public partial class LobbyElements : Control
 
 	public void JoinLobbyButtonPressed()
 	{
+		//check if already in a lobby or same lobby
+		if (SteamManager.Instance.hostedLobby.Id == lobby.Id)
+		{
+			GD.Print("Already in this lobby");
+			return;
+		}
 		lobby.Join();
 	}
 
-	public void SetLabels(string id, string name, Lobby lobby)
+	public void SetLabels(string name, Lobby lobby)
 	{
-		LobbyIdLabel.Text = id;
 		LobbyNameLabel.Text = name;
 		this.lobby = lobby;
 	}

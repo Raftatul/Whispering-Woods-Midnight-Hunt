@@ -17,7 +17,7 @@ public partial class SteamManager : Node
   [Export]
   public int MaxlobbyMembers { get; set; } = 5;
 
-  private Lobby hostedLobby { get; set; }
+  public Lobby hostedLobby { get; set; }
 
   private List<Lobby> availableLobbies { get; set; } = new List<Lobby>();
 

@@ -7,6 +7,7 @@ public partial class StartMenu : Control
     public override void _Ready()
     {
         SteamMatchmaking.OnLobbyCreated += (result, lobby) => Visible = false;
+        SteamMatchmaking.OnLobbyEntered += (lobby) => Visible = false;
     }
 
     private void StartGame()

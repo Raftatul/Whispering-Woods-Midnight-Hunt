@@ -1,6 +1,7 @@
 [gd_scene load_steps=29 format=3 uid="uid://cj8vo15g1p7td"]
 
 [ext_resource type="Script" path="res://scripts/PlayerMovement.cs" id="1_vsh0o"]
+[ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
 [ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_ltj03"]
 [ext_resource type="PackedScene" uid="uid://w0rew2y546rd" path="res://assets/meshs/player/X Bot.fbx" id="3_pbseb"]
 [ext_resource type="AnimationLibrary" uid="uid://c27tdnovxfb3q" path="res://assets/meshs/player/Basic Locomotion Pack/idle.fbx" id="4_ive16"]
@@ -17,6 +18,8 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_at2ia"]
 radius = 0.3
 height = 1.8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_oitv7"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_6xvjk"]
 
@@ -94,7 +97,16 @@ _mesh = NodePath("Root Scene")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+_standUpCollider = NodePath("StandUpCollider")
+_crouchRayCastChecker = NodePath("CrouchRaycastChecker")
+_playerData = ExtResource("2_dqpa7")
+
+[node name="StandUpCollider" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_at2ia")
+
+[node name="CrouchCollider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("SphereShape3D_oitv7")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 visible = false

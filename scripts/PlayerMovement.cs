@@ -7,9 +7,11 @@ public partial class PlayerMovement : CharacterBody3D
     [Export]
     private Camera3D _camera3D;
 
-    private Vector3 _cameraUp = new Vector3(0f, 0.5f, 0f);
+    [Export]
+    private Node3D _cameraUp;
 
-    private Vector3 _cameraCrouch = Vector3.Zero;
+    [Export]
+    private Node3D _cameraCrouch;
 
     [Export]
     private AnimationTree _animationTree;
@@ -20,6 +22,7 @@ public partial class PlayerMovement : CharacterBody3D
     [Export]
     private float _moveSpeed = 5f;
 
+    [Export]
     private CollisionShape3D _standUpCollider;
 
     [Export]
@@ -27,8 +30,6 @@ public partial class PlayerMovement : CharacterBody3D
 
     [Export]
     private PlayerData _playerData;
-
-    private float _moveSpeed;
 
     private float _crouchTransitionTime = 0.15f;
 
@@ -80,9 +81,13 @@ public partial class PlayerMovement : CharacterBody3D
             _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
         }
 
+        int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
+
         Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
-        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X, 0.1f);
-        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, inputAxis.Z, 0.1f);
+        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
+        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
+
+        GD.Print(inputAxis.Z * targetBlend);
 
         _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
 
@@ -178,7 +183,7 @@ public partial class PlayerMovement : CharacterBody3D
         _standUpCollider.Disabled = true;
 
         Tween cameraTween = CreateTween();
-        cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch, _crouchTransitionTime);
+        cameraTween.TweenProperty(_camera3D, "position", _cameraCrouch.Position, _crouchTransitionTime);
     }
 
     private bool CanUnCrouch()
@@ -196,7 +201,7 @@ public partial class PlayerMovement : CharacterBody3D
         _standUpCollider.Disabled = false;
 
         Tween cameraTween = CreateTween();
-        cameraTween.TweenProperty(_camera3D, "position", _cameraUp, _crouchTransitionTime);
+        cameraTween.TweenProperty(_camera3D, "position", _cameraUp.Position, _crouchTransitionTime);
     }
 
     private void ToogleCrouch()

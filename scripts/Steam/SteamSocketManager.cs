@@ -3,7 +3,7 @@ using Steamworks.Data;
 using System;
 using Godot;
 
-class SteamSocketManager : SocketManager
+public class SteamSocketManager : SocketManager
 {
     public override void OnConnected(Connection connection, ConnectionInfo info)
     {
@@ -26,6 +26,6 @@ class SteamSocketManager : SocketManager
     public override void OnMessage(Connection connection, NetIdentity identity, IntPtr data, int size, long messageNum, long recvTime, int channel)
     {
         base.OnMessage(connection, identity, data, size, messageNum, recvTime, channel);
-        GD.Print("got socket message");
+        DataParser.ProcessData(data, size);
     }
 }

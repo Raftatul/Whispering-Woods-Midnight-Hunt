@@ -2,7 +2,6 @@ using Steamworks;
 using Steamworks.Data;
 using System;
 using Godot;
-
 public class SteamConnectionManager : ConnectionManager
 {
     public override void OnConnected(ConnectionInfo info)
@@ -26,6 +25,6 @@ public class SteamConnectionManager : ConnectionManager
     public override void OnMessage(IntPtr data, int size, long messageNum, long recvTime, int channel)
     {
         base.OnMessage(data, size, messageNum, recvTime, channel);
-        GD.Print("got message");
+        DataParser.ProcessData(data, size);
     }
 }

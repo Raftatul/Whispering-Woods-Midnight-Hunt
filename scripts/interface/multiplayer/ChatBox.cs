@@ -16,7 +16,7 @@ public partial class ChatBox : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		DataParser.OnChatMessageReceived += OnChatMessageReceivedCallback;
+		DataParser.OnChatMessageReceived += OnChatMessageCallback;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -34,7 +34,7 @@ public partial class ChatBox : Control
                 { "UserName", SteamManager.Instance.PlayerName },
                 { "ChatMessage", ChatInput.Text }
             };
-			OnChatMessageReceivedCallback(data);
+			OnChatMessageCallback(data);
 			string json = OwnJsonParser.Serialize(data);
 			if (SteamManager.Instance.IsHost)
 			{
@@ -47,7 +47,7 @@ public partial class ChatBox : Control
 		}
 	}
 
-	private void OnChatMessageReceivedCallback(Dictionary<string, string> data)
+	private void OnChatMessageCallback(Dictionary<string, string> data)
 	{
 		ChatHistory.Text += data["UserName"] + ": " + data["ChatMessage"] + System.Environment.NewLine;
 	}

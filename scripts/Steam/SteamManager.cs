@@ -4,6 +4,7 @@ using Steamworks;
 using Steamworks.Data;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class SteamManager : Node
 {
@@ -26,6 +27,11 @@ public partial class SteamManager : Node
   public static event Action<Friend> OnPlayerJoinedLobby;
 
   public static event Action<Friend> OnPlayerLeftLobby;
+
+  public SteamSocketManager SocketManager;
+  public SteamConnectionManager SteamConnectionManager;
+
+  public bool IsHost;
   public SteamManager()
   {
     if (Instance == null)
@@ -69,17 +75,14 @@ public partial class SteamManager : Node
       return;
     }
     GD.Print("Lobby created !");
+
+    CreateSteamSocketServer();
   }
 
   private async void OnLobbyMemberJoined(Lobby lobby, Friend friend)
   {
     GD.Print("User joined lobby " + friend.Name);
     OnPlayerJoinedLobby(friend);  
-  }
-
-  public static Godot.Image GetImageFromSteamImage(Steamworks.Data.Image steamImage)
-  {
-    return Godot.Image.CreateFromData((int)steamImage.Width, (int)steamImage.Height, false, Godot.Image.Format.Rgba8, steamImage.Data);
   }
 
   private void OnLobbyMemberDisconnected(Lobby lobby, Friend friend)
@@ -110,6 +113,7 @@ public partial class SteamManager : Node
     {
       GD.Print($"You have joined your own lobby");
     }
+    JoinSteamSocketServer(lobby.Owner.Id);
   }
   #endregion Steam Callbacks
 
@@ -159,6 +163,29 @@ private async void OnGameLobbyJoinRequested(Lobby lobby, SteamId steamIDFriend)
   }
 }
 
+public void CreateSteamSocketServer()
+{
+  SocketManager = SteamNetworkingSockets.CreateRelaySocket<SteamSocketManager>(0);
+  SteamConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(PlayerId, 0); 
+  IsHost = true;
+  GD.Print("Created socket server");
+}
+
+public void JoinSteamSocketServer(SteamId hostId)
+{
+  if (!IsHost)
+  {
+    GD.Print("Joining socket server");
+    SteamConnectionManager = SteamNetworkingSockets.ConnectRelay<SteamConnectionManager>(hostId, 0);
+  }
+}
+
+public static Godot.Image GetImageFromSteamImage(Steamworks.Data.Image steamImage)
+  {
+    return Godot.Image.CreateFromData((int)steamImage.Width, (int)steamImage.Height, false, Godot.Image.Format.Rgba8, steamImage.Data);
+  }
+
+
 public void OpenFriendInviteOverlay()
 {
   SteamFriends.OpenGameInviteOverlay(hostedLobby.Id);
@@ -188,40 +215,65 @@ public async Task<bool> GetMultiplayerLobbyList()
   }
 }
 
-  #region Godot Methods
-
-  public override void _Ready()
+public void SendMessageToAll(string message)
+{
+  foreach (var socket in SocketManager.Connected.Skip(1).ToArray()) //skip 1 car le premier est le serveur
   {
-    SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
-    SteamMatchmaking.OnLobbyCreated += OnLobbyCreated; 
-    SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
-    SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
-    SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
-    SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
-    SteamFriends.OnGameLobbyJoinRequested += OnGameLobbyJoinRequested;
+    socket.SendMessage(message);
   }
+}
 
-    public override void _Process(double delta)
-    {
-      SteamClient.RunCallbacks();
-    }
+#region Godot Methods
 
-    public override void _Notification(int what)
+public override void _Ready()
+{
+  SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
+  SteamMatchmaking.OnLobbyCreated += OnLobbyCreated; 
+  SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
+  SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
+  SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
+  SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+  SteamFriends.OnGameLobbyJoinRequested += OnGameLobbyJoinRequested;
+}
+
+  public override void _Process(double delta)
+  {
+    SteamClient.RunCallbacks();
+
+    try
     {
-      base._Notification(what);
-      if (what == NotificationWMCloseRequest)
+      if (SocketManager != null)
       {
-        SteamClient.Shutdown();
-        GetTree().Quit();
+        SocketManager.Receive();
+      }
+      if (SteamConnectionManager != null && SteamConnectionManager.Connected)
+      {
+        SteamConnectionManager.Receive();
       }
     }
+    catch (System.Exception e)
+    {
+      GD.PrintErr("Failed to receive socket message: " + e.Message);
+      throw;
+    }
+  }
 
-    public override void _ExitTree()
+  public override void _Notification(int what)
+  {
+    base._Notification(what);
+    if (what == NotificationWMCloseRequest)
     {
       SteamClient.Shutdown();
+      GetTree().Quit();
     }
+  }
 
-    #endregion Godot Methods
+  public override void _ExitTree()
+  {
+    SteamClient.Shutdown();
+  }
+
+  #endregion Godot Methods
 }
 
 

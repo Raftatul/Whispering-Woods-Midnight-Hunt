@@ -1,4 +1,5 @@
 using Godot;
+using Steamworks;
 using System;
 
 public partial class PlayerMovement : CharacterBody3D
@@ -17,7 +18,11 @@ public partial class PlayerMovement : CharacterBody3D
 
     private bool _isGrounded = false;
 
+    public bool ControlledByPlayer { get; set; } = false;
+
     private Vector3 _targetVelocity = Vector3.Zero;
+
+    public Friend FriendData { get; set; }
 
     private Vector3 GetDirectionInput()
     {

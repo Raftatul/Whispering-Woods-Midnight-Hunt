@@ -5,6 +5,10 @@ using System.Collections.Generic;
 public class DataParser
 {
     public static Action<Dictionary<string, string>> OnChatMessageReceived;
+    public static Action<Dictionary<string, string>> OnPlayerJoined;
+    public static Action<Dictionary<string, string>> OnPlayerUpdate;
+    public static Action<Dictionary<string, string>> OnPlayerLeft;
+    public static Action<Dictionary<string, string>> OnStartGame;
 
 
    public static Dictionary<string, string> ParseData(IntPtr data, int size)
@@ -22,6 +26,18 @@ public class DataParser
         {
             case "ChatMessage":
                 OnChatMessageReceived.Invoke(dataDictionnary);
+                break;
+            case "PlayerJoined":
+                OnPlayerJoined.Invoke(dataDictionnary);
+                break;
+            case "PlayerUpdate":
+                OnPlayerUpdate.Invoke(dataDictionnary);
+                break;
+            case "PlayerLeft":
+                OnPlayerLeft.Invoke(dataDictionnary);
+                break;
+            case "StartGame":
+                OnStartGame.Invoke(dataDictionnary);
                 break;
             default:
                 break;

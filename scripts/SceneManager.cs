@@ -16,6 +16,10 @@ public partial class SceneManager : Node
 	public Button InviteFriendButton { get; set; }
 
 	[Export]
+	public Button STartGameButton { get; set; }
+
+
+	[Export]
 	public PackedScene LobbyElementScene { get; set; }
 
 	[Export]
@@ -27,6 +31,9 @@ public partial class SceneManager : Node
 	[Export]
 	public VBoxContainer PlayerListContainer { get; set; }
 
+	[Export]
+	public PackedScene PlayerMovement { get; set; }
+
 	public override void _Ready()
 	{
 		SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
@@ -35,6 +42,7 @@ public partial class SceneManager : Node
 		InviteFriendButton.Pressed += InviteFriendButtonPressed;
 		SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
 		SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
+		DataParser.OnStartGame += StartGame;
 	}
 
 	private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -82,5 +90,36 @@ public partial class SceneManager : Node
 	public void InviteFriendButtonPressed()
 	{
 		SteamManager.Instance.OpenFriendInviteOverlay();
+	}
+
+	public void StartGameButtonPressed(Dictionary<string, string> data)
+	{
+		if (SteamManager.Instance.IsHost)
+		{
+
+		Dictionary<string, string> dataToSend = new Dictionary<string, string>
+		{
+			{ "DataType", "StartGame" },
+			{ "SceneToLoad", "res://main.tscn" }
+		};
+		SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
+		StartGame(dataToSend);
+		}
+
+	}
+
+	public void StartGame(Dictionary<string, string> data)
+	{
+		foreach (var item in GameManager.Players)
+		{
+			var player = PlayerMovement.Instantiate() as PlayerMovement;
+			player.Name = item.FriendData.Id.AccountId.ToString();
+			player.FriendData = item.FriendData;
+			if(player.Name == SteamManager.Instance.PlayerId.AccountId.ToString())
+			{
+				player.ControlledByPlayer = true;
+			}
+
+		}
 	}
 }

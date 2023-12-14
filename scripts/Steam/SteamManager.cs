@@ -79,7 +79,7 @@ public partial class SteamManager : Node
     CreateSteamSocketServer();
   }
 
-  private async void OnLobbyMemberJoined(Lobby lobby, Friend friend)
+  private void OnLobbyMemberJoined(Lobby lobby, Friend friend)
   {
     GD.Print("User joined lobby " + friend.Name);
     OnPlayerJoinedLobby(friend);  

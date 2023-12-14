@@ -16,7 +16,7 @@ public partial class SceneManager : Node
 	public Button InviteFriendButton { get; set; }
 
 	[Export]
-	public Button STartGameButton { get; set; }
+	public Button StartGameButton { get; set; }
 
 
 	[Export]
@@ -68,6 +68,7 @@ public partial class SceneManager : Node
 		ImageTexture avatar = ImageTexture.CreateFromImage(SteamManager.GetImageFromSteamImage(friend.GetMediumAvatarAsync().Result.Value));
 		playerCard.SetLabels(friend.Name, avatar);
 		PlayerListContainer.AddChild(playerCard);
+		GameManager.OnPlayerJoinedCallback(friend);
 	}
 
 	private void OnPlayerLeftLobbyCallback(Friend friend)

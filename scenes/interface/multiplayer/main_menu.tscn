@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://i1g4s60qpvyj"]
+[gd_scene load_steps=11 format=3 uid="uid://i1g4s60qpvyj"]
 
 [ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
 [ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_jk5bo"]
@@ -6,18 +6,22 @@
 [ext_resource type="Texture2D" uid="uid://cffqlgd20cf0y" path="res://assets/sprites/interface/cogwheel.png" id="2_4yofa"]
 [ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="2_6p8nt"]
 [ext_resource type="Script" path="res://scripts/interface/general/TransitionButton.cs" id="3_y82su"]
+[ext_resource type="PackedScene" uid="uid://cj8vo15g1p7td" path="res://scenes/player.tscn" id="4_5wyhn"]
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
 [ext_resource type="Script" path="res://scripts/interface/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
+[ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
-[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "LobbyListContainer", "PlayerListContainer")]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "LobbyListContainer", "PlayerListContainer")]
 script = ExtResource("1_jk5bo")
 CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton")
 GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/RefreshLobbiesList")
 InviteFriendButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/InviteFriendButton")
+StartGameButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/Button")
 LobbyElementScene = ExtResource("2_6p8nt")
 PlayerCardScene = ExtResource("1_2wl7p")
 LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
 PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerList")
+PlayerMovement = ExtResource("4_5wyhn")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -176,6 +180,10 @@ theme_override_constants/separation = 15
 layout_mode = 2
 text = "Invite"
 
+[node name="Button" type="Button" parent="Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "buttonstartgame>w<"
+
 [node name="Button" type="Button" parent="Control/LobbyMenu"]
 layout_mode = 1
 anchors_preset = 7
@@ -191,6 +199,12 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 32
 text = "Back"
+
+[node name="Control" parent="Control/LobbyMenu" instance=ExtResource("9_iah38")]
+offset_left = 737.0
+offset_top = 72.0
+offset_right = 1084.0
+offset_bottom = 362.0
 
 [node name="Settings" parent="Control" instance=ExtResource("5_t2d84")]
 visible = false

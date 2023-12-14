@@ -22,7 +22,8 @@ public partial class VoiceChat : Node3D
 
     public override void _Ready()
     {
-        _player.OnPlayerInitialized += Initialize;
+        if (_player.ControlledByPlayer)
+            Initialize();
     }
 
     private void Initialize()
@@ -40,8 +41,7 @@ public partial class VoiceChat : Node3D
         byte[] data = System.Convert.FromBase64String(recData["Data"]);
         GD.Print("Audio package size : ", data.Length);
         var sample = new AudioStreamWav();
-        sample.Data = data;
-        // sample.Data = Decompress(data);
+        sample.Data = Decompress(data);
         sample.Format = AudioStreamWav.FormatEnum.Format16Bits;
         sample.MixRate = ((int)(AudioServer.GetMixRate() * 2));
         _audioStreamPlayer3D.Stream = sample;
@@ -50,9 +50,9 @@ public partial class VoiceChat : Node3D
 
     private void OnSendRecordingTimerTimeout()
     {
+        GD.Print("Sending recording data");
         var recording = effect.GetRecording();
-        recording.Data = recording.Data;
-        // recording.Data = Compress(recording.Data);
+        recording.Data = Compress(recording.Data);
         effect.SetRecordingActive(false);
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
@@ -65,7 +65,6 @@ public partial class VoiceChat : Node3D
         else
             SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
         
-        // SendRecordingData(recording.Data);
         effect.SetRecordingActive(true);
     }
 

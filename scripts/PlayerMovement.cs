@@ -57,6 +57,9 @@ public partial class PlayerMovement : CharacterBody3D
 
     private PlayerState _playerState;
 
+    [Signal]
+    public delegate void OnPlayerInitializedEventHandler();
+
     private Vector3 GetDirectionInput()
     {
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
@@ -102,10 +105,6 @@ public partial class PlayerMovement : CharacterBody3D
         Input.MouseMode = Input.MouseModeEnum.Captured;
         DataParser.OnPlayerUpdate += OnPlayerUpdate;
 
-        if (IsMultiplayerAuthority())
-        {
-            // _mesh.Visible = false;
-        }
         SwitchState(PlayerState.Idle);
     }
 

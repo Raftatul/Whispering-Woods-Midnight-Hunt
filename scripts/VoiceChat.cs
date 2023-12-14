@@ -7,6 +7,9 @@ using System.IO.Compression;
 public partial class VoiceChat : Node3D
 {
     [Export]
+    private PlayerMovement _player;
+
+    [Export]
     private AudioStreamPlayer3D _audioStreamPlayer3D;
 
     [Export]
@@ -19,13 +22,18 @@ public partial class VoiceChat : Node3D
 
     public override void _Ready()
     {
+        _player.OnPlayerInitialized += Initialize;
+    }
+
+    private void Initialize()
+    {
         var idx = AudioServer.GetBusIndex("Record");
         effect = AudioServer.GetBusEffect(idx, 0) as AudioEffectRecord;
         effect.SetRecordingActive(true);
 
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
         DataParser.OnVoiceChat += SendRecordingData;
-    }
+    }	
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {

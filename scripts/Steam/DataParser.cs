@@ -10,6 +10,8 @@ public class DataParser
     public static Action<Dictionary<string, string>> OnPlayerLeft;
     public static Action<Dictionary<string, string>> OnStartGame;
 
+    public static Action<Dictionary<string, string>> OnVoiceChat;
+
     public static Dictionary<string, string> ParseData(IntPtr data, int size)
     {
         byte[] managedArray = new byte[size];
@@ -41,6 +43,10 @@ public class DataParser
 
             case "StartGame":
                 OnStartGame.Invoke(dataDictionnary);
+                break;
+            
+            case "VoiceChat":
+                OnVoiceChat.Invoke(dataDictionnary);
                 break;
 
             default:

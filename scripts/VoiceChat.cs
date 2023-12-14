@@ -1,4 +1,6 @@
 using Godot;
+using Steamworks;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
@@ -22,13 +24,15 @@ public partial class VoiceChat : Node3D
         effect.SetRecordingActive(true);
 
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
+        DataParser.OnVoiceChat += SendRecordingData;
     }
 
-    private void SendRecordingData(byte[] recData)
+    private void SendRecordingData(Dictionary<string, string> recData)
     {
-        GD.Print("Audio package size : ", recData.Length);
+        byte[] data = System.Convert.FromBase64String(recData["Data"]);
+        GD.Print("Audio package size : ", data.Length);
         var sample = new AudioStreamWav();
-        sample.Data = Decompress(recData);
+        sample.Data = Decompress(data);
         sample.Format = AudioStreamWav.FormatEnum.Format16Bits;
         sample.MixRate = ((int)(AudioServer.GetMixRate() * 2));
         _audioStreamPlayer3D.Stream = sample;
@@ -40,7 +44,13 @@ public partial class VoiceChat : Node3D
         var recording = effect.GetRecording();
         recording.Data = Compress(recording.Data);
         effect.SetRecordingActive(false);
-        SendRecordingData(recording.Data);
+        Dictionary<string, string> data = new Dictionary<string, string>()
+        {
+            {"DataType", "VoiceChat"},
+            {"Data", System.Convert.ToBase64String(recording.Data)}
+        };
+        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
+        // SendRecordingData(recording.Data);
         effect.SetRecordingActive(true);
     }
 

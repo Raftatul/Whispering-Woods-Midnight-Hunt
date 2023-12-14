@@ -108,6 +108,11 @@ public partial class PlayerMovement : CharacterBody3D
         SwitchState(PlayerState.Idle);
     }
 
+    public void Initialize()
+    {
+        EmitSignal(SignalName.OnPlayerInitialized);
+    }
+
     public override void _PhysicsProcess(double delta)
     {
         if (!IsOnFloor())
@@ -166,9 +171,6 @@ public partial class PlayerMovement : CharacterBody3D
                     RegenStamina((float)delta);
                     break;
             }
-
-            GD.Print(_stamina);
-            GD.Print("Player State :", _playerState);
 
             Velocity = _targetVelocity;
 

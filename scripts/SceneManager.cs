@@ -121,7 +121,7 @@ public partial class SceneManager : CanvasLayer
             {
                 player.ControlledByPlayer = true;
                 player.PlayerCamera.Current = true;
-                player.EmitSignal(nameof(player.OnPlayerInitialized));
+                player.Initialize();
             }
             mapNode.AddChild(player);
             player.GlobalPosition += new Vector3(0, 10, 0);

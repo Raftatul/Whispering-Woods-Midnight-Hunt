@@ -1,10 +1,10 @@
 using Godot;
-using System;
 
 public partial class Graphics : Control
 {
     [Export]
     private OptionButton _screenOptionButton;
+
     private Godot.Collections.Dictionary _screenModes = new Godot.Collections.Dictionary{
         {"Windowed", ((int)DisplayServer.WindowMode.Windowed)},
         {"Fullscreen", ((int)DisplayServer.WindowMode.Fullscreen)}
@@ -12,6 +12,7 @@ public partial class Graphics : Control
 
     [Export]
     private OptionButton _resolutionOptionButton;
+
     private Godot.Collections.Dictionary _resolutions = new Godot.Collections.Dictionary{
         {"1920x1080", new Vector2I(1920, 1080)},
         {"1600x900", new Vector2I(1600, 900)},

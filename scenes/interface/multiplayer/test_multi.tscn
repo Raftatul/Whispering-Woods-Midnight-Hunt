@@ -1,0 +1,134 @@
+[gd_scene load_steps=5 format=3 uid="uid://bhlt6u7j7oolf"]
+
+[ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_epyu8"]
+[ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="1_fi7rk"]
+[ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="3_iiuct"]
+[ext_resource type="Script" path="res://scripts/interface/multiplayer/ChatBox.cs" id="4_xir1i"]
+
+[node name="TestMulti" type="Node2D" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "LobbyListContainer", "PlayerListContainer")]
+script = ExtResource("1_epyu8")
+CreateLobbyButton = NodePath("CanvasLayer/Control/buttons/create")
+GetallLobbiesButton = NodePath("CanvasLayer/Control/buttons/getalls")
+InviteFriendButton = NodePath("CanvasLayer/Control/buttons/invite_friends")
+LobbyElementScene = ExtResource("1_fi7rk")
+PlayerCardScene = ExtResource("3_iiuct")
+LobbyListContainer = NodePath("CanvasLayer/Control/ScrollContainer/lobbies")
+PlayerListContainer = NodePath("CanvasLayer/Control/PlayerLists")
+metadata/_edit_horizontal_guides_ = [-118.0]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="buttons" type="VBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 31.0
+offset_right = 325.0
+offset_bottom = 141.0
+metadata/_edit_group_ = true
+
+[node name="create" type="Button" parent="CanvasLayer/Control/buttons"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "create"
+
+[node name="getalls" type="Button" parent="CanvasLayer/Control/buttons"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "get all"
+
+[node name="invite_friends" type="Button" parent="CanvasLayer/Control/buttons"]
+layout_mode = 2
+text = "invite friends
+"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -522.0
+grow_horizontal = 0
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="lobbies" type="VBoxContainer" parent="CanvasLayer/Control/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PlayerLists" type="VBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 115.0
+offset_top = -20.0
+offset_right = 321.0
+offset_bottom = 180.0
+grow_vertical = 2
+
+[node name="Control" type="Control" parent="CanvasLayer/Control" node_paths=PackedStringArray("ChatInput", "SendButton", "ChatHistory")]
+anchors_preset = 0
+offset_left = 757.0
+offset_top = 120.0
+offset_right = 1104.0
+offset_bottom = 410.0
+script = ExtResource("4_xir1i")
+ChatInput = NodePath("LineEdit")
+SendButton = NodePath("Button")
+ChatHistory = NodePath("RichTextLabel")
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.137255, 0.137255, 0.137255, 0.729412)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Control/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -31.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Control/Control"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+offset_right = -91.0
+grow_horizontal = 2
+grow_vertical = 0
+placeholder_text = "message?"
+
+[node name="Button" type="Button" parent="CanvasLayer/Control/Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -91.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Submit"

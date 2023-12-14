@@ -11,13 +11,17 @@ config_version=5
 [application]
 
 config/name="DbD"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scenes/interface/multiplayer/main_menu.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [audio]
 
 driver/enable_input=true
+
+[autoload]
+
+SteamManager="*res://scripts/Steam/SteamManager.cs"
 
 [display]
 
@@ -35,6 +39,10 @@ folder_colors={
 "res://scenes/": "blue",
 "res://scripts/": "red"
 }
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
 
 [gui]
 

@@ -4,7 +4,7 @@ using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 
-public partial class SceneManager : Node
+public partial class SceneManager : CanvasLayer
 {
 	[Export]
 	public Button CreateLobbyButton { get; set; }
@@ -59,7 +59,6 @@ public partial class SceneManager : Node
 			lobbyElement.SetLabels(item.GetData("ownerNameDataString") + " lobby", item);
 			LobbyListContainer.AddChild(lobbyElement);
 		}
-		
 	}
 
 	private void OnPlayerJoinedLobbyCallback(Friend friend)
@@ -98,21 +97,23 @@ public partial class SceneManager : Node
 	{
 		if (SteamManager.Instance.IsHost)
 		{
-
-		Dictionary<string, string> dataToSend = new Dictionary<string, string>
-		{
-			{ "DataType", "StartGame" },
-			{ "SceneToLoad", "res://main.tscn" }
-		};
-		SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
-		StartGame(dataToSend);
+			Dictionary<string, string> dataToSend = new Dictionary<string, string>
+			{
+				{ "DataType", "StartGame" },
+				{ "SceneToLoad", "res://main.tscn" }
+			};
+			SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
+			StartGame(dataToSend);
 		}
-
 	}
 
 	public void StartGame(Dictionary<string, string> data)
 	{
-		GetTree().ChangeSceneToFile(data["SceneToLoad"]);
+		PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
+		Node mapNode = map.Instantiate();
+		GetTree().Root.AddChild(mapNode);
+
+		// GetTree().ChangeSceneToFile(data["SceneToLoad"]);
 		foreach (var item in GameManager.Players)
 		{
 			var player = PlayerMovement.Instantiate() as PlayerMovement;
@@ -122,7 +123,11 @@ public partial class SceneManager : Node
 			{
 				player.ControlledByPlayer = true;
 			}
-
+			mapNode.AddChild(player);
+			player.GlobalPosition += new Vector3(0, 10, 0);
 		}
+
+		Visible = false;
 	}
+
 }

@@ -3,6 +3,7 @@ using Steamworks;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 public partial class VoiceChat : Node3D
 {
@@ -39,20 +40,23 @@ public partial class VoiceChat : Node3D
     private void SendRecordingData(Dictionary<string, string> recData)
     {
         byte[] data = System.Convert.FromBase64String(recData["Data"]);
-        GD.Print("Audio package size : ", data.Length);
-        var sample = new AudioStreamWav();
-        sample.Data = Decompress(data);
-        sample.Format = AudioStreamWav.FormatEnum.Format16Bits;
-        sample.MixRate = ((int)(AudioServer.GetMixRate() * 2));
+        GD.Print("Received recording data raw : ", recData["Data"]);
+        GD.Print("Received recording data", data.ToString());
+
+        var sample = new AudioStreamWav
+        {
+            Data = data,
+            Format = AudioStreamWav.FormatEnum.Format16Bits,
+            MixRate = ((int)(AudioServer.GetMixRate() * 2))
+        };
         _audioStreamPlayer3D.Stream = sample;
         _audioStreamPlayer3D.Play();
     }
 
     private void OnSendRecordingTimerTimeout()
     {
-        GD.Print("Sending recording data");
         var recording = effect.GetRecording();
-        recording.Data = Compress(recording.Data);
+        recording.Data = recording.Data;
         effect.SetRecordingActive(false);
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
@@ -60,32 +64,13 @@ public partial class VoiceChat : Node3D
             {"Data", System.Convert.ToBase64String(recording.Data)}
         };
 
+        GD.Print("Sending recording data", data["Data"]);
+
         if (SteamManager.Instance.IsHost)
             SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
         else
             SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
         
         effect.SetRecordingActive(true);
-    }
-
-    public byte[] Compress(byte[] data)
-    {
-        MemoryStream output = new MemoryStream();
-        using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal))
-        {
-            dstream.Write(data, 0, data.Length);
-        }
-        return output.ToArray();
-    }
-
-    public byte[] Decompress(byte[] data)
-    {
-        MemoryStream input = new MemoryStream(data);
-        MemoryStream output = new MemoryStream();
-        using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
-        {
-            dstream.CopyTo(output);
-        }
-        return output.ToArray();
     }
 }

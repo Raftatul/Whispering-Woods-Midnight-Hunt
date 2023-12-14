@@ -111,6 +111,7 @@ public partial class SceneManager : Node
 
 	public void StartGame(Dictionary<string, string> data)
 	{
+		GetTree().ChangeSceneToFile(data["SceneToLoad"]);
 		foreach (var item in GameManager.Players)
 		{
 			var player = PlayerMovement.Instantiate() as PlayerMovement;

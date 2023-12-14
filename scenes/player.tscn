@@ -23,8 +23,6 @@ height = 1.8
 radius = 0.3
 height = 1.0
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera")]
-
 [sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_trbrd"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4qrxj"]
@@ -87,16 +85,13 @@ nodes/Walk/position = Vector2(-200, 200)
 nodes/output/position = Vector2(400, 200)
 node_connections = [&"OneShot", 0, &"Walk", &"OneShot", 1, &"Jump", &"output", 0, &"OneShot"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_cameraUp", "_cameraCrouch", "_animationTree", "_mesh", "_standUpCollider", "_crouchRayCastChecker")]
-
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_camera3D", "_cameraUp", "_cameraCrouch", "_animationTree", "_mesh", "_standUpCollider", "_crouchRayCastChecker")]
 collision_layer = 0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
 script = ExtResource("1_vsh0o")
-
-PlayerCamera = NodePath("Camera3D")
-
+_camera3D = NodePath("Camera3D")
 _cameraUp = NodePath("CameraUp")
 _cameraCrouch = NodePath("CameraCrouch")
 _animationTree = NodePath("Root Scene/AnimationTree")
@@ -104,7 +99,6 @@ _mesh = NodePath("Root Scene")
 _standUpCollider = NodePath("StandUpCollider")
 _crouchRayCastChecker = NodePath("UnCrouchRaycast")
 _playerData = ExtResource("2_dqpa7")
-
 
 [node name="StandUpCollider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

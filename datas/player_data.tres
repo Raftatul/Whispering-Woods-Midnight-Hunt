@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerData" load_steps=2 format=3 uid="uid://be08gke13o4u1"]
+
+[ext_resource type="Script" path="res://scripts/datas/PlayerData.cs" id="1_683kg"]
+
+[resource]
+script = ExtResource("1_683kg")
+WalkSpeed = 5.0
+CrouchSpeed = 2.0
+RunSpeed = 10.0
+JumpForce = 5.0
+Gravity = 9.8

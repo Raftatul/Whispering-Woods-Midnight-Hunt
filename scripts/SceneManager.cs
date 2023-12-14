@@ -43,6 +43,7 @@ public partial class SceneManager : Node
 		SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
 		SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
 		DataParser.OnStartGame += StartGame;
+		StartGameButton.Pressed += StartGameButtonPressed;
 	}
 
 	private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -93,7 +94,7 @@ public partial class SceneManager : Node
 		SteamManager.Instance.OpenFriendInviteOverlay();
 	}
 
-	public void StartGameButtonPressed(Dictionary<string, string> data)
+	public void StartGameButtonPressed()
 	{
 		if (SteamManager.Instance.IsHost)
 		{

@@ -17,6 +17,8 @@ public partial class ChatBox : Control
 	public override void _Ready()
 	{
 		DataParser.OnChatMessageReceived += OnChatMessageCallback;
+		SendButton.Pressed += OnSendButtonPressed;
+		
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

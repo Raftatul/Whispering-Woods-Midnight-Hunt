@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using Steamworks;
 
 public partial class StartMenu : Control
@@ -14,7 +13,7 @@ public partial class StartMenu : Control
     {
         GetTree().ChangeSceneToFile("res://main.tscn");
     }
-    
+
     private void QuitGame()
     {
         GetTree().Quit();

@@ -1,7 +1,8 @@
+using Godot;
 using Steamworks;
 using Steamworks.Data;
 using System;
-using Godot;
+
 public class SteamConnectionManager : ConnectionManager
 {
     public override void OnConnected(ConnectionInfo info)

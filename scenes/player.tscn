@@ -6,13 +6,13 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_6xvjk"]
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_camera3D")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera")]
 collision_layer = 0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
 script = ExtResource("1_vsh0o")
-_camera3D = NodePath("Camera3D")
+PlayerCamera = NodePath("Camera3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_at2ia")

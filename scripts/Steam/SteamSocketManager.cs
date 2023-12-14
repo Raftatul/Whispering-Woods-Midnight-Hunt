@@ -1,7 +1,7 @@
+using Godot;
 using Steamworks;
 using Steamworks.Data;
 using System;
-using Godot;
 
 public class SteamSocketManager : SocketManager
 {
@@ -11,13 +11,13 @@ public class SteamSocketManager : SocketManager
         GD.Print("OnConnected fired");
     }
 
-    public override void OnConnecting(Connection connection,ConnectionInfo info)
+    public override void OnConnecting(Connection connection, ConnectionInfo info)
     {
         base.OnConnecting(connection, info);
         GD.Print("OnConnecting fired");
     }
 
-    public override void OnDisconnected(Connection connection,ConnectionInfo info)
+    public override void OnDisconnected(Connection connection, ConnectionInfo info)
     {
         base.OnDisconnected(connection, info);
         GD.Print("OnDisconnected fired");

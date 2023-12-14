@@ -1,12 +1,11 @@
 using Godot;
 using Steamworks;
-using System;
 using System.Collections.Generic;
 
 public partial class PlayerMovement : CharacterBody3D
 {
     [Export]
-    private Camera3D _camera3D;
+    public Camera3D PlayerCamera;
 
     [Export]
     private float _moveSpeed = 5f;
@@ -26,8 +25,8 @@ public partial class PlayerMovement : CharacterBody3D
     public Friend FriendData { get; set; }
 
     private int currentframe = 0;
-    
-    private int frameRate = 10;
+
+    private int frameRate = 5;
 
     private Vector3 _newPosition = Vector3.Zero;
 
@@ -63,7 +62,7 @@ public partial class PlayerMovement : CharacterBody3D
     {
         if (data["PlayerId"] == SteamManager.Instance.PlayerId.ToString())
             return;
-        
+
         if (data["PlayerId"] == FriendData.Id.ToString())
         {
             _newPosition = new Vector3(float.Parse(data["LocationX"]), float.Parse(data["LocationY"]), float.Parse(data["LocationZ"]));
@@ -79,12 +78,11 @@ public partial class PlayerMovement : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!IsOnFloor())
+            _targetVelocity.Y -= _gravity * (float)delta;
+
         if (ControlledByPlayer)
         {
-
-            if (!IsOnFloor())
-                _targetVelocity.Y -= _gravity * (float)delta;
-
             Vector3 inputAxis = GetDirectionInput().Normalized();
             Vector3 movement = Basis * inputAxis;
 
@@ -98,9 +96,9 @@ public partial class PlayerMovement : CharacterBody3D
                 _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
                 _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
             }
-            
+
             Velocity = _targetVelocity;
-            MoveAndSlide();
+
             currentframe++;
             if (currentframe == frameRate)
             {
@@ -110,17 +108,22 @@ public partial class PlayerMovement : CharacterBody3D
         }
         else
         {
-            Position = Position.Lerp(_newPosition,(float)delta * 15f);
+            Position = Position.Lerp(_newPosition, (float)delta * 15f);
         }
+        MoveAndSlide();
     }
 
     public override void _Input(InputEvent @event)
     {
+        if (!ControlledByPlayer)
+        {
+            return;
+        }
         if (@event is InputEventMouseMotion mouseMotion)
         {
             RotateY(Mathf.DegToRad(-mouseMotion.Relative.X * 0.1f));
-            _camera3D.RotateX(Mathf.DegToRad(-mouseMotion.Relative.Y * 0.1f));
-            _camera3D.RotationDegrees = new Vector3(Mathf.Clamp(_camera3D.RotationDegrees.X, -90f, 90f), _camera3D.RotationDegrees.Y, _camera3D.RotationDegrees.Z);
+            PlayerCamera.RotateX(Mathf.DegToRad(-mouseMotion.Relative.Y * 0.1f));
+            PlayerCamera.RotationDegrees = new Vector3(Mathf.Clamp(PlayerCamera.RotationDegrees.X, -90f, 90f), PlayerCamera.RotationDegrees.Y, PlayerCamera.RotationDegrees.Z);
         }
 
         if (@event.IsActionPressed("jump") && IsOnFloor())

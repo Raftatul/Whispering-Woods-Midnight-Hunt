@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class InputRemapping : Control
 {
@@ -26,7 +25,7 @@ public partial class InputRemapping : Control
     {
         if (!@event.IsPressed())
             return;
-        
+
         InputMap.ActionEraseEvents(_action);
         InputMap.ActionAddEvent(_action, @event);
 

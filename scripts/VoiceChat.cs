@@ -41,13 +41,8 @@ public partial class VoiceChat : Node3D
     private void SendRecordingData(Dictionary<string, string> recData)
     {
         // byte[] data = System.Convert.FromHexString(recData["Data"]);
-        byte[] data = new byte[recData["Data"].Length]; 
-        for (int i = 0; i < recData["Data"].Length; i++)
-        {
-            data[i] = Convert.ToByte(recData["Data"][i]);
-        }
+        byte[] data = StringToBytes(recData["Data"]);
         GD.Print("Received recording data raw : ", recData["Data"]);
-        GD.Print("Received recording data", data.ToString());
 
         var sample = new AudioStreamWav
         {
@@ -70,8 +65,6 @@ public partial class VoiceChat : Node3D
             {"Data", BytesToString(recording.Data)}
         };
 
-        GD.Print("Sending recording data", data["Data"]);
-
         if (SteamManager.Instance.IsHost)
             SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
         else
@@ -88,5 +81,15 @@ public partial class VoiceChat : Node3D
             str += b.ToString();
         }
         return str;
+    }
+
+    private byte[] StringToBytes(string str)
+    {
+        byte[] bytes = new byte[str.Length];
+        for (int i = 0; i < str.Length; i++)
+        {
+            bytes[i] = byte.Parse(str[i].ToString());
+        }
+        return bytes;
     }
 }

@@ -49,7 +49,12 @@ public partial class VoiceChat : Node3D
             {"DataType", "VoiceChat"},
             {"Data", System.Convert.ToBase64String(recording.Data)}
         };
-        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
+
+        if (SteamManager.Instance.IsHost)
+            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
+        else
+            SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
+        
         // SendRecordingData(recording.Data);
         effect.SetRecordingActive(true);
     }

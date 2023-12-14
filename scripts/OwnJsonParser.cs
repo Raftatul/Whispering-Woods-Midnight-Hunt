@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
-
 
 public class OwnJsonParser
 {
@@ -15,15 +13,7 @@ public class OwnJsonParser
         }
         json = json.Remove(json.Length - 1);
         json += "}";
-
-        //godot dictionary
-        Godot.Collections.Dictionary<string, string> godotDictionary = new Godot.Collections.Dictionary<string, string>();
-        foreach (var item in data)
-        {
-            godotDictionary.Add(item.Key, item.Value);
-        }
-        GD.Print(Json.Stringify(godotDictionary));
-        return Json.Stringify(godotDictionary);
+        return json;
     }
 
     public static Dictionary<string, string> Deserialize(string json)
@@ -34,21 +24,15 @@ public class OwnJsonParser
         string[] jsonSplit = json.Split(',');
         foreach (var item in jsonSplit)
         {
+            if (item.Contains("SceneToLoad"))
+            {
+                data.Add("SceneToLoad", item.Replace("\"", "").Replace("SceneToLoad:", ""));
+                continue;
+            }
             string[] itemSplit = item.Split(':');
             data.Add(itemSplit[0].Replace("\"", ""), itemSplit[1].Replace("\"", ""));
         }
-
-        Godot.Collections.Dictionary<string, string> godotDictionary;
-        Json res = new Json();
-        res.Parse(json);
-
-        godotDictionary = res.Data.AsGodotDictionary<string, string>();
-        GD.Print(godotDictionary);
-        Dictionary<string, string> godotDictionary2 = new Dictionary<string, string>();
-        foreach (var item in godotDictionary)
-        {
-            godotDictionary2.Add(item.Key, item.Value);
-        }
-        return godotDictionary2;
+        return data;
     }
+
 }

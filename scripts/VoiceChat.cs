@@ -1,5 +1,6 @@
 using Godot;
 using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -39,7 +40,12 @@ public partial class VoiceChat : Node3D
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {
-        byte[] data = System.Convert.FromBase64String(recData["Data"]);
+        // byte[] data = System.Convert.FromHexString(recData["Data"]);
+        byte[] data = new byte[recData["Data"].Length]; 
+        for (int i = 0; i < recData["Data"].Length; i++)
+        {
+            data[i] = Convert.ToByte(recData["Data"][i]);
+        }
         GD.Print("Received recording data raw : ", recData["Data"]);
         GD.Print("Received recording data", data.ToString());
 
@@ -61,7 +67,7 @@ public partial class VoiceChat : Node3D
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
             {"DataType", "VoiceChat"},
-            {"Data", System.Convert.ToBase64String(recording.Data)}
+            {"Data", BytesToString(recording.Data)}
         };
 
         GD.Print("Sending recording data", data["Data"]);
@@ -72,5 +78,15 @@ public partial class VoiceChat : Node3D
             SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
         
         effect.SetRecordingActive(true);
+    }
+
+    private string BytesToString(byte[] bytes)
+    {
+        string str = "";
+        foreach (var b in bytes)
+        {
+            str += b.ToString();
+        }
+        return str;
     }
 }

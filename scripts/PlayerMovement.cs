@@ -25,6 +25,12 @@ public partial class PlayerMovement : CharacterBody3D
 
     public Friend FriendData { get; set; }
 
+    private int currentframe = 0;
+    
+    private int frameRate = 10;
+
+    private Vector3 _newPosition = Vector3.Zero;
+
     private Vector3 GetDirectionInput()
     {
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
@@ -65,10 +71,6 @@ public partial class PlayerMovement : CharacterBody3D
         }
     }
 
-    private int currentframe = 0;
-    private int frameRate = 10;
-
-    private Vector3 _newPosition = Vector3.Zero;
     public override void _Ready()
     {
         Input.MouseMode = Input.MouseModeEnum.Captured;

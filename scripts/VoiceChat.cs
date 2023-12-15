@@ -26,6 +26,8 @@ public partial class VoiceChat : Node3D
     {
         if (_player.ControlledByPlayer)
             Initialize();
+        
+        DataParser.OnVoiceChat += SendRecordingData;
     }
 
     private void Initialize()
@@ -35,18 +37,13 @@ public partial class VoiceChat : Node3D
         effect.SetRecordingActive(true);
 
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
-        DataParser.OnVoiceChat += SendRecordingData;
     }
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {
-        // byte[] data = System.Convert.FromHexString(recData["Data"]);
-        byte[] data = StringToBytes(recData["Data"]);
-        GD.Print("Received recording data raw : ", recData["Data"]);
-
         var sample = new AudioStreamWav
         {
-            Data = data,
+            Data = Convert.FromBase64String(recData["Data"]),
             Format = AudioStreamWav.FormatEnum.Format16Bits,
             MixRate = ((int)(AudioServer.GetMixRate() * 2))
         };
@@ -57,39 +54,20 @@ public partial class VoiceChat : Node3D
     private void OnSendRecordingTimerTimeout()
     {
         var recording = effect.GetRecording();
-        recording.Data = recording.Data;
         effect.SetRecordingActive(false);
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
             {"DataType", "VoiceChat"},
-            {"Data", BytesToString(recording.Data)}
+            {"Data", Convert.ToBase64String(recording.Data)}
         };
 
         if (SteamManager.Instance.IsHost)
             SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
         else
             SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
+
+        // SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
         
         effect.SetRecordingActive(true);
-    }
-
-    private string BytesToString(byte[] bytes)
-    {
-        string str = "";
-        foreach (var b in bytes)
-        {
-            str += b.ToString();
-        }
-        return str;
-    }
-
-    private byte[] StringToBytes(string str)
-    {
-        byte[] bytes = new byte[str.Length];
-        for (int i = 0; i < str.Length; i++)
-        {
-            bytes[i] = byte.Parse(str[i].ToString());
-        }
-        return bytes;
     }
 }

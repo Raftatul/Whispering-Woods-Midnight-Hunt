@@ -22,8 +22,7 @@ public partial class VoiceChat : Node3D
 
     private AudioEffectRecord effect;
 
-    [Export]
-    private string _dataTest;
+    private AudioStreamWav recording;
 
     public override void _Ready()
     {
@@ -44,7 +43,6 @@ public partial class VoiceChat : Node3D
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {
-        GD.Print(recData["DataTest"]);
         var sample = new AudioStreamWav
         {
             Data = Convert.FromBase64String(recData["Data"]),
@@ -57,13 +55,12 @@ public partial class VoiceChat : Node3D
 
     private void OnSendRecordingTimerTimeout()
     {
-        var recording = effect.GetRecording();
+        recording = effect.GetRecording();
         effect.SetRecordingActive(false);
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
             {"DataType", "VoiceChat"},
-            {"Data", Convert.ToBase64String(recording.Data)},
-            {"DataTest", _dataTest}
+            {"Data", Convert.ToBase64String(recording.Data)}
         };
 
         if (SteamManager.Instance.IsHost)

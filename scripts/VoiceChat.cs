@@ -22,12 +22,13 @@ public partial class VoiceChat : Node3D
 
     private AudioEffectRecord effect;
 
+    [Export]
+    private string _dataTest;
+
     public override void _Ready()
     {
         if (_player.ControlledByPlayer)
             Initialize();
-        
-        DataParser.OnVoiceChat += SendRecordingData;
     }
 
     private void Initialize()
@@ -37,15 +38,18 @@ public partial class VoiceChat : Node3D
         effect.SetRecordingActive(true);
 
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
+
+        DataParser.OnVoiceChat += SendRecordingData;
     }
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {
+        GD.Print(recData["DataTest"]);
         var sample = new AudioStreamWav
         {
             Data = Convert.FromBase64String(recData["Data"]),
             Format = AudioStreamWav.FormatEnum.Format16Bits,
-            MixRate = ((int)(AudioServer.GetMixRate() * 2))
+            MixRate = (int)(AudioServer.GetMixRate() * 2)
         };
         _audioStreamPlayer3D.Stream = sample;
         _audioStreamPlayer3D.Play();
@@ -58,7 +62,8 @@ public partial class VoiceChat : Node3D
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
             {"DataType", "VoiceChat"},
-            {"Data", Convert.ToBase64String(recording.Data)}
+            {"Data", Convert.ToBase64String(recording.Data)},
+            {"DataTest", _dataTest}
         };
 
         if (SteamManager.Instance.IsHost)
@@ -66,7 +71,7 @@ public partial class VoiceChat : Node3D
         else
             SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
 
-        // SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
+        //SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
         
         effect.SetRecordingActive(true);
     }

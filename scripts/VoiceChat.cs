@@ -43,6 +43,9 @@ public partial class VoiceChat : Node3D
 
     private void SendRecordingData(Dictionary<string, string> recData)
     {
+        GD.Print("Received Instance : ", GetTree().Root.GetNode(recData["PATH"]).Name);
+        GD.Print("Received Instance Parent : ", GetTree().Root.GetNode(recData["PATH"]).GetParent().Name);
+
         var sample = new AudioStreamWav
         {
             Data = Convert.FromBase64String(recData["Data"]),
@@ -57,10 +60,20 @@ public partial class VoiceChat : Node3D
     {
         recording = effect.GetRecording();
         effect.SetRecordingActive(false);
+        
+        Dictionary<string, string> allData = new Dictionary<string, string>()
+        {
+            {"DataRecording", Convert.ToBase64String(recording.Data)},
+            {"Format", recording.Format.ToString()},
+            {"MixRate", recording.MixRate.ToString()}
+        };
+
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
-            {"DataType", "VoiceChat"},
-            {"Data", Convert.ToBase64String(recording.Data)}
+            {"DataType", "Rpc"},
+            {"PATH", GetPath()},
+            {"MethodName", nameof(SendRecordingData)},
+            {"Data", OwnJsonParser.Serialize(allData)}
         };
 
         if (SteamManager.Instance.IsHost)

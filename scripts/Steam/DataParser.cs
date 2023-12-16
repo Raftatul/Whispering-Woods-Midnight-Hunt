@@ -12,6 +12,8 @@ public class DataParser
 
     public static Action<Dictionary<string, string>> OnVoiceChat;
 
+    public static Action<Dictionary<string, string>> OnJoin;
+
     public static Dictionary<string, string> ParseData(IntPtr data, int size)
     {
         byte[] managedArray = new byte[size];
@@ -47,6 +49,14 @@ public class DataParser
             
             case "VoiceChat":
                 OnVoiceChat.Invoke(dataDictionnary);
+                break;
+            
+            case "Rpc":
+                SteamManager.Instance.GetTree().Root.GetNode(dataDictionnary["PATH"]).Call(dataDictionnary["Method"], dataDictionnary["Data"]);
+                break;
+            
+            case "Join":
+                OnJoin?.Invoke(dataDictionnary);
                 break;
 
             default:

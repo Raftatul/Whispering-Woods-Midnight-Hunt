@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://scripts/interface/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
-[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "LobbyListContainer", "PlayerListContainer")]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "LobbyListContainer", "PlayerListContainer", "_level")]
 script = ExtResource("1_jk5bo")
 CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton")
 GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/RefreshLobbiesList")
@@ -22,6 +22,7 @@ PlayerCardScene = ExtResource("1_2wl7p")
 LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
 PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerList")
 PlayerMovement = ExtResource("4_5wyhn")
+_level = NodePath("Level")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -212,6 +213,12 @@ layout_mode = 1
 
 [node name="Button" parent="Control/Settings/MarginContainer/VBoxContainer" index="2" node_paths=PackedStringArray("_nodeToShow")]
 _nodeToShow = NodePath("../../../../StartMenu")
+
+[node name="Level" type="Node" parent="."]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://main.tscn")
+spawn_path = NodePath("../Level")
 
 [connection signal="pressed" from="Control/StartMenu/VBoxContainer/Button" to="Control/StartMenu" method="QuitGame"]
 

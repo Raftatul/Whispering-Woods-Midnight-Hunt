@@ -67,6 +67,9 @@ public partial class PlayerMovement : CharacterBody3D
 
         SetMultiplayerAuthority(int.Parse(Name));
 
+        ControlledByPlayer = Name == SteamManager.Instance.PlayerId.AccountId.ToString();
+        PlayerCamera.Current = ControlledByPlayer;
+
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
         SwitchState(PlayerState.Idle);

@@ -80,7 +80,7 @@ public partial class PlayerMovement : CharacterBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        if (IsMultiplayerAuthority())
+        if (!IsMultiplayerAuthority())
             return;
         
         if (!IsOnFloor())

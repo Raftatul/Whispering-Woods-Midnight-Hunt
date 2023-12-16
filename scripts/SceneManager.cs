@@ -2,6 +2,7 @@ using Godot;
 using Steamworks;
 using Steamworks.Data;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 
 public partial class SceneManager : CanvasLayer
@@ -124,23 +125,19 @@ public partial class SceneManager : CanvasLayer
         Node mapNode = map.Instantiate();
         _level.AddChild(mapNode);
 
-        // GetTree().ChangeSceneToFile(data["SceneToLoad"]);
-        foreach (var item in GameManager.Players)
-        {
-            var player = PlayerMovement.Instantiate() as PlayerMovement;
-            player.Name = item.FriendData.Id.AccountId.ToString();
-            player.FriendData = item.FriendData;
-            if (player.Name == SteamManager.Instance.PlayerId.AccountId.ToString())
-            {
-                player.ControlledByPlayer = true;
-                player.PlayerCamera.Current = true;
-            }
-            mapNode.AddChild(player);
-            player.GlobalPosition += new Vector3(0, 10, 0);
-        }
+        AddPlayer();
 
         SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
         Visible = false;
+    }
+
+    private void AddPlayer(int id = 1)
+    {
+        var player = PlayerMovement.Instantiate() as PlayerMovement;
+        player.Name = id.ToString();
+        player.FriendData = GameManager.Players[SteamManager.Instance.PlayerId.AccountId].FriendData;
+        _level.GetChild(0).AddChild(player);
+        player.GlobalPosition += new Vector3(0, 10, 0);
     }
 
     private ENetMultiplayerPeer _peer = new();

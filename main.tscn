@@ -64,7 +64,6 @@ spawn_path = NodePath("..")
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.59737, 1.99657, -4.22717)
 stream = ExtResource("1_uvdfn")
-autoplay = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="AudioStreamPlayer3D"]
 mesh = SubResource("BoxMesh_spm36")

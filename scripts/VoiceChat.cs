@@ -75,9 +75,7 @@ public partial class VoiceChat : Node3D
 
         //SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
 
-        Rpc(nameof(SendRecordingData), recording.Data);
-
-        SendRecordingData(recording);
+        Rpc(nameof(SendRecordingData), recording);
         
         effect.SetRecordingActive(true);
     }

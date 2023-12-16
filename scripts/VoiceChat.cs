@@ -28,8 +28,6 @@ public partial class VoiceChat : Node3D
     {
         if (_player.ControlledByPlayer)
             Initialize();
-        else
-            QueueFree();
     }
 
     private void Initialize()

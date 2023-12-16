@@ -9,9 +9,6 @@ using System.Text;
 public partial class VoiceChat : Node3D
 {
     [Export]
-    private PlayerMovement _player;
-
-    [Export]
     private AudioStreamPlayer3D _audioStreamPlayer3D;
 
     [Export]

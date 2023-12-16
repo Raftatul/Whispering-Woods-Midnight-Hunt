@@ -63,89 +63,82 @@ public partial class PlayerMovement : CharacterBody3D
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
     }
 
+    public override void _EnterTree()
+    {
+        SetMultiplayerAuthority(int.Parse(Name));
+    }
+
     public override void _Ready()
     {
-        ControlledByPlayer = Name == SteamManager.Instance.PlayerId.AccountId.ToString();
-        PlayerCamera.Current = ControlledByPlayer;
-
-        _multiplayerSynchronizer.SetMultiplayerAuthority(int.Parse(Name));
-
-        SetMultiplayerAuthority(int.Parse(Name));
-
-        ControlledByPlayer = Name == SteamManager.Instance.PlayerId.AccountId.ToString();
-        PlayerCamera.Current = ControlledByPlayer;
+        ControlledByPlayer = IsMultiplayerAuthority();
+        PlayerCamera.Current = IsMultiplayerAuthority();
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
         SwitchState(PlayerState.Idle);
     }
 
-    public void Initialize()
-    {
-        EmitSignal(SignalName.OnPlayerInitialized);
-    }
-
     public override void _PhysicsProcess(double delta)
     {
+        if (IsMultiplayerAuthority())
+            return;
+        
         if (!IsOnFloor())
             _targetVelocity.Y -= _playerData.Gravity * (float)delta;
 
-        if (ControlledByPlayer)
+        Vector3 inputAxis = GetDirectionInput().Normalized();
+        Vector3 movement = Basis * inputAxis;
+
+        int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
+
+        Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
+        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
+        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
+
+        _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
+
+        if (movement != Vector3.Zero)
         {
-            Vector3 inputAxis = GetDirectionInput().Normalized();
-            Vector3 movement = Basis * inputAxis;
-
-            int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
-
-            Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
-            targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
-            targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
-
-            _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
-
-            if (movement != Vector3.Zero)
-            {
-                _targetVelocity.X = movement.X * _moveSpeed;
-                _targetVelocity.Z = movement.Z * _moveSpeed;
-            }
-            else
-            {
-                _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
-                _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
-            }
-            
-            if (IsOnFloor() && !_isGrounded)
-            {
-                _isGrounded = true;
-                OnGrounded();
-            }
-            else if (!IsOnFloor() && _isGrounded)
-                _isGrounded = false;
-
-            switch(_playerState)
-            {
-                case PlayerState.Run:
-                    DepleteStamina((float)delta);
-                    if (inputAxis.Length() == 0f)
-                        SwitchState(PlayerState.Idle);
-                    break;
-                case PlayerState.Idle:
-                    RegenStamina((float)delta);
-                    if (inputAxis.Length() > 0f)
-                        SwitchState(PlayerState.Walk);
-                    break;
-                case PlayerState.Walk:
-                    RegenStamina((float)delta);
-                    if (inputAxis.Length() == 0f)
-                        SwitchState(PlayerState.Idle);
-                    break;
-                default:
-                    RegenStamina((float)delta);
-                    break;
-            }
-
-            Velocity = _targetVelocity;
+            _targetVelocity.X = movement.X * _moveSpeed;
+            _targetVelocity.Z = movement.Z * _moveSpeed;
         }
+        else
+        {
+            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
+            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
+        }
+        
+        if (IsOnFloor() && !_isGrounded)
+        {
+            _isGrounded = true;
+            OnGrounded();
+        }
+        else if (!IsOnFloor() && _isGrounded)
+            _isGrounded = false;
+
+        switch(_playerState)
+        {
+            case PlayerState.Run:
+                DepleteStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            case PlayerState.Idle:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() > 0f)
+                    SwitchState(PlayerState.Walk);
+                break;
+            case PlayerState.Walk:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            default:
+                RegenStamina((float)delta);
+                break;
+        }
+
+        Velocity = _targetVelocity;
 
         MoveAndSlide();
     }

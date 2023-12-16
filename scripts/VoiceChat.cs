@@ -42,15 +42,9 @@ public partial class VoiceChat : Node3D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void SendRecordingData(byte[] recData)
+    private void SendRecordingData(AudioStreamWav recData)
     {
-        var sample = new AudioStreamWav
-        {
-            Data = recData,
-            Format = AudioStreamWav.FormatEnum.Format16Bits,
-            MixRate = (int)(AudioServer.GetMixRate() * 2)
-        };
-        _audioStreamPlayer3D.Stream = sample;
+        _audioStreamPlayer3D.Stream = recData;
         _audioStreamPlayer3D.Play();
     }
 
@@ -82,6 +76,8 @@ public partial class VoiceChat : Node3D
         //SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
 
         Rpc(nameof(SendRecordingData), recording.Data);
+
+        SendRecordingData(recording);
         
         effect.SetRecordingActive(true);
     }

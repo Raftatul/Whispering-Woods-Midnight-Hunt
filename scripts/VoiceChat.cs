@@ -38,17 +38,15 @@ public partial class VoiceChat : Node3D
 
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
 
-        DataParser.OnVoiceChat += SendRecordingData;
+        // DataParser.OnVoiceChat += SendRecordingData;
     }
 
-    private void SendRecordingData(Dictionary<string, string> recData)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SendRecordingData(byte[] recData)
     {
-        GD.Print("Received Instance : ", GetTree().Root.GetNode(recData["PATH"]).Name);
-        GD.Print("Received Instance Parent : ", GetTree().Root.GetNode(recData["PATH"]).GetParent().Name);
-
         var sample = new AudioStreamWav
         {
-            Data = Convert.FromBase64String(recData["Data"]),
+            Data = recData,
             Format = AudioStreamWav.FormatEnum.Format16Bits,
             MixRate = (int)(AudioServer.GetMixRate() * 2)
         };
@@ -60,28 +58,30 @@ public partial class VoiceChat : Node3D
     {
         recording = effect.GetRecording();
         effect.SetRecordingActive(false);
-        
-        Dictionary<string, string> allData = new Dictionary<string, string>()
-        {
-            {"DataRecording", Convert.ToBase64String(recording.Data)},
-            {"Format", recording.Format.ToString()},
-            {"MixRate", recording.MixRate.ToString()}
-        };
 
-        Dictionary<string, string> data = new Dictionary<string, string>()
-        {
-            {"DataType", "Rpc"},
-            {"PATH", GetPath()},
-            {"MethodName", nameof(SendRecordingData)},
-            {"Data", OwnJsonParser.Serialize(allData)}
-        };
+        // Dictionary<string, string> allData = new Dictionary<string, string>()
+        // {
+        //     {"DataRecording", Convert.ToBase64String(recording.Data)},
+        //     {"Format", recording.Format.ToString()},
+        //     {"MixRate", recording.MixRate.ToString()}
+        // };
 
-        if (SteamManager.Instance.IsHost)
-            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
-        else
-            SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
+        // Dictionary<string, string> data = new Dictionary<string, string>()
+        // {
+        //     {"DataType", "Rpc"},
+        //     {"PATH", GetPath()},
+        //     {"MethodName", nameof(SendRecordingData)},
+        //     {"Data", OwnJsonParser.Serialize(allData)}
+        // };
+
+        // if (SteamManager.Instance.IsHost)
+        //     SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
+        // else
+        //     SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
 
         //SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
+
+        Rpc(nameof(SendRecordingData), recording.Data);
         
         effect.SetRecordingActive(true);
     }

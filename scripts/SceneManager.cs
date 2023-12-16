@@ -120,7 +120,6 @@ public partial class SceneManager : CanvasLayer
             { "Data", address}
         };
 
-        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
 
         PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
         Node mapNode = map.Instantiate();
@@ -142,6 +141,7 @@ public partial class SceneManager : CanvasLayer
             player.GlobalPosition += new Vector3(0, 10, 0);
         }
 
+        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
         Visible = false;
     }
 

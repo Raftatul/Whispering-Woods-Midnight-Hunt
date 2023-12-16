@@ -67,6 +67,7 @@ public partial class PlayerMovement : CharacterBody3D
 
     private void UpdateRemoteLocation(Vector3 location, Vector3 rotation)
     {
+        return;
         Dictionary<string, string> data = new Dictionary<string, string>()
         {
             {"DataType", "PlayerUpdate"},

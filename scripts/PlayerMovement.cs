@@ -42,12 +42,7 @@ public partial class PlayerMovement : CharacterBody3D
     private Vector3 _targetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
-
-    private int currentframe = 0;
-
-    private int frameRate = 5;
-
-    private Vector3 _newPosition = Vector3.Zero;
+    
     private float _stamina;
 
     public enum PlayerState
@@ -65,49 +60,14 @@ public partial class PlayerMovement : CharacterBody3D
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
     }
 
-    private void UpdateRemoteLocation(Vector3 location, Vector3 rotation)
-    {
-        return;
-        Dictionary<string, string> data = new Dictionary<string, string>()
-        {
-            {"DataType", "PlayerUpdate"},
-            {"PlayerId", FriendData.Id.ToString()},
-            {"LocationX", location.X.ToString()},
-            {"LocationY", location.Y.ToString()},
-            {"LocationZ", location.Z.ToString()},
-            {"RotationX", rotation.X.ToString()},
-            {"RotationY", rotation.Y.ToString()},
-            {"RotationZ", rotation.Z.ToString()},
-        };
-        if (SteamManager.Instance.IsHost)
-        {
-            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
-        }
-        else
-        {
-            SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
-        }
-    }
-
-    private void OnPlayerUpdate(Dictionary<string, string> data)
-    {
-        if (data["PlayerId"] == SteamManager.Instance.PlayerId.ToString())
-            return;
-
-        if (data["PlayerId"] == FriendData.Id.ToString())
-        {
-            _newPosition = new Vector3(float.Parse(data["LocationX"]), float.Parse(data["LocationY"]), float.Parse(data["LocationZ"]));
-            Rotation = new Vector3(float.Parse(data["RotationX"]), float.Parse(data["RotationY"]), float.Parse(data["RotationZ"]));
-        }
-    }
-
     public override void _Ready()
     {
         ControlledByPlayer = Name == SteamManager.Instance.PlayerId.AccountId.ToString();
         PlayerCamera.Current = ControlledByPlayer;
 
+        SetMultiplayerAuthority(int.Parse(Name));
+
         Input.MouseMode = Input.MouseModeEnum.Captured;
-        DataParser.OnPlayerUpdate += OnPlayerUpdate;
 
         SwitchState(PlayerState.Idle);
     }
@@ -177,18 +137,8 @@ public partial class PlayerMovement : CharacterBody3D
             }
 
             Velocity = _targetVelocity;
+        }
 
-            currentframe++;
-            if (currentframe == frameRate)
-            {
-                currentframe = 0;
-                UpdateRemoteLocation(GlobalPosition, RotationDegrees);
-            }
-        }
-        else
-        {
-            Position = Position.Lerp(_newPosition, (float)delta * 15f);
-        }
         MoveAndSlide();
     }
 

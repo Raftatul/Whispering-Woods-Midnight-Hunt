@@ -12,7 +12,7 @@ public partial class VoiceChat : Node3D
     private PlayerMovement _player;
 
     [Export]
-    private AudioStreamPlayer3D _audioStreamPlayer3D;
+    private AudioStreamPlayer _audioStreamPlayer3D;
 
     [Export]
     private AudioStreamPlayer _audioStreamRecorder;

@@ -44,41 +44,29 @@ public partial class VoiceChat : Node3D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void SendRecordingData(AudioStreamWav recData)
+    private void SendRecordingData(byte[] recData)
     {
-        _audioStreamPlayer3D.Stream = recData;
+        AudioStreamWav sample = new AudioStreamWav()
+        {
+            Data = recData,
+            Format = AudioStreamWav.FormatEnum.Format16Bits,
+            MixRate = (int)AudioServer.GetMixRate() * 2
+        };
+        _audioStreamPlayer3D.Stream = sample;
         _audioStreamPlayer3D.Play();
     }
 
     private void OnSendRecordingTimerTimeout()
     {
-        recording = effect.GetRecording();
-        effect.SetRecordingActive(false);
-
-        // Dictionary<string, string> allData = new Dictionary<string, string>()
-        // {
-        //     {"DataRecording", Convert.ToBase64String(recording.Data)},
-        //     {"Format", recording.Format.ToString()},
-        //     {"MixRate", recording.MixRate.ToString()}
-        // };
-
-        // Dictionary<string, string> data = new Dictionary<string, string>()
-        // {
-        //     {"DataType", "Rpc"},
-        //     {"PATH", GetPath()},
-        //     {"MethodName", nameof(SendRecordingData)},
-        //     {"Data", OwnJsonParser.Serialize(allData)}
-        // };
-
-        // if (SteamManager.Instance.IsHost)
-        //     SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
-        // else
-        //     SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
-
-        //SendRecordingData(OwnJsonParser.Deserialize(OwnJsonParser.Serialize(data)));
-
-        Rpc(nameof(SendRecordingData), recording);
-        
+        if (Multiplayer.MultiplayerPeer != null)
+        {
+            if (Multiplayer.GetPeers().Length > 0)
+            {
+                recording = effect.GetRecording();
+                effect.SetRecordingActive(false);
+                Rpc(nameof(SendRecordingData), recording.Data);
+            }
+        }
         effect.SetRecordingActive(true);
     }
 }

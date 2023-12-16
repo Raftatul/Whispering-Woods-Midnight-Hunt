@@ -50,6 +50,7 @@ public partial class VoiceChat : Node3D
             Format = AudioStreamWav.FormatEnum.Format16Bits,
             MixRate = (int)AudioServer.GetMixRate() * 2
         };
+        GD.Print("Received recording data");
         _audioStreamPlayer3D.Stream = sample;
         _audioStreamPlayer3D.Play();
     }
@@ -58,8 +59,10 @@ public partial class VoiceChat : Node3D
     {
         if (Multiplayer.MultiplayerPeer != null)
         {
+            GD.Print(Multiplayer.GetPeers().Length);
             if (Multiplayer.GetPeers().Length > 0)
             {
+                GD.Print("Sending recording data");
                 recording = effect.GetRecording();
                 effect.SetRecordingActive(false);
                 Rpc(nameof(SendRecordingData), recording.Data);

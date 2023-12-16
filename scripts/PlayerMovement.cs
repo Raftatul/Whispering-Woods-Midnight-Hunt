@@ -55,6 +55,9 @@ public partial class PlayerMovement : CharacterBody3D
     [Signal]
     public delegate void OnPlayerInitializedEventHandler();
 
+    [Export]
+    private MultiplayerSynchronizer _multiplayerSynchronizer;
+
     private Vector3 GetDirectionInput()
     {
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
@@ -64,6 +67,8 @@ public partial class PlayerMovement : CharacterBody3D
     {
         ControlledByPlayer = Name == SteamManager.Instance.PlayerId.AccountId.ToString();
         PlayerCamera.Current = ControlledByPlayer;
+
+        _multiplayerSynchronizer.SetMultiplayerAuthority(int.Parse(Name));
 
         SetMultiplayerAuthority(int.Parse(Name));
 

@@ -105,7 +105,7 @@ public partial class SceneManager : CanvasLayer
                 { "DataType", "StartGame" },
                 { "SceneToLoad", "res://main.tscn" }
             };
-            // SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
+
             StartGame(dataToSend);
         }
     }
@@ -119,7 +119,6 @@ public partial class SceneManager : CanvasLayer
             { "DataType", "Join" },
             { "Data", address}
         };
-
 
         PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
         Node mapNode = map.Instantiate();
@@ -199,6 +198,8 @@ public partial class SceneManager : CanvasLayer
             return;
         
         Multiplayer.MultiplayerPeer = _peer;
+
+        Visible = false;
 
         return;
     }

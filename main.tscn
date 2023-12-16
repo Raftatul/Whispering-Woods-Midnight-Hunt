@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=13 format=3 uid="uid://b3gphftdi5nf7"]
 
 [ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_uvdfn"]
+[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_3e0c2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lcmhk"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -25,6 +26,10 @@ glow_enabled = true
 data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_spm36"]
+
+[sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_7hefe"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_w06hc"]
 
 [node name="World" type="Node3D"]
 
@@ -67,3 +72,26 @@ stream = ExtResource("1_uvdfn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="AudioStreamPlayer3D"]
 mesh = SubResource("BoxMesh_spm36")
+
+[node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("_player", "_audioStreamPlayer3D", "_audioStreamRecorder", "_sendRecordingTimer")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91499, 1.89129, 2.10338)
+script = ExtResource("2_3e0c2")
+_player = NodePath("")
+_audioStreamPlayer3D = NodePath("AudioStreamPlayer3D")
+_audioStreamRecorder = NodePath("AudioStreamRecorder")
+_sendRecordingTimer = NodePath("SendRecordingTimer")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="VoiceChat"]
+
+[node name="AudioStreamRecorder" type="AudioStreamPlayer" parent="VoiceChat"]
+stream = SubResource("AudioStreamMicrophone_7hefe")
+autoplay = true
+bus = &"Record"
+
+[node name="SendRecordingTimer" type="Timer" parent="VoiceChat"]
+wait_time = 0.5
+autostart = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="VoiceChat"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_w06hc")

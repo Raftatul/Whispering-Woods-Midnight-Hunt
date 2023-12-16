@@ -103,6 +103,8 @@ public partial class PlayerMovement : CharacterBody3D
 
     public override void _Ready()
     {
+        ControlledByPlayer = Name == SteamManager.Instance.PlayerId.ToString();
+
         Input.MouseMode = Input.MouseModeEnum.Captured;
         DataParser.OnPlayerUpdate += OnPlayerUpdate;
 

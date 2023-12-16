@@ -12,7 +12,7 @@ public partial class VoiceChat : Node3D
     private PlayerMovement _player;
 
     [Export]
-    private AudioStreamPlayer _audioStreamPlayer3D;
+    private AudioStreamPlayer3D _audioStreamPlayer3D;
 
     [Export]
     private AudioStreamPlayer _audioStreamRecorder;
@@ -26,8 +26,7 @@ public partial class VoiceChat : Node3D
 
     public override void _Ready()
     {
-        if (_player.ControlledByPlayer)
-            Initialize();
+        Initialize();
     }
 
     private void Initialize()

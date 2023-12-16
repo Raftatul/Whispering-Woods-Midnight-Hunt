@@ -48,6 +48,9 @@ public partial class SceneManager : CanvasLayer
         DataParser.OnStartGame += StartGame;
         StartGameButton.Pressed += StartGameButtonPressed;
         DataParser.OnJoin += JoinServer;
+
+        Multiplayer.PeerConnected += id => _playerIDs.Add(id);
+        Multiplayer.PeerConnected += AddPlayer;
     }
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -115,6 +118,8 @@ public partial class SceneManager : CanvasLayer
     {
         string address = CreateServer(true);
 
+        _playerIDs.Add(1);
+
         Dictionary<string, string> dataToSend = new Dictionary<string, string>
         {
             { "DataType", "Join" },
@@ -131,11 +136,11 @@ public partial class SceneManager : CanvasLayer
         Visible = false;
     }
 
-    private void AddPlayer(int id = 1)
+    private void AddPlayer(long id = 1)
     {
         var player = PlayerMovement.Instantiate() as PlayerMovement;
         player.Name = id.ToString();
-        player.FriendData = GameManager.Players[SteamManager.Instance.PlayerId.AccountId].FriendData;
+        player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
         _level.GetChild(0).AddChild(player);
         player.GlobalPosition += new Vector3(0, 10, 0);
     }
@@ -144,6 +149,8 @@ public partial class SceneManager : CanvasLayer
     private const int MAX_CONNECTIONS = 6;
     private const int PORT = 7000;
     private const string DEFAULT_SERVER_IP = "127.0.0.1";
+
+    private Godot.Collections.Array<long> _playerIDs = new Godot.Collections.Array<long>();
 
     private string SetupUPNP()
     {

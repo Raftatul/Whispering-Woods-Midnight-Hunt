@@ -65,8 +65,8 @@ public partial class VoiceChat : Node3D
                 recording = effect.GetRecording();
                 effect.SetRecordingActive(false);
                 Rpc(nameof(SendRecordingData), recording.Data);
+                effect.SetRecordingActive(true);
             }
         }
-        effect.SetRecordingActive(true);
     }
 }

@@ -158,7 +158,10 @@ public partial class SteamManager : Node
             hostedLobby = lobby;
             foreach (Friend friend in lobby.Members)
             {
-                OnPlayerJoinedLobby(friend);
+               if (friend.Id != PlayerId)
+                {
+                    OnPlayerJoinedLobby(friend);
+                }
             }
         }
     }

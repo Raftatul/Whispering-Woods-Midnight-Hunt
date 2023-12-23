@@ -55,7 +55,6 @@ public partial class VoiceChat : Node3D
     {
         if (Multiplayer.MultiplayerPeer != null)
         {
-            GD.Print(Multiplayer.GetPeers().Length);
             if (Multiplayer.GetPeers().Length > 0)
             {
                 GD.Print("Sending recording data");

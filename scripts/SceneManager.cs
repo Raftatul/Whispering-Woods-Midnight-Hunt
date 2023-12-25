@@ -37,6 +37,9 @@ public partial class SceneManager : CanvasLayer
     [Export]
     private Node _level;
 
+    private string _address;
+
+
     public override void _Ready()
     {
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
@@ -76,6 +79,11 @@ public partial class SceneManager : CanvasLayer
         playerCard.SetLabels(friend.Name, avatar);
         PlayerListContainer.AddChild(playerCard);
         GameManager.OnPlayerJoinedCallback(friend);
+        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(new Dictionary<string, string>
+        {
+            { "DataType", "Join" },
+            { "Data", _address }
+        }));
     }
 
     private void OnPlayerLeftLobbyCallback(Friend friend)
@@ -88,6 +96,8 @@ public partial class SceneManager : CanvasLayer
     public void CreateLobbyButtonPressed()
     {
         SteamManager.Instance.CreateLobby();
+        _address = CreateServer(true);
+
     }
 
     public void GetallLobbiesButtonPressed()
@@ -116,23 +126,11 @@ public partial class SceneManager : CanvasLayer
 
     public void StartGame(Dictionary<string, string> data)
     {
-        string address = CreateServer(true);
-
         _playerIDs.Add(1);
-
-        Dictionary<string, string> dataToSend = new Dictionary<string, string>
-        {
-            { "DataType", "Join" },
-            { "Data", address}
-        };
-
         PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
         Node mapNode = map.Instantiate();
         _level.AddChild(mapNode);
-
         AddPlayer();
-
-        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
         Visible = false;
     }
 

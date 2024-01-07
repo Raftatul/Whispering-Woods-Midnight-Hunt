@@ -76,13 +76,13 @@ mesh = SubResource("BoxMesh_spm36")
 [node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("_audioStreamPlayer3D", "_audioStreamRecorder", "_sendRecordingTimer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91499, 1.89129, 2.10338)
 script = ExtResource("2_3e0c2")
-_audioStreamPlayer3D = NodePath("AudioStreamPlayer3D")
-_audioStreamRecorder = NodePath("AudioStreamRecorder")
+_audioStreamPlayer3D = NodePath("VoiceOutput")
+_audioStreamRecorder = NodePath("MicInput")
 _sendRecordingTimer = NodePath("SendRecordingTimer")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="VoiceChat"]
+[node name="VoiceOutput" type="AudioStreamPlayer3D" parent="VoiceChat"]
 
-[node name="AudioStreamRecorder" type="AudioStreamPlayer" parent="VoiceChat"]
+[node name="MicInput" type="AudioStreamPlayer" parent="VoiceChat"]
 stream = SubResource("AudioStreamMicrophone_7hefe")
 autoplay = true
 bus = &"Record"

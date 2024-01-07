@@ -73,6 +73,14 @@ public partial class PlayerMovement : CharacterBody3D
         ControlledByPlayer = IsMultiplayerAuthority();
         PlayerCamera.Current = IsMultiplayerAuthority();
 
+        AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
+        AddChild(voiceOutput);
+
+        if (IsMultiplayerAuthority())
+        {
+            (GetTree().Root.GetNode("MainMenu/Level/World/VoiceChat") as VoiceChat).SetAudioOutput(voiceOutput);
+        }
+
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
         SwitchState(PlayerState.Idle);

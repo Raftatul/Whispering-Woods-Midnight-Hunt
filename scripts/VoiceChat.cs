@@ -65,4 +65,9 @@ public partial class VoiceChat : Node3D
             }
         }
     }
+
+    public void SetAudioOutput(AudioStreamPlayer3D audioStreamPlayer)
+    {
+        _audioStreamPlayer3D = audioStreamPlayer;
+    }
 }

@@ -134,8 +134,6 @@ public partial class SceneManager : CanvasLayer
         Node mapNode = map.Instantiate();
         _level.AddChild(mapNode);
 
-        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
-
         AddPlayer();
     }
 

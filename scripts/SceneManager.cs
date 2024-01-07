@@ -125,12 +125,18 @@ public partial class SceneManager : CanvasLayer
 
     public void StartGame(Dictionary<string, string> data)
     {
+        Visible = false;
+        
+        string address = CreateServer(true);
+
         _playerIDs.Add(1);
         PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
         Node mapNode = map.Instantiate();
         _level.AddChild(mapNode);
+
+        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
+
         AddPlayer();
-        Visible = false;
     }
 
     private void AddPlayer(long id = 1)

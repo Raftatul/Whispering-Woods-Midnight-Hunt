@@ -53,7 +53,6 @@ public partial class SceneManager : CanvasLayer
         DataParser.OnJoin += JoinServer;
 
         Multiplayer.PeerConnected += id => _playerIDs.Add(id);
-        Multiplayer.PeerConnected += AddPlayer;
     }
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -79,11 +78,6 @@ public partial class SceneManager : CanvasLayer
         playerCard.SetLabels(friend.Name, avatar);
         PlayerListContainer.AddChild(playerCard);
         GameManager.OnPlayerJoinedCallback(friend);
-        SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(new Dictionary<string, string>
-        {
-            { "DataType", "Join" },
-            { "Data", _address }
-        }));
     }
 
     private void OnPlayerLeftLobbyCallback(Friend friend)
@@ -97,7 +91,6 @@ public partial class SceneManager : CanvasLayer
     {
         SteamManager.Instance.CreateLobby();
         _address = CreateServer(true);
-
     }
 
     public void GetallLobbiesButtonPressed()
@@ -119,6 +112,12 @@ public partial class SceneManager : CanvasLayer
                 { "DataType", "StartGame" },
                 { "SceneToLoad", "res://main.tscn" }
             };
+
+            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(new Dictionary<string, string>
+            {
+                { "DataType", "Join" },
+                { "Data", _address }
+            }));
 
             StartGame(dataToSend);
         }

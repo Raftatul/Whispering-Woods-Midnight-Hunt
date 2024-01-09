@@ -42,12 +42,7 @@ public partial class PlayerMovement : CharacterBody3D
     private Vector3 _targetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
-
-    private int currentframe = 0;
-
-    private int frameRate = 5;
-
-    private Vector3 _newPosition = Vector3.Zero;
+    
     private float _stamina;
 
     public enum PlayerState
@@ -60,131 +55,104 @@ public partial class PlayerMovement : CharacterBody3D
     [Signal]
     public delegate void OnPlayerInitializedEventHandler();
 
+    [Export]
+    private MultiplayerSynchronizer _multiplayerSynchronizer;
+
     private Vector3 GetDirectionInput()
     {
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
     }
 
-    private void UpdateRemoteLocation(Vector3 location, Vector3 rotation)
+    public override void _EnterTree()
     {
-        Dictionary<string, string> data = new Dictionary<string, string>()
-        {
-            {"DataType", "PlayerUpdate"},
-            {"PlayerId", FriendData.Id.ToString()},
-            {"LocationX", location.X.ToString()},
-            {"LocationY", location.Y.ToString()},
-            {"LocationZ", location.Z.ToString()},
-            {"RotationX", rotation.X.ToString()},
-            {"RotationY", rotation.Y.ToString()},
-            {"RotationZ", rotation.Z.ToString()},
-        };
-        if (SteamManager.Instance.IsHost)
-        {
-            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
-        }
-        else
-        {
-            SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
-        }
-    }
-
-    private void OnPlayerUpdate(Dictionary<string, string> data)
-    {
-        if (data["PlayerId"] == SteamManager.Instance.PlayerId.ToString())
-            return;
-
-        if (data["PlayerId"] == FriendData.Id.ToString())
-        {
-            _newPosition = new Vector3(float.Parse(data["LocationX"]), float.Parse(data["LocationY"]), float.Parse(data["LocationZ"]));
-            Rotation = new Vector3(float.Parse(data["RotationX"]), float.Parse(data["RotationY"]), float.Parse(data["RotationZ"]));
-        }
+        Name = Name.ToString().Replace(GameManager.PlayerInstanceName, "");
+        SetMultiplayerAuthority(int.Parse(Name));
+        Name = GameManager.PlayerInstanceName + Name;
     }
 
     public override void _Ready()
     {
+        ControlledByPlayer = IsMultiplayerAuthority();
+        PlayerCamera.Current = IsMultiplayerAuthority();
+
+        AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
+        AddChild(voiceOutput);
+        voiceOutput.Name = "VoiceOutput";
+
+        Position += Vector3.Up * 10f;
+
+        if (IsMultiplayerAuthority())
+        {
+            (GetTree().Root.GetNode("MainMenu/Level/World/VoiceChat") as VoiceChat).SetAudioOutput(voiceOutput);
+        }
+
         Input.MouseMode = Input.MouseModeEnum.Captured;
-        DataParser.OnPlayerUpdate += OnPlayerUpdate;
 
         SwitchState(PlayerState.Idle);
     }
 
-    public void Initialize()
-    {
-        EmitSignal(SignalName.OnPlayerInitialized);
-    }
-
     public override void _PhysicsProcess(double delta)
     {
+        if (!IsMultiplayerAuthority())
+            return;
+        
         if (!IsOnFloor())
             _targetVelocity.Y -= _playerData.Gravity * (float)delta;
 
-        if (ControlledByPlayer)
+        Vector3 inputAxis = GetDirectionInput().Normalized();
+        Vector3 movement = Basis * inputAxis;
+
+        int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
+
+        Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
+        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
+        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
+
+        _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
+
+        if (movement != Vector3.Zero)
         {
-            Vector3 inputAxis = GetDirectionInput().Normalized();
-            Vector3 movement = Basis * inputAxis;
-
-            int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
-
-            Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
-            targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
-            targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
-
-            _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
-
-            if (movement != Vector3.Zero)
-            {
-                _targetVelocity.X = movement.X * _moveSpeed;
-                _targetVelocity.Z = movement.Z * _moveSpeed;
-            }
-            else
-            {
-                _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
-                _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
-            }
-            
-            if (IsOnFloor() && !_isGrounded)
-            {
-                _isGrounded = true;
-                OnGrounded();
-            }
-            else if (!IsOnFloor() && _isGrounded)
-                _isGrounded = false;
-
-            switch(_playerState)
-            {
-                case PlayerState.Run:
-                    DepleteStamina((float)delta);
-                    if (inputAxis.Length() == 0f)
-                        SwitchState(PlayerState.Idle);
-                    break;
-                case PlayerState.Idle:
-                    RegenStamina((float)delta);
-                    if (inputAxis.Length() > 0f)
-                        SwitchState(PlayerState.Walk);
-                    break;
-                case PlayerState.Walk:
-                    RegenStamina((float)delta);
-                    if (inputAxis.Length() == 0f)
-                        SwitchState(PlayerState.Idle);
-                    break;
-                default:
-                    RegenStamina((float)delta);
-                    break;
-            }
-
-            Velocity = _targetVelocity;
-
-            currentframe++;
-            if (currentframe == frameRate)
-            {
-                currentframe = 0;
-                UpdateRemoteLocation(GlobalPosition, RotationDegrees);
-            }
+            _targetVelocity.X = movement.X * _moveSpeed;
+            _targetVelocity.Z = movement.Z * _moveSpeed;
         }
         else
         {
-            Position = Position.Lerp(_newPosition, (float)delta * 15f);
+            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
+            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
         }
+        
+        if (IsOnFloor() && !_isGrounded)
+        {
+            _isGrounded = true;
+            OnGrounded();
+        }
+        else if (!IsOnFloor() && _isGrounded)
+            _isGrounded = false;
+
+        switch(_playerState)
+        {
+            case PlayerState.Run:
+                DepleteStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            case PlayerState.Idle:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() > 0f)
+                    SwitchState(PlayerState.Walk);
+                break;
+            case PlayerState.Walk:
+                RegenStamina((float)delta);
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            default:
+                RegenStamina((float)delta);
+                break;
+        }
+
+        Velocity = _targetVelocity;
+
         MoveAndSlide();
     }
 

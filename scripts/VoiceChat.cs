@@ -1,5 +1,6 @@
 using Godot;
 using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -8,23 +9,21 @@ using System.Text;
 public partial class VoiceChat : Node3D
 {
     [Export]
-    private PlayerMovement _player;
-
-    [Export]
-    private AudioStreamPlayer3D _audioStreamPlayer3D;
-
-    [Export]
     private AudioStreamPlayer _audioStreamRecorder;
 
-    [Export]
     private Timer _sendRecordingTimer;
+
+    private AudioStreamPlayer3D _audioStreamPlayer3D;
 
     private AudioEffectRecord effect;
 
+    private AudioStreamWav recording;
+
+    private Godot.Collections.Dictionary<string, AudioStreamPlayer3D> _audioStreamPlayer3Ds = new Godot.Collections.Dictionary<string, AudioStreamPlayer3D>();
+
     public override void _Ready()
     {
-        if (_player.ControlledByPlayer)
-            Initialize();
+        Initialize();
     }
 
     private void Initialize()
@@ -33,44 +32,53 @@ public partial class VoiceChat : Node3D
         effect = AudioServer.GetBusEffect(idx, 0) as AudioEffectRecord;
         effect.SetRecordingActive(true);
 
+        _sendRecordingTimer = new Timer();
+        _sendRecordingTimer.WaitTime = 0.5f;
         _sendRecordingTimer.Timeout += OnSendRecordingTimerTimeout;
-        DataParser.OnVoiceChat += SendRecordingData;
+        AddChild(_sendRecordingTimer);
+        _sendRecordingTimer.Start();
     }
 
-    private void SendRecordingData(Dictionary<string, string> recData)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void SendRecordingData(NodePath audioPlayerPath, byte[] recData)
     {
-        byte[] data = System.Convert.FromBase64String(recData["Data"]);
-        GD.Print("Received recording data raw : ", recData["Data"]);
-        GD.Print("Received recording data", data.ToString());
+        string stringPath = audioPlayerPath.ToString();
+        string relativePath = stringPath.Substr(stringPath.Find(GameManager.PlayerInstanceName), stringPath.Length);
 
-        var sample = new AudioStreamWav
+        if (!_audioStreamPlayer3Ds.ContainsKey(relativePath))
         {
-            Data = data,
+            audioPlayerPath = audioPlayerPath.ToString().Replace("/root/", "");
+            _audioStreamPlayer3Ds.Add(relativePath, GetTree().Root.GetNode<AudioStreamPlayer3D>(audioPlayerPath));
+        }
+
+        AudioStreamWav sample = new AudioStreamWav()
+        {
+            Data = recData,
             Format = AudioStreamWav.FormatEnum.Format16Bits,
-            MixRate = ((int)(AudioServer.GetMixRate() * 2))
+            MixRate = (int)AudioServer.GetMixRate() * 2
         };
-        _audioStreamPlayer3D.Stream = sample;
-        _audioStreamPlayer3D.Play();
+
+        _audioStreamPlayer3Ds[relativePath].Stream = sample;
+        _audioStreamPlayer3Ds[relativePath].Play();
     }
 
     private void OnSendRecordingTimerTimeout()
     {
-        var recording = effect.GetRecording();
-        recording.Data = recording.Data;
-        effect.SetRecordingActive(false);
-        Dictionary<string, string> data = new Dictionary<string, string>()
+        if (Multiplayer.MultiplayerPeer != null)
         {
-            {"DataType", "VoiceChat"},
-            {"Data", System.Convert.ToBase64String(recording.Data)}
-        };
+            if (Multiplayer.GetPeers().Length > 0)
+            {
+                GD.Print("Sending recording data");
+                recording = effect.GetRecording();
+                effect.SetRecordingActive(false);
+                Rpc(nameof(SendRecordingData), _audioStreamPlayer3D.GetPath(), recording.Data);
+                effect.SetRecordingActive(true);
+            }
+        }
+    }
 
-        GD.Print("Sending recording data", data["Data"]);
-
-        if (SteamManager.Instance.IsHost)
-            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(data));
-        else
-            SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(OwnJsonParser.Serialize(data));
-        
-        effect.SetRecordingActive(true);
+    public void SetAudioOutput(AudioStreamPlayer3D audioStreamPlayer)
+    {
+        _audioStreamPlayer3D = audioStreamPlayer;
     }
 }

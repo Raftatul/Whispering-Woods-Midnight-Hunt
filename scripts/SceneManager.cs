@@ -2,9 +2,16 @@ using Godot;
 using Steamworks;
 using Steamworks.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.Common;
+using System.Diagnostics;
 
 public partial class SceneManager : CanvasLayer
 {
+    [Export]
+    private Node _level;
+
+    [ExportCategory("UI")]
     [Export]
     public Button CreateLobbyButton { get; set; }
 
@@ -18,30 +25,38 @@ public partial class SceneManager : CanvasLayer
     public Button StartGameButton { get; set; }
 
     [Export]
+    public VBoxContainer LobbyListContainer { get; set; }
+
+    [Export]
+    public VBoxContainer PlayerListContainer { get; set; }
+
+    [ExportCategory("PackedScene")]
+    [Export]
     public PackedScene LobbyElementScene { get; set; }
 
     [Export]
     public PackedScene PlayerCardScene { get; set; }
 
     [Export]
-    public VBoxContainer LobbyListContainer { get; set; }
+    public PackedScene PlayerScene { get; set; }
 
-    [Export]
-    public VBoxContainer PlayerListContainer { get; set; }
-
-    [Export]
-    public PackedScene PlayerMovement { get; set; }
+    private string _address;
 
     public override void _Ready()
     {
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
+        SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
+        SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
+        DataParser.OnJoin += JoinServer;
+
+        //UI
         CreateLobbyButton.Pressed += CreateLobbyButtonPressed;
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
-        SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
-        SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
-        DataParser.OnStartGame += StartGame;
         StartGameButton.Pressed += StartGameButtonPressed;
+
+        Multiplayer.PeerConnected += _playerIDs.Add;
+        Multiplayer.PeerConnected += AddPlayer;
     }
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
@@ -76,9 +91,10 @@ public partial class SceneManager : CanvasLayer
         player.QueueFree();
     }
 
-    public void CreateLobbyButtonPressed()
+    public async void CreateLobbyButtonPressed()
     {
-        SteamManager.Instance.CreateLobby();
+        await SteamManager.Instance.CreateLobby();
+        _address = CreateServer(true);
     }
 
     public void GetallLobbiesButtonPressed()
@@ -95,38 +111,96 @@ public partial class SceneManager : CanvasLayer
     {
         if (SteamManager.Instance.IsHost)
         {
-            Dictionary<string, string> dataToSend = new Dictionary<string, string>
+            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(new Dictionary<string, string>
             {
-                { "DataType", "StartGame" },
-                { "SceneToLoad", "res://main.tscn" }
-            };
-            SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(dataToSend));
-            StartGame(dataToSend);
+                { "DataType", "Join" },
+                { "Data", _address }
+            }));
+
+            StartGame();
         }
     }
 
-    public void StartGame(Dictionary<string, string> data)
+    public void StartGame()
     {
-        PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
+        Visible = false;
+        
+        _playerIDs.Add(1);
+        PackedScene map = GD.Load<PackedScene>("res://main.tscn");
         Node mapNode = map.Instantiate();
-        GetTree().Root.AddChild(mapNode);
+        _level.AddChild(mapNode);
 
-        // GetTree().ChangeSceneToFile(data["SceneToLoad"]);
-        foreach (var item in GameManager.Players)
+        AddPlayer();
+    }
+
+    private void AddPlayer(long id = 1)
+    {
+        var player = PlayerScene.Instantiate() as PlayerMovement;
+        player.Name = id.ToString();
+        player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
+        _level.GetChild(0).AddChild(player);
+        player.GlobalPosition += new Vector3(0, 10, 0);
+    }
+
+    private ENetMultiplayerPeer _peer = new();
+    private const int MAX_CONNECTIONS = 6;
+    private const int PORT = 7000;
+    private const string DEFAULT_SERVER_IP = "127.0.0.1";
+
+    private Godot.Collections.Array<long> _playerIDs = new Godot.Collections.Array<long>();
+
+    private string SetupUPNP()
+    {
+        Upnp upnp = new ();
+
+        int error = upnp.Discover();
+        Debug.Assert(error == (int)Upnp.UpnpResult.Success, "UPNP Discover Failed! Error %s" + error);
+
+        Debug.Assert(upnp.GetGateway() != null && upnp.GetGateway().IsValidGateway(), "UPNP Invalid Gateway!");
+
+        int mapResult = upnp.AddPortMapping(PORT);
+
+        Debug.Assert(mapResult == (int)Upnp.UpnpResult.Success, "UPNP AddPortMapping Failed! Error %s" + mapResult);
+
+        Debug.Print("Success! Join Address : " + upnp.GetGateway().QueryExternalAddress() + ":" + PORT);
+
+        return upnp.GetGateway().QueryExternalAddress();
+    }
+
+    private string CreateServer(bool online)
+    {
+        Error error = _peer.CreateServer(PORT, MAX_CONNECTIONS);
+
+        if (error != Error.Ok)
+            return "";
+
+        Multiplayer.MultiplayerPeer = _peer;
+
+        string address = DEFAULT_SERVER_IP;
+        if (online)
         {
-            var player = PlayerMovement.Instantiate() as PlayerMovement;
-            player.Name = item.FriendData.Id.AccountId.ToString();
-            player.FriendData = item.FriendData;
-            if (player.Name == SteamManager.Instance.PlayerId.AccountId.ToString())
-            {
-                player.ControlledByPlayer = true;
-                player.PlayerCamera.Current = true;
-                player.Initialize();
-            }
-            mapNode.AddChild(player);
-            player.GlobalPosition += new Vector3(0, 10, 0);
+            address = SetupUPNP();
         }
 
+        return address;
+    }
+
+    private void JoinServer(Dictionary<string, string> data)
+    {
+        string address = data["Data"];
+
+        if (address == "")
+            address = DEFAULT_SERVER_IP;
+        
+        Error error = _peer.CreateClient(address , PORT);
+
+        if (error != Error.Ok)
+            return;
+        
+        Multiplayer.MultiplayerPeer = _peer;
+
         Visible = false;
+
+        return;
     }
 }

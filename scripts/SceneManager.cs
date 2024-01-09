@@ -53,6 +53,7 @@ public partial class SceneManager : CanvasLayer
         DataParser.OnJoin += JoinServer;
 
         Multiplayer.PeerConnected += id => _playerIDs.Add(id);
+        Multiplayer.PeerConnected += AddPlayer;
     }
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)

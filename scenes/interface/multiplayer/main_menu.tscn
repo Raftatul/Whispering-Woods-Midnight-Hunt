@@ -72,10 +72,6 @@ placeholder_text = "IP :"
 layout_mode = 2
 text = "Start"
 
-[node name="JoinButton" type="Button" parent="Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "join"
-
 [node name="Button" type="Button" parent="Control/StartMenu/VBoxContainer"]
 layout_mode = 2
 text = "QUIT"

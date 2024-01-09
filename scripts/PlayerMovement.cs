@@ -65,8 +65,8 @@ public partial class PlayerMovement : CharacterBody3D
 
     public override void _EnterTree()
     {
+        Name = Name.ToString().Replace(GameManager.PlayerInstanceName, "");
         SetMultiplayerAuthority(int.Parse(Name));
-
         Name = GameManager.PlayerInstanceName + Name;
     }
 
@@ -78,6 +78,8 @@ public partial class PlayerMovement : CharacterBody3D
         AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
         AddChild(voiceOutput);
         voiceOutput.Name = "VoiceOutput";
+
+        Position += Vector3.Up * 10f;
 
         if (IsMultiplayerAuthority())
         {

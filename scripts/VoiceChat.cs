@@ -40,9 +40,10 @@ public partial class VoiceChat : Node3D
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void SendRecordingData(string audioPlayerPath, byte[] recData)
+    private void SendRecordingData(NodePath audioPlayerPath, byte[] recData)
     {
-        string relativePath = audioPlayerPath.Substr(audioPlayerPath.Find(GameManager.PlayerInstanceName), audioPlayerPath.Length);
+        string stringPath = audioPlayerPath.ToString();
+        string relativePath = stringPath.Substr(stringPath.Find(GameManager.PlayerInstanceName), stringPath.Length);
 
         if (!_audioStreamPlayer3Ds.ContainsKey(relativePath))
         {

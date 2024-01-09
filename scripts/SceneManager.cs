@@ -2,11 +2,16 @@ using Godot;
 using Steamworks;
 using Steamworks.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics;
 
 public partial class SceneManager : CanvasLayer
 {
+    [Export]
+    private Node _level;
+
+    [ExportCategory("UI")]
     [Export]
     public Button CreateLobbyButton { get; set; }
 
@@ -20,39 +25,37 @@ public partial class SceneManager : CanvasLayer
     public Button StartGameButton { get; set; }
 
     [Export]
+    public VBoxContainer LobbyListContainer { get; set; }
+
+    [Export]
+    public VBoxContainer PlayerListContainer { get; set; }
+
+    [ExportCategory("PackedScene")]
+    [Export]
     public PackedScene LobbyElementScene { get; set; }
 
     [Export]
     public PackedScene PlayerCardScene { get; set; }
 
     [Export]
-    public VBoxContainer LobbyListContainer { get; set; }
-
-    [Export]
-    public VBoxContainer PlayerListContainer { get; set; }
-
-    [Export]
-    public PackedScene PlayerMovement { get; set; }
-
-    [Export]
-    private Node _level;
+    public PackedScene PlayerScene { get; set; }
 
     private string _address;
-
 
     public override void _Ready()
     {
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
+        SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
+        SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
+        DataParser.OnJoin += JoinServer;
+
+        //UI
         CreateLobbyButton.Pressed += CreateLobbyButtonPressed;
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
-        SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
-        SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
-        DataParser.OnStartGame += StartGame;
         StartGameButton.Pressed += StartGameButtonPressed;
-        DataParser.OnJoin += JoinServer;
 
-        Multiplayer.PeerConnected += id => _playerIDs.Add(id);
+        Multiplayer.PeerConnected += _playerIDs.Add;
         Multiplayer.PeerConnected += AddPlayer;
     }
 
@@ -88,9 +91,9 @@ public partial class SceneManager : CanvasLayer
         player.QueueFree();
     }
 
-    public void CreateLobbyButtonPressed()
+    public async void CreateLobbyButtonPressed()
     {
-        SteamManager.Instance.CreateLobby();
+        await SteamManager.Instance.CreateLobby();
         _address = CreateServer(true);
     }
 
@@ -108,30 +111,22 @@ public partial class SceneManager : CanvasLayer
     {
         if (SteamManager.Instance.IsHost)
         {
-            Dictionary<string, string> dataToSend = new Dictionary<string, string>
-            {
-                { "DataType", "StartGame" },
-                { "SceneToLoad", "res://main.tscn" }
-            };
-
             SteamManager.Instance.SendMessageToAll(OwnJsonParser.Serialize(new Dictionary<string, string>
             {
                 { "DataType", "Join" },
                 { "Data", _address }
             }));
 
-            StartGame(dataToSend);
+            StartGame();
         }
     }
 
-    public void StartGame(Dictionary<string, string> data)
+    public void StartGame()
     {
         Visible = false;
         
-        string address = CreateServer(true);
-
         _playerIDs.Add(1);
-        PackedScene map = GD.Load<PackedScene>(data["SceneToLoad"]);
+        PackedScene map = GD.Load<PackedScene>("res://main.tscn");
         Node mapNode = map.Instantiate();
         _level.AddChild(mapNode);
 
@@ -140,7 +135,7 @@ public partial class SceneManager : CanvasLayer
 
     private void AddPlayer(long id = 1)
     {
-        var player = PlayerMovement.Instantiate() as PlayerMovement;
+        var player = PlayerScene.Instantiate() as PlayerMovement;
         player.Name = id.ToString();
         player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
         _level.GetChild(0).AddChild(player);

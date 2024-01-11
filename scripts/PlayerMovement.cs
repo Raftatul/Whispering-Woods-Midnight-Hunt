@@ -16,9 +16,6 @@ public partial class PlayerMovement : CharacterBody3D
     private Node3D _cameraCrouch;
 
     [Export]
-    private AnimationTree _animationTree;
-
-    [Export]
     private Node3D _mesh;
 
     [Export]
@@ -57,6 +54,9 @@ public partial class PlayerMovement : CharacterBody3D
 
     [Export]
     private MultiplayerSynchronizer _multiplayerSynchronizer;
+
+    [Export]
+    private AnimationManager _animationManager;
 
     private Vector3 GetDirectionInput()
     {
@@ -103,12 +103,10 @@ public partial class PlayerMovement : CharacterBody3D
         Vector3 movement = Basis * inputAxis;
 
         int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
+        Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z);
 
-        Vector2 targetBlendPosition = _animationTree.Get("parameters/Walk/blend_position").AsVector2();
-        targetBlendPosition.X = Mathf.Lerp(targetBlendPosition.X, inputAxis.X * targetBlend, 0.1f);
-        targetBlendPosition.Y = Mathf.Lerp(targetBlendPosition.Y, -inputAxis.Z * targetBlend, 0.1f);
-
-        _animationTree.Set("parameters/Walk/blend_position", targetBlendPosition);
+        _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
+        _animationManager.SetVector2("BS_Crouch/blend_position", flatInput);
 
         if (movement != Vector3.Zero)
         {
@@ -127,7 +125,9 @@ public partial class PlayerMovement : CharacterBody3D
             OnGrounded();
         }
         else if (!IsOnFloor() && _isGrounded)
+        {
             _isGrounded = false;
+        }
 
         switch(_playerState)
         {
@@ -194,14 +194,13 @@ public partial class PlayerMovement : CharacterBody3D
     {
         RotateY(Mathf.DegToRad(-mouseMotion.X * 0.1f));
         PlayerCamera.RotateX(Mathf.DegToRad(-mouseMotion.Y * 0.1f));
-        PlayerCamera.RotationDegrees = new Vector3(Mathf.Clamp(PlayerCamera.RotationDegrees.X, -90f, 90f), PlayerCamera.RotationDegrees.Y, PlayerCamera.RotationDegrees.Z);
+        PlayerCamera.RotationDegrees = new Vector3(Mathf.Clamp(PlayerCamera.RotationDegrees.X, -75f, 75f), 0f, 0f);
     }
 
     private void Jump()
     {
         _targetVelocity.Y = _playerData.JumpForce;
-        GD.Print("JUMP");
-        _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Fire));
+        _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
     }
 
     private void Crouch()
@@ -209,9 +208,10 @@ public partial class PlayerMovement : CharacterBody3D
         SwitchState(PlayerState.Crouch);
 
         _standUpCollider.Disabled = true;
+        _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
 
-        Tween cameraTween = CreateTween();
-        cameraTween.TweenProperty(PlayerCamera, "position", _cameraCrouch.Position, _crouchTransitionTime);
+        // Tween cameraTween = CreateTween();
+        // cameraTween.TweenProperty(PlayerCamera, "position", _cameraCrouch.Position, _crouchTransitionTime);
     }
 
     private bool CanUnCrouch()
@@ -228,8 +228,10 @@ public partial class PlayerMovement : CharacterBody3D
         
         _standUpCollider.Disabled = false;
 
-        Tween cameraTween = CreateTween();
-        cameraTween.TweenProperty(PlayerCamera, "position", _cameraUp.Position, _crouchTransitionTime);
+        _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+
+        // Tween cameraTween = CreateTween();
+        // cameraTween.TweenProperty(PlayerCamera, "position", _cameraUp.Position, _crouchTransitionTime);
     }
 
     private void ToogleCrouch()
@@ -290,6 +292,6 @@ public partial class PlayerMovement : CharacterBody3D
 
     private void OnGrounded()
     {
-        _animationTree.Set("parameters/OneShot/request", ((int)AnimationNodeOneShot.OneShotRequest.Abort));
+        _animationManager.RequestTransition("Trans_Jump/transition_request", "land");
     }
 }

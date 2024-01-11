@@ -1,20 +1,22 @@
-[gd_scene load_steps=13 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=12 format=3 uid="uid://b3gphftdi5nf7"]
 
-[ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_uvdfn"]
-[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_3e0c2"]
+[ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_61nmp"]
+[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_nfd1u"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lcmhk"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
 
-[sub_resource type="Sky" id="Sky_7o6p2"]
-sky_material = SubResource("ProceduralSkyMaterial_lcmhk")
+[sub_resource type="Sky" id="Sky_68ouc"]
+sky_material = SubResource("ProceduralSkyMaterial_l6net")
 
 [sub_resource type="Environment" id="Environment_074gb"]
 background_mode = 2
-sky = SubResource("Sky_7o6p2")
-tonemap_mode = 2
+background_color = Color(0.164706, 0.686275, 0.862745, 1)
+sky = SubResource("Sky_68ouc")
+tonemap_mode = 3
+sdfgi_use_occlusion = true
 glow_enabled = true
+fog_density = 0.2039
+adjustment_contrast = 8.0
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_0d08r"]
 
@@ -29,15 +31,13 @@ data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0
 
 [sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_7hefe"]
 
-[sub_resource type="TorusMesh" id="TorusMesh_w06hc"]
-
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_074gb")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+transform = Transform3D(0.224987, -0.852438, 0.471942, -0.709135, 0.188917, 0.679292, -0.668213, -0.487503, -0.56199, 0, 5.78997, 0)
 shadow_enabled = true
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
@@ -68,21 +68,16 @@ spawn_path = NodePath("..")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.59737, 1.99657, -4.22717)
-stream = ExtResource("1_uvdfn")
+stream = ExtResource("1_61nmp")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="AudioStreamPlayer3D"]
 mesh = SubResource("BoxMesh_spm36")
 
 [node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("_audioStreamRecorder")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.91499, 1.89129, 2.10338)
-script = ExtResource("2_3e0c2")
+script = ExtResource("2_nfd1u")
 _audioStreamRecorder = NodePath("MicInput")
 
 [node name="MicInput" type="AudioStreamPlayer" parent="VoiceChat"]
 stream = SubResource("AudioStreamMicrophone_7hefe")
 autoplay = true
 bus = &"Record"
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="VoiceChat"]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("TorusMesh_w06hc")

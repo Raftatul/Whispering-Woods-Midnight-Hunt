@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://i1g4s60qpvyj"]
+[gd_scene load_steps=12 format=3 uid="uid://i1g4s60qpvyj"]
 
 [ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
 [ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_jk5bo"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="2_6p8nt"]
 [ext_resource type="Script" path="res://scripts/interface/general/TransitionButton.cs" id="3_y82su"]
 [ext_resource type="PackedScene" uid="uid://cj8vo15g1p7td" path="res://scenes/player.tscn" id="4_5wyhn"]
+[ext_resource type="PackedScene" uid="uid://b3gphftdi5nf7" path="res://scenes/maps/main.tscn" id="5_7plw1"]
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
 [ext_resource type="Script" path="res://scripts/interface/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
@@ -23,6 +24,7 @@ PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer
 LobbyElementScene = ExtResource("2_6p8nt")
 PlayerCardScene = ExtResource("1_2wl7p")
 PlayerScene = ExtResource("4_5wyhn")
+_map1 = ExtResource("5_7plw1")
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -211,7 +213,7 @@ _nodeToShow = NodePath("../../../../StartMenu")
 [node name="Level" type="Node" parent="."]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://main.tscn")
+_spawnable_scenes = PackedStringArray("res://scenes/maps/main.tscn")
 spawn_path = NodePath("../Level")
 
 [connection signal="pressed" from="Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/Button" to="Control/StartMenu" method="QuitGame"]

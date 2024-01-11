@@ -127,6 +127,7 @@ public partial class PlayerMovement : CharacterBody3D
         else if (!IsOnFloor() && _isGrounded)
         {
             _isGrounded = false;
+            _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
         }
 
         switch(_playerState)

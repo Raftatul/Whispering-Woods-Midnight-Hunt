@@ -40,6 +40,9 @@ public partial class SceneManager : CanvasLayer
     [Export]
     public PackedScene PlayerScene { get; set; }
 
+    [Export]
+    private PackedScene _map1;
+
     private string _address;
 
     public override void _Ready()
@@ -126,8 +129,7 @@ public partial class SceneManager : CanvasLayer
         Visible = false;
         
         _playerIDs.Add(1);
-        PackedScene map = GD.Load<PackedScene>("res://main.tscn");
-        Node mapNode = map.Instantiate();
+        Node mapNode = _map1.Instantiate();
         _level.AddChild(mapNode);
 
         AddPlayer();

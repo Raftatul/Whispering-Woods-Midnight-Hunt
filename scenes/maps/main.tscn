@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://b3gphftdi5nf7"]
 
-[ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_uvdfn"]
-[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_3e0c2"]
+[ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_61nmp"]
+[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="2_nfd1u"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
 
@@ -68,13 +68,13 @@ spawn_path = NodePath("..")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.59737, 1.99657, -4.22717)
-stream = ExtResource("1_uvdfn")
+stream = ExtResource("1_61nmp")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="AudioStreamPlayer3D"]
 mesh = SubResource("BoxMesh_spm36")
 
 [node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("_audioStreamRecorder")]
-script = ExtResource("2_3e0c2")
+script = ExtResource("2_nfd1u")
 _audioStreamRecorder = NodePath("MicInput")
 
 [node name="MicInput" type="AudioStreamPlayer" parent="VoiceChat"]

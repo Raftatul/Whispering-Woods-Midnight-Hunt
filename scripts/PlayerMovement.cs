@@ -6,20 +6,9 @@ using System.Collections.Generic;
 
 public partial class PlayerMovement : CharacterBody3D
 {
+    [ExportCategory("Nodes")]
     [Export]
     public Camera3D PlayerCamera;
-
-    [Export]
-    private Node3D _cameraUp;
-
-    [Export]
-    private Node3D _cameraCrouch;
-
-    [Export]
-    private Node3D _mesh;
-
-    [Export]
-    private float _moveSpeed = 5f;
 
     [Export]
     private CollisionShape3D _standUpCollider;
@@ -28,9 +17,17 @@ public partial class PlayerMovement : CharacterBody3D
     private RayCast3D _crouchRayCastChecker;
 
     [Export]
-    private PlayerData _playerData;
+    private AnimationManager _animationManager;
 
-    private float _crouchTransitionTime = 0.15f;
+    [ExportCategory("Player Data")]
+    [Export]
+    private float _currentMoveSpeed = 5f;
+
+    [Export]
+    private float _currentStamina;
+    
+    [Export]
+    private PlayerData _playerData;
 
     private bool _isGrounded = false;
 
@@ -39,8 +36,6 @@ public partial class PlayerMovement : CharacterBody3D
     private Vector3 _targetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
-    
-    private float _stamina;
 
     public enum PlayerState
     {
@@ -51,12 +46,6 @@ public partial class PlayerMovement : CharacterBody3D
 
     [Signal]
     public delegate void OnPlayerInitializedEventHandler();
-
-    [Export]
-    private MultiplayerSynchronizer _multiplayerSynchronizer;
-
-    [Export]
-    private AnimationManager _animationManager;
 
     private Vector3 GetDirectionInput()
     {
@@ -102,7 +91,7 @@ public partial class PlayerMovement : CharacterBody3D
         Vector3 inputAxis = GetDirectionInput().Normalized();
         Vector3 movement = Basis * inputAxis;
 
-        int targetBlend = _moveSpeed == _playerData.WalkSpeed ? 1 : _moveSpeed == _playerData.RunSpeed ? 2 : 0;
+        int targetBlend = _currentMoveSpeed == _playerData.WalkSpeed ? 1 : _currentMoveSpeed == _playerData.RunSpeed ? 2 : 0;
         Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z);
 
         _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
@@ -110,13 +99,13 @@ public partial class PlayerMovement : CharacterBody3D
 
         if (movement != Vector3.Zero)
         {
-            _targetVelocity.X = movement.X * _moveSpeed;
-            _targetVelocity.Z = movement.Z * _moveSpeed;
+            _targetVelocity.X = movement.X * _currentMoveSpeed;
+            _targetVelocity.Z = movement.Z * _currentMoveSpeed;
         }
         else
         {
-            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _moveSpeed);
-            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _moveSpeed);
+            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _currentMoveSpeed);
+            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _currentMoveSpeed);
         }
         
         if (IsOnFloor() && !_isGrounded)
@@ -164,30 +153,30 @@ public partial class PlayerMovement : CharacterBody3D
         switch (_playerState)
         {
             case PlayerState.Idle:
-                _moveSpeed = 0f;
+                _currentMoveSpeed = 0f;
                 break;
             case PlayerState.Walk:
-                _moveSpeed = _playerData.WalkSpeed;
+                _currentMoveSpeed = _playerData.WalkSpeed;
                 break;
             case PlayerState.Run:
-                _moveSpeed = _playerData.RunSpeed;
+                _currentMoveSpeed = _playerData.RunSpeed;
                 break;
             case PlayerState.Crouch:
-                _moveSpeed = _playerData.CrouchSpeed;
+                _currentMoveSpeed = _playerData.CrouchSpeed;
                 break;
         }
     }
 
     private void RegenStamina(float delta)
     {
-        _stamina = Mathf.MoveToward(_stamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
+        _currentStamina = Mathf.MoveToward(_currentStamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
     }
 
     private void DepleteStamina(float delta)
     {
-        _stamina = Mathf.MoveToward(_stamina, 0f, _playerData.StaminaDepletionRate * delta);
+        _currentStamina = Mathf.MoveToward(_currentStamina, 0f, _playerData.StaminaDepletionRate * delta);
 
-        if (_stamina <= 0f)
+        if (_currentStamina <= 0f)
             StopRun();
     }
 

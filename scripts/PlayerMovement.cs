@@ -209,9 +209,6 @@ public partial class PlayerMovement : CharacterBody3D
 
         _standUpCollider.Disabled = true;
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
-
-        // Tween cameraTween = CreateTween();
-        // cameraTween.TweenProperty(PlayerCamera, "position", _cameraCrouch.Position, _crouchTransitionTime);
     }
 
     private bool CanUnCrouch()
@@ -229,9 +226,6 @@ public partial class PlayerMovement : CharacterBody3D
         _standUpCollider.Disabled = false;
 
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
-
-        // Tween cameraTween = CreateTween();
-        // cameraTween.TweenProperty(PlayerCamera, "position", _cameraUp.Position, _crouchTransitionTime);
     }
 
     private void ToogleCrouch()
@@ -245,8 +239,6 @@ public partial class PlayerMovement : CharacterBody3D
                 Crouch();
                 break;
         }
-        
-        GD.Print("CROUCH");
     }
 
     private void StartRun()

@@ -25,11 +25,13 @@ public partial class AnimationManager : AnimationTree
         Set("parameters/" + path, value);
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     public void RequestTransition(string path, string state)
     {
         Set("parameters/" + path, state);
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     public void RequestOneShot(string path, AnimationNodeOneShot.OneShotRequest request)
     {
         Set("parameters/" + path, (int)request);

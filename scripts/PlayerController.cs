@@ -116,7 +116,8 @@ public partial class PlayerController : CharacterBody3D
         else if (!IsOnFloor() && _isGrounded)
         {
             _isGrounded = false;
-            _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
+            _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
+            // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
         }
 
         switch(_playerState)
@@ -190,7 +191,8 @@ public partial class PlayerController : CharacterBody3D
     private void Jump()
     {
         _targetVelocity.Y = _playerData.JumpForce;
-        _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
+        _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
+        // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
     }
 
     private void Crouch()
@@ -198,7 +200,8 @@ public partial class PlayerController : CharacterBody3D
         SwitchState(PlayerState.Crouch);
 
         _standUpCollider.Disabled = true;
-        _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+        _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "crouch");
+        // _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
     }
 
     private bool CanUnCrouch()
@@ -215,7 +218,8 @@ public partial class PlayerController : CharacterBody3D
         
         _standUpCollider.Disabled = false;
 
-        _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+        _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "uncrouch");
+        // _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
     }
 
     private void ToogleCrouch()
@@ -274,6 +278,7 @@ public partial class PlayerController : CharacterBody3D
 
     private void OnGrounded()
     {
-        _animationManager.RequestTransition("Trans_Jump/transition_request", "land");
+        _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
+        // _animationManager.RequestTransition("Trans_Jump/transition_request", "land");
     }
 }

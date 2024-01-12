@@ -33,7 +33,7 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     private PlayerData _playerData;
 
-    private bool _isGrounded = false;
+    private bool _isGrounded = true;
 
     public bool ControlledByPlayer { get; set; } = false;
 
@@ -106,6 +106,9 @@ public partial class PlayerController : CharacterBody3D
 
         Vector3 inputAxis = GetDirectionInput().Normalized();
 
+        float look = PlayerCamera.GlobalRotationDegrees.X / 75f;
+        _animationManager.SetFloat("BS_Look/blend_position", look, 1f);
+
         HandleVelocity(inputAxis, (float)delta);
         
         HandleGroundSignal();
@@ -118,6 +121,16 @@ public partial class PlayerController : CharacterBody3D
 
         Velocity = _targetVelocity;
         MoveAndSlide();
+
+        // for (int i = 0; i < GetSlideCollisionCount(); i++)
+        // {
+        //     var col = GetSlideCollision(i);
+        //     if (col.GetCollider() is RigidBody3D truc)
+        //     {
+        //         truc.ApplyCentralImpulse(-col.GetNormal() * 0.3f);
+        //         // truc.ApplyImpulse(-col.GetNormal() * 0.01f, col.GetPosition());
+        //     }
+        // }
     }
 
     private void SwitchState(PlayerState newState)

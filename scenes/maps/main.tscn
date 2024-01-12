@@ -1,8 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=9 format=3 uid="uid://b3gphftdi5nf7"]
 
 [ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_61nmp"]
 [ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
-[ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_hsrix"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
 
@@ -19,10 +18,6 @@ glow_enabled = true
 fog_density = 0.2039
 adjustment_contrast = 8.0
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_0d08r"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_jy68y"]
-
 [sub_resource type="BoxMesh" id="BoxMesh_uo0bs"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_00qao"]
@@ -38,15 +33,6 @@ environment = SubResource("Environment_074gb")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.224987, -0.852438, 0.471942, -0.709135, 0.188917, 0.679292, -0.668213, -0.487503, -0.56199, 0, 5.78997, 0)
 shadow_enabled = true
-
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.2141, -4.03802)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("SphereShape3D_0d08r")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
-mesh = SubResource("SphereMesh_jy68y")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true
@@ -73,6 +59,3 @@ stream = ExtResource("1_61nmp")
 mesh = SubResource("BoxMesh_spm36")
 
 [node name="VoiceChat" parent="." instance=ExtResource("2_brv5t")]
-
-[node name="Item" parent="." instance=ExtResource("3_hsrix")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22627, 1.88649, 1.25948)

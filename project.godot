@@ -22,7 +22,6 @@ driver/enable_input=true
 [autoload]
 
 SteamManager="*res://scripts/Steam/SteamManager.cs"
-VoiceChat="*res://scripts/VoiceChat.cs"
 
 [display]
 

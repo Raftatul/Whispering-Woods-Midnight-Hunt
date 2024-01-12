@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=12 format=3 uid="uid://b3gphftdi5nf7"]
 
 [ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_61nmp"]
 [ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
+[ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_hsrix"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
 
@@ -72,3 +73,6 @@ stream = ExtResource("1_61nmp")
 mesh = SubResource("BoxMesh_spm36")
 
 [node name="VoiceChat" parent="." instance=ExtResource("2_brv5t")]
+
+[node name="Item" parent="." instance=ExtResource("3_hsrix")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.22627, 1.88649, 1.25948)

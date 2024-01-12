@@ -2,6 +2,7 @@ using Godot;
 using Steamworks;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 
 public partial class PlayerController : CharacterBody3D
@@ -15,6 +16,9 @@ public partial class PlayerController : CharacterBody3D
 
     [Export]
     private RayCast3D _crouchRayCastChecker;
+
+    [Export]
+    private RayCast3D _interactionRaycast;
 
     [Export]
     private AnimationManager _animationManager;
@@ -47,6 +51,12 @@ public partial class PlayerController : CharacterBody3D
     [Signal]
     public delegate void OnPlayerInitializedEventHandler();
 
+    [Signal]
+    public delegate void OnGroundedEventHandler();
+
+    [Signal]
+    public delegate void OnAirEventHandler();
+
     private Vector3 GetDirectionInput()
     {
         return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
@@ -78,72 +88,35 @@ public partial class PlayerController : CharacterBody3D
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
         SwitchState(PlayerState.Idle);
+        ConnectSignals();
+    }
+
+    private void ConnectSignals()
+    {
+        OnGrounded += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
+        OnAir += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
+
+        // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");   
     }
 
     public override void _PhysicsProcess(double delta)
     {
         if (!IsMultiplayerAuthority())
             return;
-        
-        if (!IsOnFloor())
-            _targetVelocity.Y -= _playerData.Gravity * (float)delta;
 
         Vector3 inputAxis = GetDirectionInput().Normalized();
-        Vector3 movement = Basis * inputAxis;
 
-        int targetBlend = _currentMoveSpeed == _playerData.WalkSpeed ? 1 : _currentMoveSpeed == _playerData.RunSpeed ? 2 : 0;
-        Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z);
-
-        _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
-        _animationManager.SetVector2("BS_Crouch/blend_position", flatInput);
-
-        if (movement != Vector3.Zero)
-        {
-            _targetVelocity.X = movement.X * _currentMoveSpeed;
-            _targetVelocity.Z = movement.Z * _currentMoveSpeed;
-        }
-        else
-        {
-            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _currentMoveSpeed);
-            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _currentMoveSpeed);
-        }
+        HandleVelocity(inputAxis, (float)delta);
         
-        if (IsOnFloor() && !_isGrounded)
-        {
-            _isGrounded = true;
-            OnGrounded();
-        }
-        else if (!IsOnFloor() && _isGrounded)
-        {
-            _isGrounded = false;
-            _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
-            // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
-        }
+        HandleGroundSignal();
 
-        switch(_playerState)
-        {
-            case PlayerState.Run:
-                DepleteStamina((float)delta);
-                if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.Idle);
-                break;
-            case PlayerState.Idle:
-                RegenStamina((float)delta);
-                if (inputAxis.Length() > 0f)
-                    SwitchState(PlayerState.Walk);
-                break;
-            case PlayerState.Walk:
-                RegenStamina((float)delta);
-                if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.Idle);
-                break;
-            default:
-                RegenStamina((float)delta);
-                break;
-        }
+        HandlePlayerState(inputAxis);
+        HandleStamina((float)delta);
+
+        if (_interactionRaycast.Enabled)
+            Interact();
 
         Velocity = _targetVelocity;
-
         MoveAndSlide();
     }
 
@@ -166,19 +139,6 @@ public partial class PlayerController : CharacterBody3D
                 _currentMoveSpeed = _playerData.CrouchSpeed;
                 break;
         }
-    }
-
-    private void RegenStamina(float delta)
-    {
-        _currentStamina = Mathf.MoveToward(_currentStamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
-    }
-
-    private void DepleteStamina(float delta)
-    {
-        _currentStamina = Mathf.MoveToward(_currentStamina, 0f, _playerData.StaminaDepletionRate * delta);
-
-        if (_currentStamina <= 0f)
-            StopRun();
     }
 
     private void CameraRotation(Vector2 mouseMotion)
@@ -251,6 +211,104 @@ public partial class PlayerController : CharacterBody3D
         SwitchState(_targetVelocity.Length() > 0f ? PlayerState.Walk : PlayerState.Idle);
     }
 
+    private void HandleVelocity(Vector3 inputAxis, float delta)
+    {
+        Vector3 movement = Basis * inputAxis;
+
+        int targetBlend = _currentMoveSpeed == _playerData.WalkSpeed ? 1 : _currentMoveSpeed == _playerData.RunSpeed ? 2 : 0;
+        Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z);
+
+        _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
+        _animationManager.SetVector2("BS_Crouch/blend_position", flatInput);
+
+        if (!IsOnFloor())
+            _targetVelocity.Y -= _playerData.Gravity * (float)delta;
+        
+        if (movement != Vector3.Zero)
+        {
+            _targetVelocity.X = movement.X * _currentMoveSpeed;
+            _targetVelocity.Z = movement.Z * _currentMoveSpeed;
+        }
+        else
+        {
+            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _currentMoveSpeed);
+            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _currentMoveSpeed);
+        }
+    }
+
+    private void HandleGroundSignal()
+    {
+        if (IsOnFloor() && !_isGrounded)
+        {
+            _isGrounded = true;
+            EmitSignal(SignalName.OnGrounded);
+        }
+        else if (!IsOnFloor() && _isGrounded)
+        {
+            _isGrounded = false;
+            EmitSignal(SignalName.OnAir);
+        }
+    }
+
+    private void HandlePlayerState(Vector3 inputAxis)
+    {
+        switch(_playerState)
+        {
+            case PlayerState.Idle:
+                if (inputAxis.Length() > 0f)
+                    SwitchState(PlayerState.Walk);
+                break;
+            case PlayerState.Walk:
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+            case PlayerState.Run:
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.Idle);
+                break;
+        }
+    }
+
+    private void RegenStamina(float delta)
+    {
+        _currentStamina = Mathf.MoveToward(_currentStamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
+    }
+
+    private void DepleteStamina(float delta)
+    {
+        _currentStamina = Mathf.MoveToward(_currentStamina, 0f, _playerData.StaminaDepletionRate * delta);
+
+        if (_currentStamina <= 0f)
+            StopRun();
+    }
+
+    private void HandleStamina(float delta)
+    {
+        switch(_playerState)
+        {
+            case PlayerState.Run:
+                DepleteStamina((float)delta);
+                break;
+            default:
+                RegenStamina((float)delta);
+                break;
+        }
+    }
+    
+    private void SetInteractRaycastEnabled(bool enabled)
+    {
+        _interactionRaycast.Enabled = enabled;
+    }
+
+    private void Interact()
+    {
+        if (!_interactionRaycast.IsColliding())
+            return;
+
+        if (_interactionRaycast.GetCollider() is Interactable interactable)
+            interactable.Interact();
+    }
+
     public override void _Input(InputEvent @event)
     {
         if (!ControlledByPlayer)
@@ -278,11 +336,13 @@ public partial class PlayerController : CharacterBody3D
         {
             StopRun();
         }
-    }
-
-    private void OnGrounded()
-    {
-        _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
-        // _animationManager.RequestTransition("Trans_Jump/transition_request", "land");
+        else if (@event.IsActionPressed("interact"))
+        {
+            SetInteractRaycastEnabled(true);
+        }
+        else if (@event.IsActionReleased("interact"))
+        {
+            SetInteractRaycastEnabled(false);
+        }
     }
 }

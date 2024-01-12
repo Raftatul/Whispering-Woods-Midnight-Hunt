@@ -195,13 +195,14 @@ public partial class PlayerController : CharacterBody3D
         // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Crouch()
     {
         SwitchState(PlayerState.Crouch);
 
         _standUpCollider.Disabled = true;
-        _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "crouch");
-        // _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+        // _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "crouch");
+        _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
     }
 
     private bool CanUnCrouch()
@@ -209,6 +210,7 @@ public partial class PlayerController : CharacterBody3D
         return !_crouchRayCastChecker.IsColliding();
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void UnCrouch()
     {
         if (!CanUnCrouch())
@@ -218,8 +220,8 @@ public partial class PlayerController : CharacterBody3D
         
         _standUpCollider.Disabled = false;
 
-        _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "uncrouch");
-        // _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+        // _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "uncrouch");
+        _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
     }
 
     private void ToogleCrouch()
@@ -227,10 +229,12 @@ public partial class PlayerController : CharacterBody3D
         switch(_playerState)
         {
             case PlayerState.Crouch:
-                UnCrouch();
+                Rpc(MethodName.UnCrouch);
+                // UnCrouch();
                 break;
             default:
-                Crouch();
+                Rpc(MethodName.Crouch);
+                // Crouch();
                 break;
         }
     }

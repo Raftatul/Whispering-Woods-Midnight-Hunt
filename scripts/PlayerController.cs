@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-public partial class PlayerMovement : CharacterBody3D
+public partial class PlayerController : CharacterBody3D
 {
     [ExportCategory("Nodes")]
     [Export]
@@ -72,7 +72,7 @@ public partial class PlayerMovement : CharacterBody3D
 
         if (IsMultiplayerAuthority())
         {
-            (GetTree().Root.GetNode("MainMenu/Level/World/VoiceChat") as VoiceChat).SetAudioOutput(voiceOutput);
+            VoiceChat.Instance.SetAudioOutput(voiceOutput);
         }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;

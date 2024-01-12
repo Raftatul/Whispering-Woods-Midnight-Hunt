@@ -8,6 +8,8 @@ using System.Text;
 
 public partial class VoiceChat : Node3D
 {
+    public static VoiceChat Instance { get; private set; }
+
     [Export]
     private AudioStreamPlayer _audioStreamRecorder;
 
@@ -23,6 +25,7 @@ public partial class VoiceChat : Node3D
 
     public override void _Ready()
     {
+        Instance = this;
         Initialize();
     }
 

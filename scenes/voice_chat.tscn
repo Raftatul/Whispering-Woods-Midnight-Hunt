@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://dibk1vj0nup7d"]
+
+[ext_resource type="Script" path="res://scripts/VoiceChat.cs" id="1_x034o"]
+
+[sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_7hefe"]
+
+[node name="VoiceChat" type="Node3D" node_paths=PackedStringArray("_audioStreamRecorder")]
+script = ExtResource("1_x034o")
+_audioStreamRecorder = NodePath("MicInput")
+
+[node name="MicInput" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamMicrophone_7hefe")
+autoplay = true
+bus = &"Record"

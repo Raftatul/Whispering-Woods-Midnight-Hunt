@@ -137,7 +137,7 @@ public partial class SceneManager : CanvasLayer
 
     private void AddPlayer(long id = 1)
     {
-        var player = PlayerScene.Instantiate() as PlayerMovement;
+        var player = PlayerScene.Instantiate() as PlayerController;
         player.Name = id.ToString();
         player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
         _level.GetChild(0).AddChild(player);

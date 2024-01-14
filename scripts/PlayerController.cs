@@ -305,7 +305,6 @@ public partial class PlayerController : CharacterBody3D
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Interact()
     {
         _interactionRaycast.Enabled = true;
@@ -321,7 +320,7 @@ public partial class PlayerController : CharacterBody3D
             return;
 
         if (_interactionRaycast.GetCollider() is IInteractable interactable)
-            interactable.Interact();
+            interactable.Rpc(nameof(IInteractable.Interact));
     }
 
     public override void _Input(InputEvent @event)
@@ -353,7 +352,7 @@ public partial class PlayerController : CharacterBody3D
         }
         else if (@event.IsActionPressed("interact"))
         {
-            Rpc(MethodName.Interact);
+            Interact();
         }
     }
 }

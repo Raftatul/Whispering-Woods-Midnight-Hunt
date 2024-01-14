@@ -2,14 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://b2hio1hj1x2iu" path="res://scenes/interface/multiplayer/player_card.tscn" id="1_2wl7p"]
 [ext_resource type="Script" path="res://scripts/SceneManager.cs" id="1_jk5bo"]
-[ext_resource type="Script" path="res://scripts/interface/multiplayer/StartMenu.cs" id="1_ncc4i"]
+[ext_resource type="Script" path="res://scripts/ux/multiplayer/StartMenu.cs" id="1_ncc4i"]
 [ext_resource type="Texture2D" uid="uid://cffqlgd20cf0y" path="res://assets/sprites/interface/cogwheel.png" id="2_4yofa"]
 [ext_resource type="PackedScene" uid="uid://cyjexb66xuosq" path="res://scenes/interface/multiplayer/lobby_element.tscn" id="2_6p8nt"]
-[ext_resource type="Script" path="res://scripts/interface/general/TransitionButton.cs" id="3_y82su"]
+[ext_resource type="Script" path="res://scripts/ux/general/TransitionButton.cs" id="3_y82su"]
 [ext_resource type="PackedScene" uid="uid://cj8vo15g1p7td" path="res://scenes/player.tscn" id="4_5wyhn"]
 [ext_resource type="PackedScene" uid="uid://b3gphftdi5nf7" path="res://scenes/maps/main.tscn" id="5_7plw1"]
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
-[ext_resource type="Script" path="res://scripts/interface/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
+[ext_resource type="Script" path="res://scripts/ux/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
 [node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "LobbyListContainer", "PlayerListContainer")]

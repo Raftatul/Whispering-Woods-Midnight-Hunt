@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d1s842vxbge4y"]
 
-[ext_resource type="Script" path="res://scripts/interface/multiplayer/ChatBox.cs" id="1_d6m43"]
+[ext_resource type="Script" path="res://scripts/ux/multiplayer/ChatBox.cs" id="1_d6m43"]
 
 [node name="Control" type="Control" node_paths=PackedStringArray("ChatInput", "SendButton", "ChatHistory")]
 layout_mode = 3

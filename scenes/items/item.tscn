@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://becyt0ajbw0ee"]
+[gd_scene load_steps=5 format=3 uid="uid://becyt0ajbw0ee"]
 
-[ext_resource type="Script" path="res://scripts/items/Interactable.cs" id="1_si3q0"]
 [ext_resource type="Script" path="res://scripts/items/Item.cs" id="1_vvil5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_oop3x"]
@@ -12,12 +11,9 @@ albedo_color = Color(1, 0, 0, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_s4uvk"]
 size = Vector3(0.25, 0.25, 0.25)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_usqwk"]
-size = Vector3(0.25, 0.25, 0.25)
-
-[node name="RigidBody3D" type="RigidBody3D" node_paths=PackedStringArray("_interactable")]
+[node name="RigidBody3D" type="RigidBody3D"]
+collision_layer = 2147483649
 script = ExtResource("1_vvil5")
-_interactable = NodePath("Interactable")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_oop3x")
@@ -25,13 +21,4 @@ shape = SubResource("BoxShape3D_oop3x")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = SubResource("StandardMaterial3D_cr83j")
 mesh = SubResource("BoxMesh_s4uvk")
-skeleton = NodePath("../Interactable")
-
-[node name="Interactable" type="Area3D" parent="."]
-collision_layer = 2147483648
-collision_mask = 0
-script = ExtResource("1_si3q0")
-_interactionDelay = 0.25
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
-shape = SubResource("BoxShape3D_usqwk")
+skeleton = NodePath("")

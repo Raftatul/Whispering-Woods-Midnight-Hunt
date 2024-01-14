@@ -1,13 +1,10 @@
 using Godot;
 using System;
 
-public partial class Item : RigidBody3D
+public partial class Item : RigidBody3D, IInteractable
 {
-    [Export]
-    private Interactable _interactable;
-
-    public override void _Ready()
+    public void Interact()
     {
-        _interactable.OnInteracted += () => GD.Print("Interacted with " + Name);
+        QueueFree();
     }
 }

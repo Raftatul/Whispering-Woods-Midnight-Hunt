@@ -116,9 +116,6 @@ public partial class PlayerController : CharacterBody3D
         HandlePlayerState(inputAxis);
         HandleStamina((float)delta);
 
-        if (_interactionRaycast.Enabled)
-            Interact();
-
         Velocity = _targetVelocity;
         MoveAndSlide();
 
@@ -307,18 +304,23 @@ public partial class PlayerController : CharacterBody3D
                 break;
         }
     }
-    
-    private void SetInteractRaycastEnabled(bool enabled)
+
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    private void Interact()
     {
-        _interactionRaycast.Enabled = enabled;
+        _interactionRaycast.Enabled = true;
+
+        CallDeferred(MethodName.DeferredInteraction);
+        
+        _interactionRaycast.SetDeferred("enabled", false);
     }
 
-    private void Interact()
+    private void DeferredInteraction()
     {
         if (!_interactionRaycast.IsColliding())
             return;
 
-        if (_interactionRaycast.GetCollider() is Interactable interactable)
+        if (_interactionRaycast.GetCollider() is IInteractable interactable)
             interactable.Interact();
     }
 
@@ -351,11 +353,7 @@ public partial class PlayerController : CharacterBody3D
         }
         else if (@event.IsActionPressed("interact"))
         {
-            SetInteractRaycastEnabled(true);
-        }
-        else if (@event.IsActionReleased("interact"))
-        {
-            SetInteractRaycastEnabled(false);
+            Rpc(MethodName.Interact);
         }
     }
 }

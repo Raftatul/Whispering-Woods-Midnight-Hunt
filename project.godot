@@ -31,6 +31,10 @@ window/stretch/mode="canvas_items"
 
 project/assembly_name="DbD"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/proton_scatter/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+
 [file_customization]
 
 folder_colors={
@@ -40,6 +44,10 @@ folder_colors={
 "res://scenes/": "blue",
 "res://scripts/": "red"
 }
+
+[filesystem]
+
+import/blender/enabled=false
 
 [gui]
 

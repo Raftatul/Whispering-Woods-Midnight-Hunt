@@ -18,10 +18,13 @@ public partial class PlayerController : CharacterBody3D
     private RayCast3D _crouchRayCastChecker;
 
     [Export]
-    private RayCast3D _interactionRaycast;
+    private InteractionRaycast _interactionRaycast;
 
     [Export]
     private AnimationManager _animationManager;
+
+    [Export]
+    private Node3D _mesh;
 
     [ExportCategory("Player Data")]
     [Export]
@@ -33,8 +36,6 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     private PlayerData _playerData;
 
-    private bool _isGrounded = true;
-
     public bool ControlledByPlayer { get; set; } = false;
 
     private Vector3 _targetVelocity = Vector3.Zero;
@@ -43,7 +44,7 @@ public partial class PlayerController : CharacterBody3D
 
     public enum PlayerState
     {
-        Idle, Walk, Run, Crouch
+        IDLE, WALK, RUN, CROUCH, AIR
     }
 
     private PlayerState _playerState;
@@ -83,11 +84,12 @@ public partial class PlayerController : CharacterBody3D
         if (IsMultiplayerAuthority())
         {
             VoiceChat.Instance.SetAudioOutput(voiceOutput);
+            // _mesh.Visible = false;
         }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
-        SwitchState(PlayerState.Idle);
+        SwitchState(PlayerState.IDLE);
         ConnectSignals();
     }
 
@@ -95,8 +97,6 @@ public partial class PlayerController : CharacterBody3D
     {
         OnGrounded += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
         OnAir += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
-
-        // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");   
     }
 
     public override void _PhysicsProcess(double delta)
@@ -118,16 +118,6 @@ public partial class PlayerController : CharacterBody3D
 
         Velocity = _targetVelocity;
         MoveAndSlide();
-
-        // for (int i = 0; i < GetSlideCollisionCount(); i++)
-        // {
-        //     var col = GetSlideCollision(i);
-        //     if (col.GetCollider() is RigidBody3D truc)
-        //     {
-        //         truc.ApplyCentralImpulse(-col.GetNormal() * 0.3f);
-        //         // truc.ApplyImpulse(-col.GetNormal() * 0.01f, col.GetPosition());
-        //     }
-        // }
     }
 
     private void SwitchState(PlayerState newState)
@@ -136,16 +126,16 @@ public partial class PlayerController : CharacterBody3D
 
         switch (_playerState)
         {
-            case PlayerState.Idle:
+            case PlayerState.IDLE:
                 _currentMoveSpeed = 0f;
                 break;
-            case PlayerState.Walk:
+            case PlayerState.WALK:
                 _currentMoveSpeed = _playerData.WalkSpeed;
                 break;
-            case PlayerState.Run:
+            case PlayerState.RUN:
                 _currentMoveSpeed = _playerData.RunSpeed;
                 break;
-            case PlayerState.Crouch:
+            case PlayerState.CROUCH:
                 _currentMoveSpeed = _playerData.CrouchSpeed;
                 break;
         }
@@ -162,16 +152,14 @@ public partial class PlayerController : CharacterBody3D
     {
         _targetVelocity.Y = _playerData.JumpForce;
         _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
-        // _animationManager.RequestTransition("Trans_Jump/transition_request", "jump");
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void Crouch()
     {
-        SwitchState(PlayerState.Crouch);
+        SwitchState(PlayerState.CROUCH);
 
         _standUpCollider.Disabled = true;
-        // _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "crouch");
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
     }
 
@@ -186,11 +174,10 @@ public partial class PlayerController : CharacterBody3D
         if (!CanUnCrouch())
             return;
         
-        SwitchState(PlayerState.Idle);
+        SwitchState(PlayerState.IDLE);
         
         _standUpCollider.Disabled = false;
 
-        // _animationManager.Rpc("RequestTransition", "Trans_Crouch/transition_request", "uncrouch");
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
     }
 
@@ -198,27 +185,31 @@ public partial class PlayerController : CharacterBody3D
     {
         switch(_playerState)
         {
-            case PlayerState.Crouch:
+            case PlayerState.CROUCH:
                 Rpc(MethodName.UnCrouch);
-                // UnCrouch();
                 break;
             default:
                 Rpc(MethodName.Crouch);
-                // Crouch();
                 break;
         }
     }
 
     private void StartRun()
     {
+        if (_playerState == PlayerState.AIR)
+            return;
+        
         UnCrouch();
 
-        SwitchState(PlayerState.Run);
+        SwitchState(PlayerState.RUN);
     }
 
     private void StopRun()
     {
-        SwitchState(_targetVelocity.Length() > 0f ? PlayerState.Walk : PlayerState.Idle);
+        if (_playerState == PlayerState.AIR)
+            return;
+        
+        SwitchState(_targetVelocity.Length() > 0f ? PlayerState.WALK : PlayerState.IDLE);
     }
 
     private void HandleVelocity(Vector3 inputAxis, float delta)
@@ -248,14 +239,18 @@ public partial class PlayerController : CharacterBody3D
 
     private void HandleGroundSignal()
     {
-        if (IsOnFloor() && !_isGrounded)
+        bool isOnFloor = IsOnFloor();
+
+        if (isOnFloor && _playerState == PlayerState.AIR)
         {
-            _isGrounded = true;
+            _playerState = PlayerState.IDLE;
+
             EmitSignal(SignalName.OnGrounded);
         }
-        else if (!IsOnFloor() && _isGrounded)
+        else if (!isOnFloor && _playerState != PlayerState.AIR)
         {
-            _isGrounded = false;
+            _playerState = PlayerState.AIR;
+
             EmitSignal(SignalName.OnAir);
         }
     }
@@ -264,17 +259,17 @@ public partial class PlayerController : CharacterBody3D
     {
         switch(_playerState)
         {
-            case PlayerState.Idle:
+            case PlayerState.IDLE:
                 if (inputAxis.Length() > 0f)
-                    SwitchState(PlayerState.Walk);
+                    SwitchState(PlayerState.WALK);
                 break;
-            case PlayerState.Walk:
+            case PlayerState.WALK:
                 if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.Idle);
+                    SwitchState(PlayerState.IDLE);
                 break;
-            case PlayerState.Run:
+            case PlayerState.RUN:
                 if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.Idle);
+                    SwitchState(PlayerState.IDLE);
                 break;
         }
     }
@@ -293,25 +288,16 @@ public partial class PlayerController : CharacterBody3D
     }
 
     private void HandleStamina(float delta)
-    {
+    {       
         switch(_playerState)
         {
-            case PlayerState.Run:
+            case PlayerState.RUN:
                 DepleteStamina((float)delta);
                 break;
             default:
                 RegenStamina((float)delta);
                 break;
         }
-    }
-
-    private void Interact()
-    {
-        _interactionRaycast.Enabled = true;
-
-        CallDeferred(MethodName.DeferredInteraction);
-        
-        _interactionRaycast.SetDeferred("enabled", false);
     }
 
     private void DeferredInteraction()
@@ -346,13 +332,13 @@ public partial class PlayerController : CharacterBody3D
         {
             StartRun();
         }
-        else if (@event.IsActionReleased("run") && _playerState == PlayerState.Run)
+        else if (@event.IsActionReleased("run") && _playerState == PlayerState.RUN)
         {
             StopRun();
         }
         else if (@event.IsActionPressed("interact"))
         {
-            Interact();
+            _interactionRaycast.Interact();
         }
     }
 }

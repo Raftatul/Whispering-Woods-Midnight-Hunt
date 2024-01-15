@@ -62,4 +62,13 @@ mesh = SubResource("BoxMesh_spm36")
 [node name="VoiceChat" parent="." instance=ExtResource("2_brv5t")]
 
 [node name="RigidBody3D" parent="." instance=ExtResource("3_v6c13")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.45962, 1.4526, -1.65667)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.45962, 1.4526, -2.03034)
+
+[node name="RigidBody3D2" parent="." node_paths=PackedStringArray("_interactable") instance=ExtResource("3_v6c13")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.73572, 1.4526, -2.03708)
+_interactable = NodePath("../RigidBody3D/IInteractable")
+
+[node name="IInteractable" parent="RigidBody3D2" index="2"]
+InteractionText = "Hold"
+
+[editable path="RigidBody3D2"]

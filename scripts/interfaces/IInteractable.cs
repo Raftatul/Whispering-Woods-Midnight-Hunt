@@ -4,6 +4,9 @@ using System;
 [GlobalClass]
 public partial class IInteractable : Area3D
 {
+    [Export]
+    public string InteractionText = "Interact";
+
     [Signal]
     public delegate void InteractedEventHandler();
 

@@ -36,8 +36,6 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     private PlayerData _playerData;
 
-    public bool ControlledByPlayer { get; set; } = false;
-
     private Vector3 _targetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
@@ -72,7 +70,6 @@ public partial class PlayerController : CharacterBody3D
 
     public override void _Ready()
     {
-        ControlledByPlayer = IsMultiplayerAuthority();
         PlayerCamera.Current = IsMultiplayerAuthority();
 
         AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
@@ -311,10 +308,9 @@ public partial class PlayerController : CharacterBody3D
 
     public override void _Input(InputEvent @event)
     {
-        if (!ControlledByPlayer)
-        {
+        if (!IsMultiplayerAuthority())
             return;
-        }
+        
         if (@event is InputEventMouseMotion mouseMotion)
         {
             CameraRotation(mouseMotion.Relative);

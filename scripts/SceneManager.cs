@@ -33,6 +33,13 @@ public partial class SceneManager : CanvasLayer
     [Export]
     public VBoxContainer PlayerListContainer { get; set; }
 
+    [ExportCategory("Menu")]
+    [Export]
+    private Control _startMenu;
+
+    [Export]
+    private Control _lobbyMenu;
+
     [ExportCategory("PackedScene")]
     [Export]
     public PackedScene LobbyElementScene { get; set; }
@@ -53,6 +60,10 @@ public partial class SceneManager : CanvasLayer
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
         SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
         SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
+
+        SteamMatchmaking.OnLobbyCreated += (result, lobby) => _startMenu.Visible = false;
+        SteamMatchmaking.OnLobbyCreated += (result, lobby) => _lobbyMenu.Visible = true;
+
         DataParser.OnJoin += JoinServer;
 
         //UI
@@ -135,6 +146,10 @@ public partial class SceneManager : CanvasLayer
     public void BackButtonPressed()
     {
         GD.Print("BackButtonPressed");
+
+        _startMenu.Visible = true;
+        _lobbyMenu.Visible = false;
+
         SteamManager.Instance.LeaveLobby();
     }
 

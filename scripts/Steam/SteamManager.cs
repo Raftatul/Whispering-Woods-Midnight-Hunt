@@ -290,7 +290,6 @@ public partial class SteamManager : Node
     internal void LeaveLobby()
     {     
         hostedLobby.Leave();
-
     }
 
 

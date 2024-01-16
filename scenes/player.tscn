@@ -289,7 +289,7 @@ node_connections = [&"B_Look", 0, &"Trans_Jump", &"B_Look", 1, &"BS_Look", &"Ble
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_standUpCollider", "_crouchRayCastChecker", "_interactionRaycast", "_animationManager", "_crouchAnimationPlayer", "_walkAnimationPlayer", "_mesh", "_stateDebug")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_standUpCollider", "_crouchRayCastChecker", "_interactionRaycast", "_animationManager", "_crouchAnimationPlayer", "_walkAnimationPlayer", "_mesh")]
 collision_layer = 0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
@@ -303,7 +303,6 @@ _animationManager = NodePath("Root Scene/AnimationTree")
 _crouchAnimationPlayer = NodePath("CameraParent/CrouchAnimationPlayer")
 _walkAnimationPlayer = NodePath("CameraParent/WalkAnimationPlayer")
 _mesh = NodePath("Root Scene")
-_stateDebug = NodePath("")
 _playerData = ExtResource("2_dqpa7")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
@@ -349,9 +348,9 @@ bones/0/position = Vector3(0.000764229, 0.505327, 2.67755e-06)
 bones/0/rotation = Quaternion(0.184406, -0.349852, 0.116618, 0.911042)
 bones/1/rotation = Quaternion(0.0881608, -0.0249612, -0.0120089, 0.995721)
 bones/2/rotation = Quaternion(0.0895365, -0.0544951, -0.0422086, 0.993596)
-bones/3/rotation = Quaternion(0.0102515, 0.00433381, 0.0140208, 0.99984)
-bones/4/rotation = Quaternion(0.04978, -0.00203408, 0.00327776, 0.998753)
-bones/5/rotation = Quaternion(-0.0737686, 0.00736389, -0.00168199, 0.997247)
+bones/3/rotation = Quaternion(0.0109223, 0.00491144, 0.0144382, 0.999824)
+bones/4/rotation = Quaternion(0.0529779, -0.00182388, 0.00276535, 0.99859)
+bones/5/rotation = Quaternion(-0.0737641, 0.00884378, -0.00134632, 0.997236)
 bones/5/scale = Vector3(1.00048, 1.00048, 1.00048)
 bones/7/rotation = Quaternion(0.466464, -0.372621, -0.644864, -0.477196)
 bones/8/rotation = Quaternion(-0.112094, 0.964987, -0.232356, -0.0473983)

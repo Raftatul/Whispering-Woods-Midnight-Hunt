@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://cj8vo15g1p7td"]
+[gd_scene load_steps=59 format=3 uid="uid://cj8vo15g1p7td"]
 
 [ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1_83cig"]
 [ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
@@ -21,6 +21,7 @@
 [ext_resource type="AnimationLibrary" uid="uid://bfggjquonriqm" path="res://assets/meshs/player/Basic Locomotion Pack/Male Crouch Pose.fbx" id="12_veq4k"]
 [ext_resource type="AnimationLibrary" uid="uid://c1uk1nw8pp02" path="res://assets/meshs/player/Basic Locomotion Pack/Male Sitting Pose.fbx" id="13_rl7rt"]
 [ext_resource type="Script" path="res://scripts/AnimationManager.cs" id="18_g1naw"]
+[ext_resource type="AudioStream" uid="uid://utnwe5i0cisr" path="res://assets/sfx/footstep-1-83098.mp3" id="22_s4758"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_at2ia"]
 radius = 0.3
@@ -29,6 +30,99 @@ height = 1.8
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8oaih"]
 radius = 0.3
 height = 1.0
+
+[sub_resource type="Animation" id="Animation_sp5a2"]
+resource_name = "Crouch"
+length = 0.25
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5, 0), Vector3(0, 0.75, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_8crqm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.5, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_37f1j"]
+_data = {
+"Crouch": SubResource("Animation_sp5a2"),
+"RESET": SubResource("Animation_8crqm")
+}
+
+[sub_resource type="Animation" id="Animation_m8lrf"]
+resource_name = "Walk"
+loop_mode = 1
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.1, 0), Vector3(0, 0, 0), Vector3(0, 0.1, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Audio/AudioStreamPlayer3D")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [0.0],
+"method": &"play"
+}, {
+"args": [0.0],
+"method": &"play"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_60xi4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fcqj8"]
+_data = {
+"RESET": SubResource("Animation_60xi4"),
+"Walk": SubResource("Animation_m8lrf")
+}
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ns86g"]
 animation = &"Female Crouch Pose/mixamo_com"
@@ -195,17 +289,19 @@ properties/4/replication_mode = 2
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_standUpCollider", "_crouchRayCastChecker", "_interactionRaycast", "_animationManager", "_mesh")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_standUpCollider", "_crouchRayCastChecker", "_interactionRaycast", "_animationManager", "_crouchAnimationPlayer", "_walkAnimationPlayer", "_mesh")]
 collision_layer = 0
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
 script = ExtResource("1_83cig")
-PlayerCamera = NodePath("Camera3D")
+PlayerCamera = NodePath("CameraParent/Camera3D")
 _standUpCollider = NodePath("StandUpCollider")
 _crouchRayCastChecker = NodePath("UnCrouchRaycast")
-_interactionRaycast = NodePath("Camera3D/InteractRaycast")
+_interactionRaycast = NodePath("CameraParent/Camera3D/InteractRaycast")
 _animationManager = NodePath("Root Scene/AnimationTree")
+_crouchAnimationPlayer = NodePath("CameraParent/CrouchAnimationPlayer")
+_walkAnimationPlayer = NodePath("CameraParent/WalkAnimationPlayer")
 _mesh = NodePath("Root Scene")
 _playerData = ExtResource("2_dqpa7")
 
@@ -217,34 +313,46 @@ shape = SubResource("CapsuleShape3D_at2ia")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_8oaih")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0153281, 1.58793, 0.0076093)
+[node name="CameraParent" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraParent"]
 fov = 90.0
 
-[node name="InteractRaycast" type="RayCast3D" parent="Camera3D" node_paths=PackedStringArray("_label")]
+[node name="InteractRaycast" type="RayCast3D" parent="CameraParent/Camera3D" node_paths=PackedStringArray("_label")]
 target_position = Vector3(0, 0, -1)
 collision_mask = 2147483648
 collide_with_areas = true
 collide_with_bodies = false
 script = ExtResource("3_ffqdy")
-_label = NodePath("../../CanvasLayer/Control/Label")
+_label = NodePath("../../../CanvasLayer/Control/Label")
+
+[node name="CrouchAnimationPlayer" type="AnimationPlayer" parent="CameraParent"]
+libraries = {
+"": SubResource("AnimationLibrary_37f1j")
+}
+
+[node name="WalkAnimationPlayer" type="AnimationPlayer" parent="CameraParent"]
+libraries = {
+"": SubResource("AnimationLibrary_fcqj8")
+}
 
 [node name="Root Scene" parent="." instance=ExtResource("3_pbseb")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="GeneralSkeleton" parent="Root Scene/RootNode" index="0"]
-bones/0/position = Vector3(-0.00348357, 1.0346, 0.0213221)
-bones/0/rotation = Quaternion(-0.0350268, -0.0444409, -0.0258372, 0.998063)
-bones/1/rotation = Quaternion(0.0248936, 0.0144015, 0.0251635, 0.99927)
-bones/2/rotation = Quaternion(0.00914852, 0.00366705, 0.014243, 0.99985)
-bones/3/rotation = Quaternion(0.00844877, 0.00373949, 0.014093, 0.999858)
-bones/4/rotation = Quaternion(0.0451482, -0.00165245, 0.00519998, 0.998966)
-bones/5/rotation = Quaternion(-0.0656053, 0.0112435, -0.00239022, 0.997779)
+bones/0/position = Vector3(-0.00424316, 1.03357, 0.0206166)
+bones/0/rotation = Quaternion(-0.0352504, -0.044743, -0.0281745, 0.997979)
+bones/1/rotation = Quaternion(0.0324692, 0.0167868, 0.0258274, 0.998998)
+bones/2/rotation = Quaternion(0.0102941, 0.00405581, 0.0141482, 0.999839)
+bones/3/rotation = Quaternion(0.00996082, 0.00422928, 0.0141285, 0.999842)
+bones/4/rotation = Quaternion(0.0506242, -0.002197, 0.00302957, 0.998711)
+bones/5/rotation = Quaternion(-0.0744676, 0.00680471, -0.00157975, 0.997199)
 bones/5/scale = Vector3(1.00048, 1.00048, 1.00048)
-bones/7/rotation = Quaternion(0.478285, -0.477403, -0.632676, -0.378221)
-bones/8/rotation = Quaternion(-0.15089, 0.828331, -0.494076, 0.216768)
-bones/9/rotation = Quaternion(0.0409477, 0.70592, -0.0409475, 0.70592)
-bones/10/rotation = Quaternion(0.0418698, -0.57177, 0.0360195, 0.818553)
+bones/7/rotation = Quaternion(0.474922, -0.479374, -0.638142, -0.370709)
+bones/8/rotation = Quaternion(-0.147076, 0.827992, -0.496607, 0.214896)
+bones/9/rotation = Quaternion(0.0407475, 0.705932, -0.0407474, 0.705932)
+bones/10/rotation = Quaternion(0.0409786, -0.569302, 0.0359869, 0.820318)
 bones/11/rotation = Quaternion(-0.0367837, 0.0144657, 0.00205623, 0.999216)
 bones/12/rotation = Quaternion(-0.121712, -0.819574, 0.0371682, 0.558662)
 bones/13/rotation = Quaternion(0.0455454, 0.0460794, 0.161693, 0.984712)
@@ -264,10 +372,10 @@ bones/26/rotation = Quaternion(-5.96046e-08, -5.96046e-08, -5.96046e-08, 1)
 bones/27/rotation = Quaternion(0.228493, 0.00340284, 0.0429808, 0.97259)
 bones/28/rotation = Quaternion(0.151548, 1.49012e-08, 0.0123456, 0.988373)
 bones/29/rotation = Quaternion(0.143773, 4.47035e-08, 0.011712, 0.989541)
-bones/31/rotation = Quaternion(0.458781, 0.499905, 0.627346, -0.382168)
-bones/32/rotation = Quaternion(0.122537, 0.797687, -0.576652, -0.127089)
-bones/33/rotation = Quaternion(0.00994333, -0.707037, 0.00994342, 0.707037)
-bones/34/rotation = Quaternion(0.0549596, 0.482592, -0.0206876, 0.873875)
+bones/31/rotation = Quaternion(0.458463, 0.498388, 0.633821, -0.373754)
+bones/32/rotation = Quaternion(0.125792, 0.80508, -0.566763, -0.121666)
+bones/33/rotation = Quaternion(0.00953986, -0.707042, 0.00953992, 0.707042)
+bones/34/rotation = Quaternion(0.0521445, 0.475727, -0.013128, 0.877948)
 bones/35/rotation = Quaternion(-0.0420415, -0.0049842, -0.0190791, 0.998921)
 bones/36/rotation = Quaternion(-0.152845, 0.81215, -0.014813, 0.562877)
 bones/37/rotation = Quaternion(0.0400129, -0.0528763, -0.128588, 0.989479)
@@ -288,24 +396,14 @@ bones/51/rotation = Quaternion(0.233867, -0.00350587, -0.0490091, 0.971026)
 bones/52/rotation = Quaternion(0.151258, -2.5332e-07, -0.0155007, 0.988373)
 bones/53/rotation = Quaternion(0.143498, -1.3411e-07, -0.0147054, 0.989541)
 bones/54/rotation = Quaternion(1.49012e-08, -1.49012e-08, -4.47035e-08, 1)
-bones/55/rotation = Quaternion(-0.0935085, -0.0113389, 0.995235, -0.0252053)
-bones/56/rotation = Quaternion(0.0337549, 0.993897, -0.0641669, -0.0831365)
-bones/57/rotation = Quaternion(0.0108532, 0.680073, -0.732484, -0.0291599)
-bones/58/rotation = Quaternion(-7.38345e-08, 0.998154, 0.0607424, 1.26848e-08)
-bones/60/rotation = Quaternion(0.134626, 0.0677016, 0.985909, -0.07263)
-bones/61/rotation = Quaternion(-0.0388371, 0.994676, -0.0944198, 0.0140261)
-bones/62/rotation = Quaternion(-0.0415899, 0.715488, -0.695659, 0.0490476)
+bones/55/rotation = Quaternion(-0.0923349, -0.00780184, 0.99529, -0.0284787)
+bones/56/rotation = Quaternion(0.0351496, 0.99332, -0.0721388, -0.082919)
+bones/57/rotation = Quaternion(0.0105636, 0.677839, -0.734529, -0.0298309)
+bones/58/rotation = Quaternion(-2.20912e-08, 0.998082, 0.0619092, 1.34828e-08)
+bones/60/rotation = Quaternion(0.138428, 0.0739416, 0.98462, -0.0767747)
+bones/61/rotation = Quaternion(-0.0378363, 0.993626, -0.105819, 0.00882888)
+bones/62/rotation = Quaternion(-0.041169, 0.712388, -0.698878, 0.0487671)
 bones/63/rotation = Quaternion(-8.69504e-08, 0.999075, 0.0429962, 3.86257e-09)
-
-[node name="BoneAttachment3D" type="BoneAttachment3D" parent="Root Scene/RootNode/GeneralSkeleton" index="2"]
-transform = Transform3D(0.998144, -0.0624938, -0.0276142, 0.0632958, 0.998049, 0.0292046, 0.0257229, -0.0308835, 0.999672, -0.0153281, 1.58793, -0.0076093)
-bone_name = "Head"
-bone_idx = 5
-
-[node name="RemoteTransform3D" type="RemoteTransform3D" parent="Root Scene/RootNode/GeneralSkeleton/BoneAttachment3D"]
-remote_path = NodePath("../../../../../Camera3D")
-update_rotation = false
-update_scale = false
 
 [node name="AnimationPlayer" parent="Root Scene" index="1"]
 libraries = {
@@ -401,5 +499,11 @@ text = "[E] Interact"
 label_settings = SubResource("LabelSettings_7xhta")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Audio" type="Node3D" parent="."]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Audio"]
+stream = ExtResource("22_s4758")
+bus = &"SFX"
 
 [editable path="Root Scene"]

@@ -24,6 +24,12 @@ public partial class PlayerController : CharacterBody3D
     private AnimationManager _animationManager;
 
     [Export]
+    private AnimationPlayer _crouchAnimationPlayer;
+
+    [Export]
+    private AnimationPlayer _walkAnimationPlayer;
+
+    [Export]
     private Node3D _mesh;
 
     [ExportCategory("Player Data")]
@@ -42,7 +48,7 @@ public partial class PlayerController : CharacterBody3D
 
     public enum PlayerState
     {
-        IDLE, WALK, RUN, CROUCH, AIR
+        IDLE, WALK, RUN, CROUCH, AIR, CROUCH_WALK
     }
 
     private PlayerState _playerState;
@@ -81,7 +87,7 @@ public partial class PlayerController : CharacterBody3D
         if (IsMultiplayerAuthority())
         {
             VoiceChat.Instance.SetAudioOutput(voiceOutput);
-            // _mesh.Visible = false;
+            _mesh.Visible = false;
         }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
@@ -125,15 +131,23 @@ public partial class PlayerController : CharacterBody3D
         {
             case PlayerState.IDLE:
                 _currentMoveSpeed = 0f;
+                _walkAnimationPlayer.Pause();
                 break;
             case PlayerState.WALK:
                 _currentMoveSpeed = _playerData.WalkSpeed;
+                _walkAnimationPlayer.Play("Walk");
                 break;
             case PlayerState.RUN:
                 _currentMoveSpeed = _playerData.RunSpeed;
+                _walkAnimationPlayer.Play("Walk", customSpeed: 2f);
                 break;
             case PlayerState.CROUCH:
+                _currentMoveSpeed = 0f;
+                _walkAnimationPlayer.Pause();
+                break;
+            case PlayerState.CROUCH_WALK:
                 _currentMoveSpeed = _playerData.CrouchSpeed;
+                _walkAnimationPlayer.Play("Walk", customSpeed: 1.25f);
                 break;
         }
     }
@@ -158,6 +172,7 @@ public partial class PlayerController : CharacterBody3D
 
         _standUpCollider.Disabled = true;
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+        _crouchAnimationPlayer.Play("Crouch");
     }
 
     private bool CanUnCrouch()
@@ -176,6 +191,7 @@ public partial class PlayerController : CharacterBody3D
         _standUpCollider.Disabled = false;
 
         _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+        _crouchAnimationPlayer.PlayBackwards("Crouch");
     }
 
     private void ToogleCrouch()
@@ -183,6 +199,9 @@ public partial class PlayerController : CharacterBody3D
         switch(_playerState)
         {
             case PlayerState.CROUCH:
+                Rpc(MethodName.UnCrouch);
+                break;
+            case PlayerState.CROUCH_WALK:
                 Rpc(MethodName.UnCrouch);
                 break;
             default:
@@ -196,7 +215,8 @@ public partial class PlayerController : CharacterBody3D
         if (_playerState == PlayerState.AIR)
             return;
         
-        UnCrouch();
+        if(_playerState == PlayerState.CROUCH || _playerState == PlayerState.CROUCH_WALK)
+            UnCrouch();
 
         SwitchState(PlayerState.RUN);
     }
@@ -267,6 +287,14 @@ public partial class PlayerController : CharacterBody3D
             case PlayerState.RUN:
                 if (inputAxis.Length() == 0f)
                     SwitchState(PlayerState.IDLE);
+                break;
+            case PlayerState.CROUCH:
+                if (inputAxis.Length() > 0f)
+                    SwitchState(PlayerState.CROUCH_WALK);
+                break;
+            case PlayerState.CROUCH_WALK:
+                if (inputAxis.Length() == 0f)
+                    SwitchState(PlayerState.CROUCH);
                 break;
         }
     }

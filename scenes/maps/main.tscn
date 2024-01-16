@@ -1,6 +1,5 @@
-[gd_scene load_steps=10 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=8 format=3 uid="uid://b3gphftdi5nf7"]
 
-[ext_resource type="AudioStream" uid="uid://dq0dpy7q4wndv" path="res://assets/y2mate.com - Lethal Company Soundtrack  Boombox Song 5.mp3" id="1_61nmp"]
 [ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
 [ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_v6c13"]
 
@@ -23,8 +22,6 @@ adjustment_contrast = 8.0
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_00qao"]
 data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_spm36"]
 
 [node name="World" type="Node3D"]
 
@@ -51,13 +48,6 @@ shape = SubResource("ConcavePolygonShape3D_00qao")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/player.tscn")
 spawn_path = NodePath("..")
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.59737, 1.99657, -4.22717)
-stream = ExtResource("1_61nmp")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="AudioStreamPlayer3D"]
-mesh = SubResource("BoxMesh_spm36")
 
 [node name="VoiceChat" parent="." instance=ExtResource("2_brv5t")]
 

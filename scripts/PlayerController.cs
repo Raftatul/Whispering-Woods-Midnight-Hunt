@@ -164,6 +164,11 @@ public partial class PlayerController : CharacterBody3D
 
     private void Jump()
     {
+        if (!CanUnCrouch())
+            return;
+        
+        Rpc(MethodName.UnCrouch);
+        
         _targetVelocity.Y = _playerData.JumpForce;
         _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
     }

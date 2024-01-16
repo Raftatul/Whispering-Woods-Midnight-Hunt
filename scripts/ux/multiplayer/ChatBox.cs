@@ -12,16 +12,20 @@ public partial class ChatBox : Control
     [Export]
     public RichTextLabel ChatHistory { get; set; }
 
-    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         DataParser.OnChatMessageReceived += OnChatMessageCallback;
         SendButton.Pressed += OnSendButtonPressed;
+
+        ChatHistory.ScrollFollowing = true;
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    public override void _Input(InputEvent @event)
     {
+        if (@event.IsActionPressed("ui_text_completion_accept"))
+        {
+            OnSendButtonPressed();
+        }
     }
 
     public void OnSendButtonPressed()
@@ -39,6 +43,7 @@ public partial class ChatBox : Control
             if (SteamManager.Instance.IsHost)
             {
                 SteamManager.Instance.SendMessageToAll(json);
+                ChatInput.Text = "";
             }
             else
             {

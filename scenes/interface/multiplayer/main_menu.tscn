@@ -198,10 +198,7 @@ theme_override_font_sizes/font_size = 32
 text = "Back"
 
 [node name="Control" parent="Control/LobbyMenu" instance=ExtResource("9_iah38")]
-offset_left = 737.0
-offset_top = 72.0
-offset_right = 1084.0
-offset_bottom = 362.0
+layout_mode = 1
 
 [node name="Settings" parent="Control" instance=ExtResource("5_t2d84")]
 visible = false

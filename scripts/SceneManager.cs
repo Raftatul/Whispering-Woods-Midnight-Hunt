@@ -125,6 +125,8 @@ public partial class SceneManager : CanvasLayer
             }));
             GameManager.States = GameManager.GameState.InGame;
             SteamManager.Instance.hostedLobby.SetData("lobbyState", GameManager.States.ToString());
+            SteamManager.Instance.hostedLobby.GetData("lobbyState");
+            GD.Print(SteamManager.Instance.hostedLobby.GetData("lobbyState"));
             StartGame();
         }
     }

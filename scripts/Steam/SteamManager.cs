@@ -82,6 +82,10 @@ public partial class SteamManager : Node
     private void OnLobbyMemberJoined(Lobby lobby, Friend friend)
     {
         GD.Print("User joined lobby " + friend.Name);
+        if (lobby.GetData("lobbyState") != GameManager.GameState.Lobby.ToString())
+        {
+            return;
+        }
         OnPlayerJoinedLobby(friend);
     }
 
@@ -150,6 +154,7 @@ public partial class SteamManager : Node
     {
         if (lobby.GetData("lobbyState") != GameManager.GameState.Lobby.ToString())
         {
+            GD.PrintErr("Lobby is not in lobby state");
             return;
         }
         

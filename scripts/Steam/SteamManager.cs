@@ -140,6 +140,7 @@ public partial class SteamManager : Node
             hostedLobby.SetPublic();
             hostedLobby.SetJoinable(true);
             hostedLobby.SetData("ownerNameDataString", PlayerName); //equivalent du dictionnaire des player id / dico infos
+            hostedLobby.SetData("lobbyState", GameManager.GameState.Lobby.ToString());
 
             GD.Print("Lobby created with id " + hostedLobby.Id);
             return true;

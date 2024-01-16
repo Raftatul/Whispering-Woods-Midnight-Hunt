@@ -210,9 +210,9 @@ public partial class SteamManager : Node
         try
         {
             Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithKeyValue("lobbyState", GameManager.GameState.Lobby.ToString()).WithSlotsAvailable(1).RequestAsync();
+            availableLobbies.Clear();
             if (lobbies != null)
             {
-                availableLobbies.Clear();
                 foreach (Lobby lobby in lobbies)
                 {
                     GD.Print("Lobby found with id " + lobby.Id);

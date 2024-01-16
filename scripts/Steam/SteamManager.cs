@@ -148,6 +148,11 @@ public partial class SteamManager : Node
 
     private async void OnGameLobbyJoinRequested(Lobby lobby, SteamId steamIDFriend)
     {
+        if (lobby.GetData("lobbyState") != GameManager.GameState.Lobby.ToString())
+        {
+            return;
+        }
+        
         RoomEnter joinSuccessful = await lobby.Join();
         if (joinSuccessful != RoomEnter.Success)
         {
@@ -274,6 +279,13 @@ public partial class SteamManager : Node
     {
         SteamClient.Shutdown();
     }
+
+    internal void LeaveLobby()
+    {     
+        hostedLobby.Leave();
+
+    }
+
 
     #endregion Godot Methods
 }

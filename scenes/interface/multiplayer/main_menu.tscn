@@ -12,13 +12,14 @@
 [ext_resource type="Script" path="res://scripts/ux/multiplayer/LobbyMenu.cs" id="7_eqlnh"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
-[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "LobbyListContainer", "PlayerListContainer")]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "BackButton", "LobbyListContainer", "PlayerListContainer")]
 script = ExtResource("1_jk5bo")
 _level = NodePath("Level")
 CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/StartButton")
 GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/RefreshLobbiesList")
 InviteFriendButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/InviteFriendButton")
 StartGameButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/Button")
+BackButton = NodePath("Control/LobbyMenu/Button")
 LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
 PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerList")
 LobbyElementScene = ExtResource("2_6p8nt")

@@ -149,6 +149,9 @@ public partial class PlayerController : CharacterBody3D
                 _currentMoveSpeed = _playerData.CrouchSpeed;
                 _walkAnimationPlayer.Play("Walk", customSpeed: 1.25f);
                 break;
+            case PlayerState.AIR:
+                _walkAnimationPlayer.Pause();
+                break;
         }
     }
 
@@ -231,6 +234,12 @@ public partial class PlayerController : CharacterBody3D
 
     private void HandleVelocity(Vector3 inputAxis, float delta)
     {
+        if (_playerState == PlayerState.AIR)
+        {
+            _targetVelocity.Y -= _playerData.Gravity * (float)delta;
+            return;
+        }
+
         Vector3 movement = Basis * inputAxis;
 
         int targetBlend = _currentMoveSpeed == _playerData.WalkSpeed ? 1 : _currentMoveSpeed == _playerData.RunSpeed ? 2 : 0;
@@ -238,9 +247,6 @@ public partial class PlayerController : CharacterBody3D
 
         _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
         _animationManager.SetVector2("BS_Crouch/blend_position", flatInput);
-
-        if (!IsOnFloor())
-            _targetVelocity.Y -= _playerData.Gravity * (float)delta;
         
         if (movement != Vector3.Zero)
         {
@@ -266,7 +272,7 @@ public partial class PlayerController : CharacterBody3D
         }
         else if (!isOnFloor && _playerState != PlayerState.AIR)
         {
-            _playerState = PlayerState.AIR;
+            SwitchState(PlayerState.AIR);
 
             EmitSignal(SignalName.OnAir);
         }
@@ -323,15 +329,6 @@ public partial class PlayerController : CharacterBody3D
                 RegenStamina((float)delta);
                 break;
         }
-    }
-
-    private void DeferredInteraction()
-    {
-        if (!_interactionRaycast.IsColliding())
-            return;
-
-        if (_interactionRaycast.GetCollider() is IInteractable interactable)
-            interactable.Rpc(nameof(IInteractable.Interact));
     }
 
     public override void _Input(InputEvent @event)

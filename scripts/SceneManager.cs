@@ -150,6 +150,7 @@ public partial class SceneManager : CanvasLayer
         _startMenu.Visible = true;
         _lobbyMenu.Visible = false;
 
+        _peer.Close();
         SteamManager.Instance.LeaveLobby();
     }
 

@@ -25,6 +25,9 @@ public partial class SceneManager : CanvasLayer
     public Button StartGameButton { get; set; }
 
     [Export]
+    public Button BackButton { get; set; }
+
+    [Export]
     public VBoxContainer LobbyListContainer { get; set; }
 
     [Export]
@@ -57,6 +60,7 @@ public partial class SceneManager : CanvasLayer
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
         StartGameButton.Pressed += StartGameButtonPressed;
+        BackButton.Pressed += BackButtonPressed;
 
         Multiplayer.PeerConnected += _playerIDs.Add;
         Multiplayer.PeerConnected += AddPlayer;
@@ -119,9 +123,16 @@ public partial class SceneManager : CanvasLayer
                 { "DataType", "Join" },
                 { "Data", _address }
             }));
-
+            GameManager.States = GameManager.GameState.InGame;
+            SteamManager.Instance.hostedLobby.SetData("lobbyState", GameManager.States.ToString());
             StartGame();
         }
+    }
+
+    public void BackButtonPressed()
+    {
+        GD.Print("BackButtonPressed");
+        SteamManager.Instance.LeaveLobby();
     }
 
     public void StartGame()

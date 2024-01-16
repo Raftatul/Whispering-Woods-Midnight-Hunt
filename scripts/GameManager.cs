@@ -7,6 +7,14 @@ public class GameManager
 
     public static string PlayerInstanceName = "Player";
 
+    public enum GameState
+    {
+        Lobby,
+        InGame
+    }
+
+    public static GameState States = GameState.Lobby; //TODO change name
+
     public static void OnPlayerJoinedCallback(Friend friend)
     {
         PlayerController player = new PlayerController();

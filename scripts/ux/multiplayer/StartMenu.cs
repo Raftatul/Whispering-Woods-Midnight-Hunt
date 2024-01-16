@@ -7,6 +7,17 @@ public partial class StartMenu : Control
     {
         SteamMatchmaking.OnLobbyCreated += (result, lobby) => Visible = false;
         SteamMatchmaking.OnLobbyEntered += (lobby) => Visible = false;
+        SteamManager.OnPlayerLeftLobby += PlayerLeftLobby;
+    }
+
+    private void PlayerLeftLobby(Friend friend)
+    {
+        GD.Print("Player left lobby: Start menu");
+        if (friend.IsMe)
+        {
+            GD.Print("I left lobby: Start menu");
+            Visible = true; // Show the start menu again
+        }
     }
 
     private void StartGame()

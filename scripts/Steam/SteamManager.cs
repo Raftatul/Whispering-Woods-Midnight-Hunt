@@ -209,7 +209,7 @@ public partial class SteamManager : Node
     {
         try
         {
-            Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithSlotsAvailable(1).RequestAsync();
+            Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithKeyValue("lobbyState", GameManager.GameState.Lobby.ToString()).WithSlotsAvailable(1).RequestAsync();
             if (lobbies != null)
             {
                 availableLobbies.Clear();

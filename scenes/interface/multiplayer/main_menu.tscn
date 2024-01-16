@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
-[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "BackButton", "LobbyListContainer", "PlayerListContainer", "_startMenu", "_lobbyMenu")]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "BackButton", "_quitButton", "LobbyListContainer", "PlayerListContainer", "_startMenu", "_lobbyMenu")]
 script = ExtResource("1_jk5bo")
 _level = NodePath("Level")
 CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/CreateLobbyButton")
@@ -18,6 +18,7 @@ GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/V
 InviteFriendButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/InviteFriendButton")
 StartGameButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/StartGameButton")
 BackButton = NodePath("Control/LobbyMenu/BackButton")
+_quitButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/QuitButton")
 LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
 PlayerListContainer = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/PlayerList")
 _startMenu = NodePath("Control/StartMenu")
@@ -214,7 +215,5 @@ _nodeToShow = NodePath("../../../../StartMenu")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/maps/main.tscn")
 spawn_path = NodePath("../Level")
-
-[connection signal="pressed" from="Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/QuitButton" to="Control/StartMenu" method="QuitGame"]
 
 [editable path="Control/Settings"]

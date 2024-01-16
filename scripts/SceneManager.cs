@@ -28,6 +28,9 @@ public partial class SceneManager : CanvasLayer
     public Button BackButton { get; set; }
 
     [Export]
+    private Button _quitButton;
+
+    [Export]
     public VBoxContainer LobbyListContainer { get; set; }
 
     [Export]
@@ -61,8 +64,8 @@ public partial class SceneManager : CanvasLayer
         SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
         SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
 
-        SteamMatchmaking.OnLobbyCreated += (result, lobby) => _startMenu.Visible = false;
-        SteamMatchmaking.OnLobbyCreated += (result, lobby) => _lobbyMenu.Visible = true;
+        SteamMatchmaking.OnLobbyEntered += (lobby) => _startMenu.Visible = false;
+        SteamMatchmaking.OnLobbyEntered += (lobby) => _lobbyMenu.Visible = true;
 
         DataParser.OnJoin += JoinServer;
 
@@ -72,6 +75,7 @@ public partial class SceneManager : CanvasLayer
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
         StartGameButton.Pressed += StartGameButtonPressed;
         BackButton.Pressed += BackButtonPressed;
+        _quitButton.Pressed += QuitGame;
 
         Multiplayer.PeerConnected += _playerIDs.Add;
         Multiplayer.PeerConnected += AddPlayer;
@@ -147,11 +151,21 @@ public partial class SceneManager : CanvasLayer
     {
         GD.Print("BackButtonPressed");
 
+        foreach (var item in PlayerListContainer.GetChildren())
+        {
+            item.QueueFree();
+        }
+
         _startMenu.Visible = true;
         _lobbyMenu.Visible = false;
 
         _peer.Close();
         SteamManager.Instance.LeaveLobby();
+    }
+
+    private void QuitGame()
+    {
+        GetTree().Quit();
     }
 
     public void StartGame()

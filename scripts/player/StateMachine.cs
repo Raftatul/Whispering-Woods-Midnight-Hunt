@@ -28,6 +28,10 @@ public partial class StateMachine : Node
         await ToSignal(Owner, "ready");
         currentState.Enter();
         _stateDisplayer.Text = "State: " + currentState.Name;
+
+        SetProcess(Owner.IsMultiplayerAuthority());
+        SetPhysicsProcess(Owner.IsMultiplayerAuthority());
+        SetProcessInput(Owner.IsMultiplayerAuthority());
     }
 
     public override void _Process(double delta)

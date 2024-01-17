@@ -8,9 +8,11 @@ public partial class CustomRemoteTransform3D : RemoteTransform3D
         if (RemotePath == null)
             return;
         
-        Vector3 targetPosition = GetNode<Node3D>(RemotePath).GlobalPosition;
+        var target = GetNode<Node3D>(RemotePath);
+
+        Vector3 targetPosition = target.GlobalPosition;
         targetPosition.Y = GlobalPosition.Y;
 
-        GetNode<Node3D>(RemotePath).GlobalPosition = targetPosition;
+        target.GlobalPosition = targetPosition;
     }
 }

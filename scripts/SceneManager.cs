@@ -92,7 +92,8 @@ public partial class SceneManager : CanvasLayer
 
     private void ServerClosing()
     {
-       GetTree().ReloadCurrentScene();
+        GetTree().ReloadCurrentScene();
+        Input.MouseMode = Input.MouseModeEnum.Visible;
     }
 
     private void PlayerLeaving(long id)

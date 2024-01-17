@@ -12,44 +12,33 @@ public partial class PlayerController : CharacterBody3D
     public Camera3D PlayerCamera;
 
     [Export]
-    private CollisionShape3D _standUpCollider;
-
-    [Export]
-    private RayCast3D _crouchRayCastChecker;
-
-    [Export]
     private InteractionRaycast _interactionRaycast;
 
     [Export]
-    private AnimationManager _animationManager;
+    public AnimationManager AnimationManager;
 
     [Export]
-    private AnimationPlayer _crouchAnimationPlayer;
+    public AnimationPlayer WalkAnimationPlayer;
 
     [Export]
-    private AnimationPlayer _walkAnimationPlayer;
+    public AnimationPlayer CrouchAnimationPlayer;
 
     [Export]
     private Node3D _mesh;
 
     [ExportCategory("Player Data")]
     [Export]
-    private float _currentMoveSpeed = 5f;
+    public float MoveSpeed = 5f;
 
     [Export]
-    private float _currentStamina;
+    public float CurrentStamina;
     
     [Export]
-    private PlayerData _playerData;
+    public PlayerData PlayerData;
 
-    private Vector3 _targetVelocity = Vector3.Zero;
+    public Vector3 TargetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
-
-    public enum PlayerState
-    {
-        IDLE, WALK, RUN, CROUCH, AIR, CROUCH_WALK
-    }
 
     private PlayerState _playerState;
 
@@ -61,11 +50,6 @@ public partial class PlayerController : CharacterBody3D
 
     [Signal]
     public delegate void OnAirEventHandler();
-
-    private Vector3 GetDirectionInput()
-    {
-        return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
-    }
 
     public override void _EnterTree()
     {
@@ -91,68 +75,24 @@ public partial class PlayerController : CharacterBody3D
         }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
-
-        SwitchState(PlayerState.IDLE);
-        ConnectSignals();
-    }
-
-    private void ConnectSignals()
-    {
-        OnGrounded += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
-        OnAir += () => _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
     }
 
     public override void _PhysicsProcess(double delta)
     {
         if (!IsMultiplayerAuthority())
             return;
-
-        Vector3 inputAxis = GetDirectionInput().Normalized();
-
-        float look = PlayerCamera.GlobalRotationDegrees.X / 75f;
-        _animationManager.SetFloat("BS_Look/blend_position", look, 1f);
-
-        HandleVelocity(inputAxis, (float)delta);
         
-        HandleGroundSignal();
-
-        HandlePlayerState(inputAxis);
-        HandleStamina((float)delta);
-
-        Velocity = _targetVelocity;
-        MoveAndSlide();
-    }
-
-    private void SwitchState(PlayerState newState)
-    {
-        _playerState = newState;
-
-        switch (_playerState)
+        for (int i = 0; i < GetSlideCollisionCount(); i++)
         {
-            case PlayerState.IDLE:
-                _currentMoveSpeed = 0f;
-                _walkAnimationPlayer.Pause();
-                break;
-            case PlayerState.WALK:
-                _currentMoveSpeed = _playerData.WalkSpeed;
-                _walkAnimationPlayer.Play("Walk");
-                break;
-            case PlayerState.RUN:
-                _currentMoveSpeed = _playerData.RunSpeed;
-                _walkAnimationPlayer.Play("Walk", customSpeed: 2f);
-                break;
-            case PlayerState.CROUCH:
-                _currentMoveSpeed = 0f;
-                _walkAnimationPlayer.Pause();
-                break;
-            case PlayerState.CROUCH_WALK:
-                _currentMoveSpeed = _playerData.CrouchSpeed;
-                _walkAnimationPlayer.Play("Walk", customSpeed: 1.25f);
-                break;
-            case PlayerState.AIR:
-                _walkAnimationPlayer.Pause();
-                break;
+            GD.Print(GetSlideCollision(i).GetCollider());
         }
+
+        UpdateGravity((float)delta);
+        UpdateInput();
+
+        UpdateBlendAnimation(GetDirectionInput(), (float)delta);
+        
+        UpdateVelocity();
     }
 
     private void CameraRotation(Vector2 mouseMotion)
@@ -162,178 +102,26 @@ public partial class PlayerController : CharacterBody3D
         PlayerCamera.RotationDegrees = new Vector3(Mathf.Clamp(PlayerCamera.RotationDegrees.X, -75f, 75f), 0f, 0f);
     }
 
-    private void Jump()
+    private void UpdateBlendAnimation(Vector3 inputAxis, float delta)
     {
-        if (!CanUnCrouch())
-            return;
-        
-        Rpc(MethodName.UnCrouch);
-        
-        _targetVelocity.Y = _playerData.JumpForce;
-        _animationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
+        float look = PlayerCamera.GlobalRotationDegrees.X / 75f;
+        AnimationManager.SetFloat("BS_Look/blend_position", look, 1f);
+
+        int targetBlend = MoveSpeed == PlayerData.WalkSpeed ? 1 : MoveSpeed == PlayerData.RunSpeed ? 2 : 0;
+        Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z).Normalized();
+
+        AnimationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
+        AnimationManager.SetVector2("BS_Crouch/blend_position", flatInput);
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void Crouch()
+    public void RegenStamina(float delta)
     {
-        SwitchState(PlayerState.CROUCH);
-
-        _standUpCollider.Disabled = true;
-        _animationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
-        _crouchAnimationPlayer.Play("Crouch");
+        CurrentStamina = Mathf.MoveToward(CurrentStamina, PlayerData.MaxStamina, PlayerData.StaminaRegenRate * delta);
     }
 
-    private bool CanUnCrouch()
+    public void DepleteStamina(float delta)
     {
-        return !_crouchRayCastChecker.IsColliding();
-    }
-
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    private void UnCrouch()
-    {
-        if (!CanUnCrouch())
-            return;
-        
-        SwitchState(PlayerState.IDLE);
-        
-        _standUpCollider.Disabled = false;
-
-        _animationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
-        _crouchAnimationPlayer.PlayBackwards("Crouch");
-    }
-
-    private void ToogleCrouch()
-    {
-        switch(_playerState)
-        {
-            case PlayerState.CROUCH:
-                Rpc(MethodName.UnCrouch);
-                break;
-            case PlayerState.CROUCH_WALK:
-                Rpc(MethodName.UnCrouch);
-                break;
-            default:
-                Rpc(MethodName.Crouch);
-                break;
-        }
-    }
-
-    private void StartRun()
-    {
-        if (_playerState == PlayerState.AIR)
-            return;
-        
-        if(_playerState == PlayerState.CROUCH || _playerState == PlayerState.CROUCH_WALK)
-            UnCrouch();
-
-        SwitchState(PlayerState.RUN);
-    }
-
-    private void StopRun()
-    {
-        if (_playerState == PlayerState.AIR)
-            return;
-        
-        SwitchState(_targetVelocity.Length() > 0f ? PlayerState.WALK : PlayerState.IDLE);
-    }
-
-    private void HandleVelocity(Vector3 inputAxis, float delta)
-    {
-        if (_playerState == PlayerState.AIR)
-        {
-            _targetVelocity.Y -= _playerData.Gravity * (float)delta;
-            return;
-        }
-
-        Vector3 movement = Basis * inputAxis;
-
-        int targetBlend = _currentMoveSpeed == _playerData.WalkSpeed ? 1 : _currentMoveSpeed == _playerData.RunSpeed ? 2 : 0;
-        Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z);
-
-        _animationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
-        _animationManager.SetVector2("BS_Crouch/blend_position", flatInput);
-        
-        if (movement != Vector3.Zero)
-        {
-            _targetVelocity.X = movement.X * _currentMoveSpeed;
-            _targetVelocity.Z = movement.Z * _currentMoveSpeed;
-        }
-        else
-        {
-            _targetVelocity.X = Mathf.MoveToward(_targetVelocity.X, 0f, _currentMoveSpeed);
-            _targetVelocity.Z = Mathf.MoveToward(_targetVelocity.Z, 0f, _currentMoveSpeed);
-        }
-    }
-
-    private void HandleGroundSignal()
-    {
-        bool isOnFloor = IsOnFloor();
-
-        if (isOnFloor && _playerState == PlayerState.AIR)
-        {
-            _playerState = PlayerState.IDLE;
-
-            EmitSignal(SignalName.OnGrounded);
-        }
-        else if (!isOnFloor && _playerState != PlayerState.AIR)
-        {
-            SwitchState(PlayerState.AIR);
-
-            EmitSignal(SignalName.OnAir);
-        }
-    }
-
-    private void HandlePlayerState(Vector3 inputAxis)
-    {
-        switch(_playerState)
-        {
-            case PlayerState.IDLE:
-                if (inputAxis.Length() > 0f)
-                    SwitchState(PlayerState.WALK);
-                break;
-            case PlayerState.WALK:
-                if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.IDLE);
-                break;
-            case PlayerState.RUN:
-                if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.IDLE);
-                break;
-            case PlayerState.CROUCH:
-                if (inputAxis.Length() > 0f)
-                    SwitchState(PlayerState.CROUCH_WALK);
-                break;
-            case PlayerState.CROUCH_WALK:
-                if (inputAxis.Length() == 0f)
-                    SwitchState(PlayerState.CROUCH);
-                break;
-        }
-    }
-
-    private void RegenStamina(float delta)
-    {
-        _currentStamina = Mathf.MoveToward(_currentStamina, _playerData.MaxStamina, _playerData.StaminaRegenRate * delta);
-    }
-
-    private void DepleteStamina(float delta)
-    {
-        _currentStamina = Mathf.MoveToward(_currentStamina, 0f, _playerData.StaminaDepletionRate * delta);
-
-        if (_currentStamina <= 0f)
-            StopRun();
-    }
-
-    private void HandleStamina(float delta)
-    {       
-        switch(_playerState)
-        {
-            case PlayerState.RUN:
-                DepleteStamina((float)delta);
-                break;
-            default:
-                RegenStamina((float)delta);
-                break;
-        }
+        CurrentStamina = Mathf.MoveToward(CurrentStamina, 0f, PlayerData.StaminaDepletionRate * delta);
     }
 
     public override void _Input(InputEvent @event)
@@ -346,25 +134,47 @@ public partial class PlayerController : CharacterBody3D
             CameraRotation(mouseMotion.Relative);
         }
 
-        if (@event.IsActionPressed("jump") && IsOnFloor())
-        {
-            Jump();
-        }
-        else if (@event.IsActionPressed("crouch") && IsOnFloor())
-        {
-            ToogleCrouch();
-        }
-        else if (@event.IsActionPressed("run") && CanUnCrouch())
-        {
-            StartRun();
-        }
-        else if (@event.IsActionReleased("run") && _playerState == PlayerState.RUN)
-        {
-            StopRun();
-        }
-        else if (@event.IsActionPressed("interact"))
+        if (@event.IsActionPressed("interact"))
         {
             _interactionRaycast.Interact();
         }
+    }
+
+    public Vector3 GetDirectionInput()
+    {
+        return new Vector3(Input.GetAxis("move_left", "move_right"), 0f, Input.GetAxis("move_up", "move_down"));
+    }
+
+    public void UpdateGravity(float delta)
+    {
+        if (IsOnFloor())
+            return;
+        
+        TargetVelocity.Y -= PlayerData.Gravity * delta;
+    }
+
+    public void UpdateInput()
+    {
+        Vector3 inputAxis = GetDirectionInput().Normalized();
+
+        Vector3 direction = Basis * inputAxis;
+
+        if (direction != Vector3.Zero)
+        {
+            GD.Print(direction.X * MoveSpeed);
+            TargetVelocity.X = Mathf.Lerp(TargetVelocity.X, direction.X * MoveSpeed, PlayerData.Acceleration);
+            TargetVelocity.Z = Mathf.Lerp(TargetVelocity.Z, direction.Z * MoveSpeed, PlayerData.Acceleration);
+        }
+        else
+        {
+            TargetVelocity.X = Mathf.MoveToward(TargetVelocity.X, 0f, PlayerData.Deceleration);
+            TargetVelocity.Z = Mathf.MoveToward(TargetVelocity.Z, 0f, PlayerData.Deceleration);
+        }
+    }
+
+    public void UpdateVelocity()
+    {
+        Velocity = TargetVelocity;
+        MoveAndSlide();
     }
 }

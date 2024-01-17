@@ -85,11 +85,6 @@ public partial class PlayerController : CharacterBody3D
     {
         if (!IsMultiplayerAuthority())
             return;
-        
-        for (int i = 0; i < GetSlideCollisionCount(); i++)
-        {
-            GD.Print(GetSlideCollision(i).GetCollider());
-        }
 
         UpdateGravity((float)delta);
         UpdateInput();
@@ -165,7 +160,6 @@ public partial class PlayerController : CharacterBody3D
 
         if (direction != Vector3.Zero)
         {
-            GD.Print(direction.X * MoveSpeed);
             TargetVelocity.X = Mathf.Lerp(TargetVelocity.X, direction.X * MoveSpeed, PlayerData.Acceleration);
             TargetVelocity.Z = Mathf.Lerp(TargetVelocity.Z, direction.Z * MoveSpeed, PlayerData.Acceleration);
         }

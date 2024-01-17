@@ -32,6 +32,7 @@ public partial class StateMachine : Node
         {
             SetPhysicsProcess(false);
             SetProcess(false);
+            SetProcessInput(false);
         }
     }
 

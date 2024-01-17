@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://b3gphftdi5nf7"]
 
 [ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
-[ext_resource type="Script" path="res://scripts/KillZone.cs" id="3_jsmtl"]
+[ext_resource type="Script" path="res://scripts/misc/KillZone.cs" id="3_jsmtl"]
 [ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_v6c13"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]

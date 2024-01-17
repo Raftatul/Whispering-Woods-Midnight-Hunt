@@ -58,6 +58,11 @@ public partial class SceneManager : CanvasLayer
 
     private string _address;
 
+    [Signal]
+    public delegate void OnServerClosingEventHandler();
+
+    
+
     public override void _Ready()
     {
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
@@ -79,7 +84,30 @@ public partial class SceneManager : CanvasLayer
 
         Multiplayer.PeerConnected += _playerIDs.Add;
         Multiplayer.PeerConnected += AddPlayer;
+        Multiplayer.PeerDisconnected +=PlayerLeaving;
+
+        OnServerClosing += ServerClosing;
+
     }
+
+    private void ServerClosing()
+    {
+       GetTree().ReloadCurrentScene();
+    }
+
+    private void PlayerLeaving(long id)
+    {
+        if (Multiplayer.IsServer())
+        {
+            _playerIDs.Remove(id);
+            EmitSignal(SignalName.OnServerClosing);
+        }
+        else
+        {
+            GetNodeOrNull<PlayerController>(id.ToString())?.QueueFree();
+        }
+    }
+
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
     {

@@ -104,7 +104,7 @@ public partial class SceneManager : CanvasLayer
         }
         else
         {
-            GetNodeOrNull<PlayerController>(id.ToString())?.QueueFree();
+            GetNodeOrNull<PlayerController>(GameManager.PlayerInstanceName + id.ToString())?.QueueFree();
         }
     }
 

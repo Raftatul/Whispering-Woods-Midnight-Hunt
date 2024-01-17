@@ -17,6 +17,10 @@ public partial class CrouchPlayerState : PlayerState
 
     public override void PhysicsUpdate(float delta)
     {
+        Player.UpdateGravity(delta);
+        Player.UpdateInput();
+        Player.UpdateVelocity();
+
         Player.RegenStamina(delta);
 
         if (Player.Velocity.Length() > 0.0f && Player.IsOnFloor())
@@ -29,7 +33,7 @@ public partial class CrouchPlayerState : PlayerState
     private void UnCrouch()
     {
         _standUpCollider.Disabled = false;
-        Player.CrouchAnimationPlayer.PlayBackwards("Crouch");
+        Player.CameraAnimPlayer.PlayBackwards("Crouch");
         Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
     }
 

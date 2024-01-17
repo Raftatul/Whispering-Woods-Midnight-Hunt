@@ -17,6 +17,10 @@ public partial class IdlePlayerState : PlayerState
 
     public override void PhysicsUpdate(float delta)
     {
+        Player.UpdateGravity(delta);
+        Player.UpdateInput();
+        Player.UpdateVelocity();
+
         Player.RegenStamina(delta);
 
         if (!Player.IsOnFloor())
@@ -27,7 +31,7 @@ public partial class IdlePlayerState : PlayerState
     {
         if (@event.IsActionPressed("crouch"))
         {
-            Player.CrouchAnimationPlayer.Play("Crouch");
+            Player.CameraAnimPlayer.Play("Crouch");
             Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
 
             EmitSignal(SignalName.Transition, "Crouch");

@@ -21,10 +21,7 @@ public partial class PlayerController : CharacterBody3D
     public AnimationManager AnimationManager;
 
     [Export]
-    public AnimationPlayer WalkAnimationPlayer;
-
-    [Export]
-    public AnimationPlayer CrouchAnimationPlayer;
+    public AnimationPlayer CameraAnimPlayer;
 
     [Export]
     private Node3D _mesh;
@@ -42,15 +39,6 @@ public partial class PlayerController : CharacterBody3D
     public Vector3 TargetVelocity = Vector3.Zero;
 
     public Friend FriendData { get; set; }
-
-    [Signal]
-    public delegate void OnPlayerInitializedEventHandler();
-
-    [Signal]
-    public delegate void OnGroundedEventHandler();
-
-    [Signal]
-    public delegate void OnAirEventHandler();
 
     public override void _EnterTree()
     {
@@ -85,12 +73,7 @@ public partial class PlayerController : CharacterBody3D
         if (!IsMultiplayerAuthority())
             return;
 
-        UpdateGravity((float)delta);
-        UpdateInput();
-
         UpdateBlendAnimation(GetDirectionInput(), (float)delta);
-        
-        UpdateVelocity();
     }
 
     private void CameraRotation(Vector2 mouseMotion)
@@ -115,11 +98,15 @@ public partial class PlayerController : CharacterBody3D
     public void RegenStamina(float delta)
     {
         CurrentStamina = Mathf.MoveToward(CurrentStamina, PlayerData.MaxStamina, PlayerData.StaminaRegenRate * delta);
+
+        GameDebug.Instance.AddDebugProperty("Stamina", CurrentStamina);
     }
 
     public void DepleteStamina(float delta)
     {
         CurrentStamina = Mathf.MoveToward(CurrentStamina, 0f, PlayerData.StaminaDepletionRate * delta);
+
+        GameDebug.Instance.AddDebugProperty("Stamina", CurrentStamina);
     }
 
     public override void _Input(InputEvent @event)

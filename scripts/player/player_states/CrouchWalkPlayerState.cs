@@ -13,11 +13,15 @@ public partial class CrouchWalkPlayerState : PlayerState
     {
         Player.MoveSpeed = Player.PlayerData.CrouchSpeed;
 
-        Player.WalkAnimationPlayer.Play("Walk", customSpeed: 1.25f);
+        Player.CameraAnimPlayer.Play("CrouchWalk", customSpeed: 1.25f);
     }
 
     public override void PhysicsUpdate(float delta)
     {
+        Player.UpdateGravity(delta);
+        Player.UpdateInput();
+        Player.UpdateVelocity();
+
         Player.RegenStamina(delta);
 
         if (Player.Velocity.Length() == 0f)
@@ -30,7 +34,6 @@ public partial class CrouchWalkPlayerState : PlayerState
     private void UnCrouch()
     {
         _standUpCollider.Disabled = false;
-        Player.CrouchAnimationPlayer.PlayBackwards("Crouch");
         Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
     }
 
@@ -46,6 +49,6 @@ public partial class CrouchWalkPlayerState : PlayerState
 
     public override void Exit()
     {
-        Player.WalkAnimationPlayer.Pause();
+        Player.CameraAnimPlayer.Pause();
     }
 }

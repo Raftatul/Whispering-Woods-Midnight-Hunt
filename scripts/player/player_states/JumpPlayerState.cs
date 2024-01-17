@@ -8,13 +8,16 @@ public partial class JumpPlayerState : PlayerState
         if (Player.IsOnFloor())
             Player.TargetVelocity.Y = Player.PlayerData.JumpForce;
         
-        Player.WalkAnimationPlayer.Pause();
+        Player.CameraAnimPlayer.Pause();
 
         Player.AnimationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
     }
 
     public override void PhysicsUpdate(float delta)
     {
+        Player.UpdateGravity(delta);
+        Player.UpdateVelocity();
+
         if (Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Idle");
     }

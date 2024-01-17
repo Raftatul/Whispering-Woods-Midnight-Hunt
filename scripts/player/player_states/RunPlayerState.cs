@@ -7,11 +7,15 @@ public partial class RunPlayerState : PlayerState
     {
         Player.MoveSpeed = Player.PlayerData.RunSpeed;
 
-        Player.WalkAnimationPlayer.Play("Walk", customSpeed: 2f);
+        Player.CameraAnimPlayer.Play("Walk", customSpeed: 4f);
     }
 
     public override void PhysicsUpdate(float delta)
     {
+        Player.UpdateGravity(delta);
+        Player.UpdateInput();
+        Player.UpdateVelocity();
+
         Player.DepleteStamina(delta);
         
         if (Player.CurrentStamina <= 0.0f)
@@ -26,7 +30,7 @@ public partial class RunPlayerState : PlayerState
             EmitSignal(SignalName.Transition, "Walk");
         if (@event.IsActionPressed("crouch"))
         {
-            Player.CrouchAnimationPlayer.Play("Crouch");
+            Player.CameraAnimPlayer.Play("Crouch");
             EmitSignal(SignalName.Transition, "CrouchWalk");
         }
         if (@event.IsActionPressed("jump") && Player.IsOnFloor())
@@ -35,6 +39,6 @@ public partial class RunPlayerState : PlayerState
 
     public override void Exit()
     {
-        Player.WalkAnimationPlayer.Pause();
+        Player.CameraAnimPlayer.Pause();
     }
 }

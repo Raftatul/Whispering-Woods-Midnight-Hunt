@@ -7,9 +7,6 @@ public partial class StateMachine : Node
     [Export]
     private State currentState;
 
-    [Export]
-    private Label _stateDisplayer;
-
     private Godot.Collections.Dictionary<string, State> _states = new Godot.Collections.Dictionary<string, State>();
 
     public override async void _Ready()
@@ -27,7 +24,9 @@ public partial class StateMachine : Node
 
         await ToSignal(Owner, "ready");
         currentState.Enter();
-        _stateDisplayer.Text = "State: " + currentState.Name;
+
+        GameDebug.Instance.AddDebugProperty("State", currentState.Name);
+
         if (!Owner.IsMultiplayerAuthority())
         {
             SetPhysicsProcess(false);
@@ -72,10 +71,11 @@ public partial class StateMachine : Node
         {
             if (currentState != newState)
             {
-                _stateDisplayer.Text = "State: " + newStateName;
                 currentState.Exit();
                 newState.Enter();
                 currentState = newState;
+
+                GameDebug.Instance.AddDebugProperty("State", currentState.Name);
             }
         }
         else

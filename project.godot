@@ -90,6 +90,7 @@ interact={
 
 [layer_names]
 
+3d_physics/layer_31="players"
 3d_physics/layer_32="interactable"
 
 [rendering]

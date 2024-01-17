@@ -43,12 +43,12 @@ public partial class ChatBox : Control
             if (SteamManager.Instance.IsHost)
             {
                 SteamManager.Instance.SendMessageToAll(json);
-                ChatInput.Text = "";
             }
             else
             {
                 SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(json);
             }
+            ChatInput.Text = "";
         }
     }
 

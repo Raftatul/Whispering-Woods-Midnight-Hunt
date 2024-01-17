@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=10 format=3 uid="uid://b3gphftdi5nf7"]
 
 [ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
+[ext_resource type="Script" path="res://scripts/KillZone.cs" id="3_jsmtl"]
 [ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_v6c13"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
@@ -22,6 +23,9 @@ adjustment_contrast = 8.0
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_00qao"]
 data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1p8xq"]
+size = Vector3(50, 1, 50)
 
 [node name="World" type="Node3D"]
 
@@ -60,5 +64,12 @@ _interactable = NodePath("../RigidBody3D/IInteractable")
 
 [node name="IInteractable" parent="RigidBody3D2" index="2"]
 InteractionText = "Hold"
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.13544, 0)
+script = ExtResource("3_jsmtl")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("BoxShape3D_1p8xq")
 
 [editable path="RigidBody3D2"]

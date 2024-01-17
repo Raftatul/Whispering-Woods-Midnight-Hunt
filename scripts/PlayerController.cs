@@ -66,11 +66,8 @@ public partial class PlayerController : CharacterBody3D
         AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
         AddChild(voiceOutput);
         voiceOutput.Name = "VoiceOutput";
-
-        Position += Vector3.Up * 10f;
-
         _canvasLayer.Visible = false;
-
+        Position = new Vector3(0f, 10f, 0f);
         if (IsMultiplayerAuthority())
         {
             VoiceChat.Instance.SetAudioOutput(voiceOutput);

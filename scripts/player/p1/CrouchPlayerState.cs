@@ -23,6 +23,7 @@ public partial class CrouchPlayerState : PlayerState
             EmitSignal(SignalName.Transition, "CrouchWalk");
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
     private void UnCrouch()
     {
         _standUpCollider.Disabled = false;
@@ -34,7 +35,7 @@ public partial class CrouchPlayerState : PlayerState
     {
         if ((@event.IsActionPressed("jump") || @event.IsActionPressed("crouch")) && !_rayCast.IsColliding())
         {
-            UnCrouch();
+            Rpc(MethodName.UnCrouch);
 
             EmitSignal(SignalName.Transition, "Idle");
         }

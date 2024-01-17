@@ -12,6 +12,9 @@ public partial class PlayerController : CharacterBody3D
     public Camera3D PlayerCamera;
 
     [Export]
+    private CanvasLayer _canvasLayer;
+
+    [Export]
     private InteractionRaycast _interactionRaycast;
 
     [Export]
@@ -40,8 +43,6 @@ public partial class PlayerController : CharacterBody3D
 
     public Friend FriendData { get; set; }
 
-    private PlayerState _playerState;
-
     [Signal]
     public delegate void OnPlayerInitializedEventHandler();
 
@@ -68,10 +69,13 @@ public partial class PlayerController : CharacterBody3D
 
         Position += Vector3.Up * 10f;
 
+        _canvasLayer.Visible = false;
+
         if (IsMultiplayerAuthority())
         {
             VoiceChat.Instance.SetAudioOutput(voiceOutput);
             _mesh.Visible = false;
+            _canvasLayer.Visible = true;
         }
 
         Input.MouseMode = Input.MouseModeEnum.Captured;

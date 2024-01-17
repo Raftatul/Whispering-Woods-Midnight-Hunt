@@ -32,12 +32,18 @@ public partial class StateMachine : Node
 
     public override void _Process(double delta)
     {
+        if (!Owner.IsMultiplayerAuthority())
+            return;
+
         if (currentState != null)
             currentState.Update((float)delta);
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        if (!Owner.IsMultiplayerAuthority())
+            return;
+
         if (currentState != null)
             currentState.PhysicsUpdate((float)delta);
     }

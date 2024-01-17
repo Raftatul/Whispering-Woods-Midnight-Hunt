@@ -1,6 +1,6 @@
-[gd_scene load_steps=66 format=3 uid="uid://cj8vo15g1p7td"]
+[gd_scene load_steps=69 format=3 uid="uid://cj8vo15g1p7td"]
 
-[ext_resource type="Script" path="res://scripts/PlayerController.cs" id="1_83cig"]
+[ext_resource type="Script" path="res://scripts/player/PlayerController.cs" id="1_s3cn5"]
 [ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
 [ext_resource type="Script" path="res://scripts/player/InteractionRaycast.cs" id="3_ffqdy"]
 [ext_resource type="PackedScene" uid="uid://w0rew2y546rd" path="res://assets/meshs/player/X Bot.fbx" id="3_pbseb"]
@@ -18,17 +18,19 @@
 [ext_resource type="AnimationLibrary" uid="uid://cvb85g7e5qk8" path="res://assets/meshs/player/Basic Locomotion Pack/Walking.fbx" id="9_0weue"]
 [ext_resource type="AnimationLibrary" uid="uid://2dh6tfkvhrel" path="res://assets/meshs/player/Basic Locomotion Pack/Sneak Walk.fbx" id="11_egpd8"]
 [ext_resource type="AnimationLibrary" uid="uid://c0xyyvyicm0m7" path="res://assets/meshs/player/Basic Locomotion Pack/Walking Backward.fbx" id="11_r74am"]
+[ext_resource type="AnimationLibrary" uid="uid://fu8o5x6tlm4d" path="res://assets/meshs/player/Basic Locomotion Pack/Macarena Dance.fbx" id="12_nk7al"]
 [ext_resource type="AnimationLibrary" uid="uid://bfggjquonriqm" path="res://assets/meshs/player/Basic Locomotion Pack/Male Crouch Pose.fbx" id="12_veq4k"]
 [ext_resource type="AnimationLibrary" uid="uid://c1uk1nw8pp02" path="res://assets/meshs/player/Basic Locomotion Pack/Male Sitting Pose.fbx" id="13_rl7rt"]
 [ext_resource type="Script" path="res://scripts/AnimationManager.cs" id="18_g1naw"]
 [ext_resource type="AudioStream" uid="uid://utnwe5i0cisr" path="res://assets/sfx/footstep-1-83098.mp3" id="22_s4758"]
 [ext_resource type="Script" path="res://scripts/player/StateMachine.cs" id="23_i88qm"]
-[ext_resource type="Script" path="res://scripts/player/p1/IdlePlayerState.cs" id="24_a3ihg"]
-[ext_resource type="Script" path="res://scripts/player/p1/WalkPlayerState.cs" id="25_15a24"]
-[ext_resource type="Script" path="res://scripts/player/p1/RunPlayerState.cs" id="26_lcexu"]
-[ext_resource type="Script" path="res://scripts/player/p1/CrouchPlayerState.cs" id="27_gtnoo"]
-[ext_resource type="Script" path="res://scripts/player/p1/CrouchWalkPlayerState.cs" id="28_hx8yl"]
-[ext_resource type="Script" path="res://scripts/player/p1/JumpPlayerState.cs" id="29_la07p"]
+[ext_resource type="Script" path="res://scripts/GameDebug.cs" id="23_xf41b"]
+[ext_resource type="Script" path="res://scripts/player/player_states/IdlePlayerState.cs" id="24_5j7bw"]
+[ext_resource type="Script" path="res://scripts/player/player_states/WalkPlayerState.cs" id="25_d5ieq"]
+[ext_resource type="Script" path="res://scripts/player/player_states/RunPlayerState.cs" id="26_h1l8p"]
+[ext_resource type="Script" path="res://scripts/player/player_states/CrouchPlayerState.cs" id="27_h47li"]
+[ext_resource type="Script" path="res://scripts/player/player_states/CrouchWalkPlayerState.cs" id="28_2as15"]
+[ext_resource type="Script" path="res://scripts/player/player_states/JumpPlayerState.cs" id="29_uqk21"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ldhqg"]
 properties/0/path = NodePath(".:position")
@@ -55,83 +57,143 @@ height = 1.7
 radius = 0.3
 height = 1.0
 
-[sub_resource type="Animation" id="Animation_sp5a2"]
+[sub_resource type="Animation" id="Animation_ifgg1"]
 resource_name = "Crouch"
 length = 0.25
 step = 0.05
-tracks/0/type = "value"
+tracks/0/type = "bezier"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
+tracks/0/path = NodePath(".:position:x")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0, 1.5, 0), Vector3(0, 0.75, 0)]
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0.01, -0.25, 0, 0.25, 0, 0.01, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.25)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1.5, -0.25, 0, 0.1, -0.775976, 0.75, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.25)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.25)
 }
 
-[sub_resource type="Animation" id="Animation_8crqm"]
-length = 0.001
-tracks/0/type = "value"
+[sub_resource type="Animation" id="Animation_2jqkq"]
+resource_name = "CrouchWalk"
+length = 2.0
+loop_mode = 1
+step = 0.05
+tracks/0/type = "method"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:position")
+tracks/0/path = NodePath("../Audio/AudioStreamPlayer3D")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 1.5, 0)]
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"values": []
 }
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_37f1j"]
-_data = {
-"Crouch": SubResource("Animation_sp5a2"),
-"RESET": SubResource("Animation_8crqm")
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.02, -0.25, 0, 0.25, 0, 8.05121e-05, -0.25, 0, 0.25, 0, -0.02, -0.25, 0, 0.25, 0, 8.05121e-05, -0.25, 0, 0.25, 0, 0.02, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.75, -0.25, 0, 0.25, 0, 0.799766, -0.25, 0, 0.25, 0, 0.749923, -0.25, 0, 0.25, 0, 0.80011, -0.25, 0, 0.25, 0, 0.75, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:position:z")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 1)
 }
 
 [sub_resource type="Animation" id="Animation_60xi4"]
 length = 0.001
-tracks/0/type = "value"
+tracks/0/type = "bezier"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Camera3D:position")
+tracks/0/path = NodePath(".:position:x")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1.5, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
 }
 
 [sub_resource type="Animation" id="Animation_m8lrf"]
 resource_name = "Walk"
+length = 2.0
 loop_mode = 1
 step = 0.05
-tracks/0/type = "value"
+tracks/0/type = "method"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Camera3D:position")
+tracks/0/path = NodePath("../Audio/AudioStreamPlayer3D")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0.1, 0), Vector3(0, 0, 0), Vector3(0, 0.1, 0), Vector3(0, 0, 0)]
-}
-tracks/1/type = "method"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("../Audio/AudioStreamPlayer3D")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.5),
+"times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [0.0],
@@ -141,9 +203,44 @@ tracks/1/keys = {
 "method": &"play"
 }]
 }
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.00954942, -0.25, 0, 0.25, 0, -8.52153e-05, -0.25, 0, 0.25, 0, -0.01, -0.25, 0, 0.25, 0, -0.000420145, -0.25, 0, 0.25, 0, 0.01, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:position:y")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(1.4, -0.25, 0, 0.25, 0, 1.5, -0.25, 0, 0.25, 0, 1.40041, -0.25, 0, 0.25, 0, 1.5, -0.25, 0, 0.25, 0, 1.4, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 2)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:position:z")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fcqj8"]
 _data = {
+"Crouch": SubResource("Animation_ifgg1"),
+"CrouchWalk": SubResource("Animation_2jqkq"),
 "RESET": SubResource("Animation_60xi4"),
 "Walk": SubResource("Animation_m8lrf")
 }
@@ -204,8 +301,15 @@ filters = ["%GeneralSkeleton:Head", "%GeneralSkeleton:Neck", "%GeneralSkeleton:U
 filter_enabled = true
 filters = ["%GeneralSkeleton:LeftHand", "%GeneralSkeleton:LeftIndexDistal", "%GeneralSkeleton:LeftIndexIntermediate", "%GeneralSkeleton:LeftIndexProximal", "%GeneralSkeleton:LeftLittleDistal", "%GeneralSkeleton:LeftLittleIntermediate", "%GeneralSkeleton:LeftLittleProximal", "%GeneralSkeleton:LeftLowerArm", "%GeneralSkeleton:LeftMiddleDistal", "%GeneralSkeleton:LeftMiddleIntermediate", "%GeneralSkeleton:LeftMiddleProximal", "%GeneralSkeleton:LeftRingDistal", "%GeneralSkeleton:LeftRingIntermediate", "%GeneralSkeleton:LeftRingProximal", "%GeneralSkeleton:LeftShoulder", "%GeneralSkeleton:LeftThumbDistal", "%GeneralSkeleton:LeftThumbMetacarpal", "%GeneralSkeleton:LeftThumbProximal", "%GeneralSkeleton:LeftUpperArm", "%GeneralSkeleton:RightHand", "%GeneralSkeleton:RightIndexDistal", "%GeneralSkeleton:RightIndexIntermediate", "%GeneralSkeleton:RightIndexProximal", "%GeneralSkeleton:RightLittleDistal", "%GeneralSkeleton:RightLittleIntermediate", "%GeneralSkeleton:RightLittleProximal", "%GeneralSkeleton:RightLowerArm", "%GeneralSkeleton:RightMiddleDistal", "%GeneralSkeleton:RightMiddleIntermediate", "%GeneralSkeleton:RightMiddleProximal", "%GeneralSkeleton:RightRingDistal", "%GeneralSkeleton:RightRingIntermediate", "%GeneralSkeleton:RightRingProximal", "%GeneralSkeleton:RightShoulder", "%GeneralSkeleton:RightThumbDistal", "%GeneralSkeleton:RightThumbMetacarpal", "%GeneralSkeleton:RightThumbProximal", "%GeneralSkeleton:RightUpperArm", "%GeneralSkeleton:mixamorig_LeftHandIndex1", "%GeneralSkeleton:mixamorig_LeftHandMiddle1", "%GeneralSkeleton:mixamorig_LeftHandPinky1", "%GeneralSkeleton:mixamorig_LeftHandRing1", "%GeneralSkeleton:mixamorig_LeftHandThumb1", "%GeneralSkeleton:mixamorig_RightHandIndex1", "%GeneralSkeleton:mixamorig_RightHandMiddle1", "%GeneralSkeleton:mixamorig_RightHandPinky1", "%GeneralSkeleton:mixamorig_RightHandRing1", "%GeneralSkeleton:mixamorig_RightHandThumb1"]
 
+[sub_resource type="AnimationNodeOneShot" id="AnimationNodeOneShot_dfska"]
+fadein_time = 0.25
+fadeout_time = 0.25
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4qrxj"]
 animation = &"Falling Idle/mixamo_com"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jqacc"]
+animation = &"Macarena Dance/mixamo_com"
 
 [sub_resource type="AnimationNodeTransition" id="AnimationNodeTransition_rhhhv"]
 xfade_time = 0.25
@@ -270,44 +374,47 @@ min_space = Vector2(-2, -2)
 max_space = Vector2(2, 2)
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_odead"]
-graph_offset = Vector2(-849.217, 740.805)
+graph_offset = Vector2(-650.183, 1001.68)
 nodes/Animation/node = SubResource("AnimationNodeAnimation_ns86g")
 nodes/Animation/position = Vector2(-760, 1940)
 nodes/BS_Crouch/node = SubResource("AnimationNodeBlendSpace2D_luvlw")
-nodes/BS_Crouch/position = Vector2(-620, 1660)
+nodes/BS_Crouch/position = Vector2(-620, 2160)
 nodes/BS_Look/node = SubResource("AnimationNodeBlendSpace1D_31vup")
-nodes/BS_Look/position = Vector2(-620, 920)
+nodes/BS_Look/position = Vector2(-620, 2440)
 nodes/B_Look/node = SubResource("AnimationNodeBlend2_xdexk")
-nodes/B_Look/position = Vector2(320, 1500)
+nodes/B_Look/position = Vector2(320, 1760)
 nodes/Blend2/node = SubResource("AnimationNodeBlend2_dex36")
-nodes/Blend2/position = Vector2(-380, 1620)
+nodes/Blend2/position = Vector2(-380, 1880)
+nodes/Emote1/node = SubResource("AnimationNodeOneShot_dfska")
+nodes/Emote1/position = Vector2(560, 1720)
 nodes/Jump/node = SubResource("AnimationNodeAnimation_4qrxj")
-nodes/Jump/position = Vector2(-760, 1160)
+nodes/Jump/position = Vector2(-760, 2680)
+nodes/MacarenaDance/node = SubResource("AnimationNodeAnimation_jqacc")
+nodes/MacarenaDance/position = Vector2(-760, 3180)
 nodes/Trans_Crouch/node = SubResource("AnimationNodeTransition_rhhhv")
-nodes/Trans_Crouch/position = Vector2(-140, 1600)
+nodes/Trans_Crouch/position = Vector2(-140, 1840)
 nodes/Trans_Jump/node = SubResource("AnimationNodeTransition_que2w")
-nodes/Trans_Jump/position = Vector2(100, 1540)
+nodes/Trans_Jump/position = Vector2(100, 1800)
 nodes/Walk/node = SubResource("AnimationNodeBlendSpace2D_83swy")
-nodes/Walk/position = Vector2(-620, 1380)
-nodes/output/position = Vector2(540, 1520)
-node_connections = [&"B_Look", 0, &"Trans_Jump", &"B_Look", 1, &"BS_Look", &"Blend2", 0, &"BS_Crouch", &"Blend2", 1, &"Animation", &"Trans_Crouch", 0, &"Blend2", &"Trans_Crouch", 1, &"Walk", &"Trans_Jump", 0, &"Jump", &"Trans_Jump", 1, &"Trans_Crouch", &"output", 0, &"B_Look"]
+nodes/Walk/position = Vector2(-620, 2900)
+nodes/output/position = Vector2(780, 1740)
+node_connections = [&"B_Look", 0, &"Trans_Jump", &"B_Look", 1, &"BS_Look", &"Blend2", 0, &"BS_Crouch", &"Blend2", 1, &"Animation", &"Emote1", 0, &"B_Look", &"Emote1", 1, &"MacarenaDance", &"Trans_Crouch", 0, &"Blend2", &"Trans_Crouch", 1, &"Walk", &"Trans_Jump", 0, &"Jump", &"Trans_Jump", 1, &"Trans_Crouch", &"output", 0, &"Emote1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_7xhta"]
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_canvasLayer", "_interactionRaycast", "AnimationManager", "WalkAnimationPlayer", "CrouchAnimationPlayer", "_mesh")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_canvasLayer", "_interactionRaycast", "AnimationManager", "CameraAnimPlayer", "_mesh")]
 collision_layer = 1073741824
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
-script = ExtResource("1_83cig")
-PlayerCamera = NodePath("CameraParent/Camera3D")
+script = ExtResource("1_s3cn5")
+PlayerCamera = NodePath("CameraController/Camera3D")
 _canvasLayer = NodePath("CanvasLayer")
-_interactionRaycast = NodePath("CameraParent/Camera3D/InteractRaycast")
+_interactionRaycast = NodePath("CameraController/Camera3D/InteractRaycast")
 AnimationManager = NodePath("Root Scene/AnimationTree")
-WalkAnimationPlayer = NodePath("CameraParent/WalkAnimationPlayer")
-CrouchAnimationPlayer = NodePath("CameraParent/CrouchAnimationPlayer")
+CameraAnimPlayer = NodePath("CameraController/CameraAnimPlayer")
 _mesh = NodePath("Root Scene")
 PlayerData = ExtResource("2_dqpa7")
 
@@ -325,13 +432,13 @@ shape = SubResource("CapsuleShape3D_at2ia")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_8oaih")
 
-[node name="CameraParent" type="Node3D" parent="."]
+[node name="CameraController" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
-[node name="Camera3D" type="Camera3D" parent="CameraParent"]
+[node name="Camera3D" type="Camera3D" parent="CameraController"]
 fov = 90.0
 
-[node name="InteractRaycast" type="RayCast3D" parent="CameraParent/Camera3D" node_paths=PackedStringArray("_label")]
+[node name="InteractRaycast" type="RayCast3D" parent="CameraController/Camera3D" node_paths=PackedStringArray("_label")]
 target_position = Vector3(0, 0, -1)
 collision_mask = 2147483648
 collide_with_areas = true
@@ -339,32 +446,28 @@ collide_with_bodies = false
 script = ExtResource("3_ffqdy")
 _label = NodePath("../../../CanvasLayer/Control/Label")
 
-[node name="CrouchAnimationPlayer" type="AnimationPlayer" parent="CameraParent"]
-libraries = {
-"": SubResource("AnimationLibrary_37f1j")
-}
-
-[node name="WalkAnimationPlayer" type="AnimationPlayer" parent="CameraParent"]
+[node name="CameraAnimPlayer" type="AnimationPlayer" parent="CameraController"]
 libraries = {
 "": SubResource("AnimationLibrary_fcqj8")
 }
+blend_times = [&"CrouchWalk", &"Walk", 0.25, &"Walk", &"CrouchWalk", 0.25]
 
 [node name="Root Scene" parent="." instance=ExtResource("3_pbseb")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="GeneralSkeleton" parent="Root Scene/RootNode" index="0"]
-bones/0/position = Vector3(-0.00408908, 1.03437, 0.0217091)
-bones/0/rotation = Quaternion(-0.033776, -0.0455188, -0.0267628, 0.998034)
-bones/1/rotation = Quaternion(0.0266937, 0.0140307, 0.024753, 0.999239)
-bones/2/rotation = Quaternion(0.00961439, 0.00370921, 0.0142288, 0.999846)
-bones/3/rotation = Quaternion(0.00913997, 0.00351122, 0.0139369, 0.999855)
-bones/4/rotation = Quaternion(0.0463261, -0.00144677, 0.00482493, 0.998914)
-bones/5/rotation = Quaternion(-0.0677447, 0.0114499, -0.00190287, 0.997635)
+bones/0/position = Vector3(-0.000925273, 1.03377, 0.0150934)
+bones/0/rotation = Quaternion(-0.0326617, -0.0477453, -0.0290475, 0.997903)
+bones/1/rotation = Quaternion(0.0328083, 0.0141351, 0.0258377, 0.999028)
+bones/2/rotation = Quaternion(0.0112916, 0.00340196, 0.0142409, 0.999829)
+bones/3/rotation = Quaternion(0.0110268, 0.00361056, 0.0142697, 0.999831)
+bones/4/rotation = Quaternion(0.0498424, -0.00164058, 0.00483773, 0.998744)
+bones/5/rotation = Quaternion(-0.0717983, 0.00998061, -0.000495213, 0.997369)
 bones/5/scale = Vector3(1.00048, 1.00048, 1.00048)
-bones/7/rotation = Quaternion(0.477558, -0.47761, -0.634632, -0.375592)
-bones/8/rotation = Quaternion(-0.149987, 0.827595, -0.495443, 0.217088)
-bones/9/rotation = Quaternion(0.0411522, 0.705908, -0.0411519, 0.705908)
-bones/10/rotation = Quaternion(0.0422008, -0.571437, 0.0360818, 0.818766)
+bones/7/rotation = Quaternion(0.473989, -0.480995, -0.63617, -0.373184)
+bones/8/rotation = Quaternion(-0.150607, 0.82735, -0.497985, 0.211707)
+bones/9/rotation = Quaternion(0.0410707, 0.705913, -0.0410706, 0.705913)
+bones/10/rotation = Quaternion(0.0420445, -0.571042, 0.034575, 0.819114)
 bones/11/rotation = Quaternion(-0.0367837, 0.0144657, 0.00205623, 0.999216)
 bones/12/rotation = Quaternion(-0.121712, -0.819574, 0.0371682, 0.558662)
 bones/13/rotation = Quaternion(0.0455454, 0.0460794, 0.161693, 0.984712)
@@ -384,10 +487,10 @@ bones/26/rotation = Quaternion(-5.96046e-08, -5.96046e-08, -5.96046e-08, 1)
 bones/27/rotation = Quaternion(0.228493, 0.00340284, 0.0429808, 0.97259)
 bones/28/rotation = Quaternion(0.151548, 1.49012e-08, 0.0123456, 0.988373)
 bones/29/rotation = Quaternion(0.143773, 4.47035e-08, 0.011712, 0.989541)
-bones/31/rotation = Quaternion(0.458789, 0.49964, 0.628278, -0.380973)
-bones/32/rotation = Quaternion(0.124305, 0.800088, -0.573314, -0.125374)
-bones/33/rotation = Quaternion(0.0100411, -0.707036, 0.0100412, 0.707036)
-bones/34/rotation = Quaternion(0.053353, 0.48069, -0.0165891, 0.875109)
+bones/31/rotation = Quaternion(0.455718, 0.501614, 0.632401, -0.375197)
+bones/32/rotation = Quaternion(0.12535, 0.802224, -0.570149, -0.125114)
+bones/33/rotation = Quaternion(0.0093823, -0.707045, 0.00938246, 0.707045)
+bones/34/rotation = Quaternion(0.0541765, 0.472929, -0.0126668, 0.879342)
 bones/35/rotation = Quaternion(-0.0420415, -0.0049842, -0.0190791, 0.998921)
 bones/36/rotation = Quaternion(-0.152845, 0.81215, -0.014813, 0.562877)
 bones/37/rotation = Quaternion(0.0400129, -0.0528763, -0.128588, 0.989479)
@@ -408,13 +511,13 @@ bones/51/rotation = Quaternion(0.233867, -0.00350587, -0.0490091, 0.971026)
 bones/52/rotation = Quaternion(0.151258, -2.5332e-07, -0.0155007, 0.988373)
 bones/53/rotation = Quaternion(0.143498, -1.3411e-07, -0.0147054, 0.989541)
 bones/54/rotation = Quaternion(1.49012e-08, -1.49012e-08, -4.47035e-08, 1)
-bones/55/rotation = Quaternion(-0.0928797, -0.00966022, 0.995264, -0.0270234)
-bones/56/rotation = Quaternion(0.0343212, 0.993734, -0.0664077, -0.083097)
-bones/57/rotation = Quaternion(0.010868, 0.679702, -0.73285, -0.0285947)
-bones/58/rotation = Quaternion(-6.42251e-08, 0.998133, 0.0610845, 6.37976e-09)
-bones/60/rotation = Quaternion(0.13523, 0.0704823, 0.985506, -0.0743135)
-bones/61/rotation = Quaternion(-0.0391593, 0.994287, -0.0983517, 0.0136435)
-bones/62/rotation = Quaternion(-0.0417532, 0.714664, -0.696478, 0.0492917)
+bones/55/rotation = Quaternion(-0.0917858, -0.00267523, 0.995371, -0.0283576)
+bones/56/rotation = Quaternion(0.0346785, 0.993417, -0.0712254, -0.0827468)
+bones/57/rotation = Quaternion(0.0113023, 0.681117, -0.731537, -0.0283724)
+bones/58/rotation = Quaternion(-3.58303e-08, 0.998041, 0.0625642, -5.37672e-09)
+bones/60/rotation = Quaternion(0.136544, 0.0774237, 0.984702, -0.0756496)
+bones/61/rotation = Quaternion(-0.0386358, 0.993819, -0.103137, 0.0139279)
+bones/62/rotation = Quaternion(-0.0408586, 0.714583, -0.696689, 0.0482266)
 bones/63/rotation = Quaternion(-8.69504e-08, 0.999075, 0.0429962, 3.86257e-09)
 
 [node name="AnimationPlayer" parent="Root Scene" index="1"]
@@ -426,6 +529,7 @@ libraries = {
 "Female Crouch Pose": ExtResource("6_1tfim"),
 "Left Strafe": ExtResource("5_gbjmx"),
 "Left Strafe Walk": ExtResource("6_qs35u"),
+"Macarena Dance": ExtResource("12_nk7al"),
 "Male Crouch Pose": ExtResource("12_veq4k"),
 "Male Sitting Pose": ExtResource("13_rl7rt"),
 "Right Strafe": ExtResource("7_scakq"),
@@ -446,6 +550,7 @@ libraries = {
 "Female Crouch Pose": ExtResource("6_1tfim"),
 "Left Strafe": ExtResource("5_gbjmx"),
 "Left Strafe Walk": ExtResource("6_qs35u"),
+"Macarena Dance": ExtResource("12_nk7al"),
 "Male Crouch Pose": ExtResource("12_veq4k"),
 "Male Sitting Pose": ExtResource("13_rl7rt"),
 "Right Strafe": ExtResource("7_scakq"),
@@ -462,6 +567,9 @@ parameters/BS_Crouch/blend_position = Vector2(0, 0)
 parameters/BS_Look/blend_position = 0.0
 parameters/B_Look/blend_amount = 1.0
 parameters/Blend2/blend_amount = 1.0
+parameters/Emote1/active = false
+parameters/Emote1/internal_active = false
+parameters/Emote1/request = 0
 parameters/Trans_Crouch/current_state = "uncrouch"
 parameters/Trans_Crouch/transition_request = ""
 parameters/Trans_Crouch/current_index = 1
@@ -506,36 +614,55 @@ label_settings = SubResource("LabelSettings_7xhta")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="States" type="Label" parent="CanvasLayer/Control"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+offset_right = 158.0
+offset_bottom = 158.0
 
-[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("currentState", "_stateDisplayer")]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Control/MarginContainer" node_paths=PackedStringArray("_vBoxContainer")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("23_xf41b")
+_vBoxContainer = NodePath("MarginContainer/VBoxContainer2/VBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control/MarginContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/MarginContainer/PanelContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Debug Panel"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer/PanelContainer/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("currentState")]
 script = ExtResource("23_i88qm")
 currentState = NodePath("Idle")
-_stateDisplayer = NodePath("../CanvasLayer/Control/States")
 
 [node name="Idle" type="Node" parent="StateMachine"]
-script = ExtResource("24_a3ihg")
+script = ExtResource("24_5j7bw")
 
 [node name="Walk" type="Node" parent="StateMachine"]
-script = ExtResource("25_15a24")
+script = ExtResource("25_d5ieq")
 
 [node name="Run" type="Node" parent="StateMachine"]
-script = ExtResource("26_lcexu")
+script = ExtResource("26_h1l8p")
 
 [node name="Crouch" type="Node" parent="StateMachine" node_paths=PackedStringArray("_rayCast", "_standUpCollider")]
-script = ExtResource("27_gtnoo")
+script = ExtResource("27_h47li")
 _rayCast = NodePath("../../UnCrouchRaycast")
 _standUpCollider = NodePath("../../StandUpCollider")
 
 [node name="CrouchWalk" type="Node" parent="StateMachine" node_paths=PackedStringArray("_rayCast", "_standUpCollider")]
-script = ExtResource("28_hx8yl")
+script = ExtResource("28_2as15")
 _rayCast = NodePath("../../UnCrouchRaycast")
 _standUpCollider = NodePath("../../StandUpCollider")
 
 [node name="Jump" type="Node" parent="StateMachine"]
-script = ExtResource("29_la07p")
+script = ExtResource("29_uqk21")
 
 [editable path="Root Scene"]

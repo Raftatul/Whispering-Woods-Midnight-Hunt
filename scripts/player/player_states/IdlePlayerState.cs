@@ -38,5 +38,12 @@ public partial class IdlePlayerState : PlayerState
         }
         if (@event.IsActionPressed("jump") && Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Jump");
+        if (@event.IsActionPressed("emote1"))
+            Player.AnimationManager.RequestOneShot("Emote1/request", AnimationNodeOneShot.OneShotRequest.Fire);
+    }
+
+    public override void Exit()
+    {
+        Player.AnimationManager.RequestOneShot("Emote1/request", AnimationNodeOneShot.OneShotRequest.FadeOut);
     }
 }

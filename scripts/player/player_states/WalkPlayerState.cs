@@ -5,6 +5,7 @@ public partial class WalkPlayerState : PlayerState
 {
     public override void Enter()
     {
+        Player.TargetVelocity.Y = 0f;
         Player.MoveSpeed = Player.PlayerData.WalkSpeed;
         
         Player.WalkAnimationPlayer.Play("Walk");

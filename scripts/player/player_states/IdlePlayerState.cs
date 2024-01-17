@@ -5,6 +5,7 @@ public partial class IdlePlayerState : PlayerState
 {
     public override void Enter()
     {
+        Player.TargetVelocity.Y = 0f;
         Player.MoveSpeed = Player.PlayerData.WalkSpeed;
     }
 

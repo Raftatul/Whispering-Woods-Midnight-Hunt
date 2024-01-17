@@ -146,10 +146,7 @@ public partial class PlayerController : CharacterBody3D
     public void UpdateGravity(float delta)
     {
         if (IsOnFloor())
-        {
-            TargetVelocity.Y = 0f;
             return;
-        }
         
         TargetVelocity.Y -= PlayerData.Gravity * delta;
     }

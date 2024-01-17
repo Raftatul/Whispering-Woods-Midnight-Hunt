@@ -183,7 +183,7 @@ public partial class SceneManager : CanvasLayer
         player.Name = id.ToString();
         player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
         _level.GetChild(0).AddChild(player);
-        player.GlobalPosition += new Vector3(0, 10, 0);
+        player.GlobalPosition = new Vector3(0, 10, 0);
     }
 
     private ENetMultiplayerPeer _peer = new();

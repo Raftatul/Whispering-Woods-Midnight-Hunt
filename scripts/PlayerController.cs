@@ -67,8 +67,6 @@ public partial class PlayerController : CharacterBody3D
         AddChild(voiceOutput);
         voiceOutput.Name = "VoiceOutput";
 
-        Position += Vector3.Up * 10f;
-
         _canvasLayer.Visible = false;
 
         if (IsMultiplayerAuthority())

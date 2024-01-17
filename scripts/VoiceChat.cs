@@ -71,7 +71,6 @@ public partial class VoiceChat : Node3D
         {
             if (Multiplayer.GetPeers().Length > 0)
             {
-                GD.Print("Sending recording data");
                 recording = effect.GetRecording();
                 effect.SetRecordingActive(false);
                 Rpc(nameof(SendRecordingData), _audioStreamPlayer3D.GetPath(), recording.Data);

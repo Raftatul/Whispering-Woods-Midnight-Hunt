@@ -5,7 +5,9 @@ public partial class JumpPlayerState : PlayerState
 {
     public override void Enter()
     {
-        Player.TargetVelocity.Y = Player.PlayerData.JumpForce;
+        if (Player.IsOnFloor())
+            Player.TargetVelocity.Y = Player.PlayerData.JumpForce;
+        
         Player.WalkAnimationPlayer.Pause();
 
         Player.AnimationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");

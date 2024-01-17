@@ -16,6 +16,8 @@ public partial class RunPlayerState : PlayerState
         
         if (Player.CurrentStamina <= 0.0f)
             EmitSignal(SignalName.Transition, "Walk");
+        if (Player.IsOnFloor())
+            EmitSignal(SignalName.Transition, "Jump");
     }
 
     public override void Input(InputEvent @event)

@@ -22,6 +22,8 @@ public partial class CrouchWalkPlayerState : PlayerState
 
         if (Player.Velocity.Length() == 0f)
             EmitSignal(SignalName.Transition, "Crouch");
+        if (Player.IsOnFloor())
+            EmitSignal(SignalName.Transition, "Jump");
     }
 
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]

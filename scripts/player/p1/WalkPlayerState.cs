@@ -19,6 +19,9 @@ public partial class WalkPlayerState : PlayerState
     public override void PhysicsUpdate(float delta)
     {
         Player.RegenStamina(delta);
+
+        if (Player.IsOnFloor())
+            EmitSignal(SignalName.Transition, "Jump");
     }
 
     public override void Input(InputEvent @event)

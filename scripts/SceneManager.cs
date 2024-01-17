@@ -97,7 +97,7 @@ public partial class SceneManager : CanvasLayer
 
     private void PlayerLeaving(long id)
     {
-        if (Multiplayer.IsServer())
+        if (id == 1)
         {
             _playerIDs.Remove(id);
             EmitSignal(SignalName.OnServerClosing);

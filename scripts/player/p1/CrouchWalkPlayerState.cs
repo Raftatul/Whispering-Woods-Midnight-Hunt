@@ -22,7 +22,7 @@ public partial class CrouchWalkPlayerState : PlayerState
 
         if (Player.Velocity.Length() == 0f)
             EmitSignal(SignalName.Transition, "Crouch");
-        if (Player.IsOnFloor())
+        if (!Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Jump");
     }
 

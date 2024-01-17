@@ -18,7 +18,7 @@ public partial class IdlePlayerState : PlayerState
     {
         Player.RegenStamina(delta);
 
-        if (Player.IsOnFloor())
+        if (!Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Jump");
     }
 

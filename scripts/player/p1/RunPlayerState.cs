@@ -16,7 +16,7 @@ public partial class RunPlayerState : PlayerState
         
         if (Player.CurrentStamina <= 0.0f)
             EmitSignal(SignalName.Transition, "Walk");
-        if (Player.IsOnFloor())
+        if (!Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Jump");
     }
 

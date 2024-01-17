@@ -20,7 +20,7 @@ public partial class WalkPlayerState : PlayerState
     {
         Player.RegenStamina(delta);
 
-        if (Player.IsOnFloor())
+        if (!Player.IsOnFloor())
             EmitSignal(SignalName.Transition, "Jump");
     }
 

@@ -14,6 +14,12 @@ public partial class PlayerData : Resource
     public float RunSpeed = 10f;
 
     [Export]
+    public float Acceleration = 0.1f;
+
+    [Export]
+    public float Deceleration = 0.25f;
+
+    [Export]
     public float  JumpForce = 5f;
 
     [Export]

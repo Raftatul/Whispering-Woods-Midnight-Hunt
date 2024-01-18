@@ -8,6 +8,8 @@ using System.Text;
 
 public partial class VoiceChat : Node3D
 {
+    public static VoiceChat Instance { get; private set; }
+
     [Export]
     private AudioStreamPlayer _audioStreamRecorder;
 
@@ -23,6 +25,7 @@ public partial class VoiceChat : Node3D
 
     public override void _Ready()
     {
+        Instance = this;
         Initialize();
     }
 
@@ -68,7 +71,6 @@ public partial class VoiceChat : Node3D
         {
             if (Multiplayer.GetPeers().Length > 0)
             {
-                GD.Print("Sending recording data");
                 recording = effect.GetRecording();
                 effect.SetRecordingActive(false);
                 Rpc(nameof(SendRecordingData), _audioStreamPlayer3D.GetPath(), recording.Data);

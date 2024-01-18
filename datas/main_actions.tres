@@ -4,4 +4,4 @@
 
 [resource]
 script = ExtResource("1_4b5lf")
-Actions = ["move_left", "move_right", "move_up", "move_down", "jump", "crouch", "run"]
+Actions = ["move_left", "move_right", "move_up", "move_down", "jump", "crouch", "run", "interact"]

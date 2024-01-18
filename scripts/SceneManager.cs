@@ -25,10 +25,23 @@ public partial class SceneManager : CanvasLayer
     public Button StartGameButton { get; set; }
 
     [Export]
+    public Button BackButton { get; set; }
+
+    [Export]
+    private Button _quitButton;
+
+    [Export]
     public VBoxContainer LobbyListContainer { get; set; }
 
     [Export]
     public VBoxContainer PlayerListContainer { get; set; }
+
+    [ExportCategory("Menu")]
+    [Export]
+    private Control _startMenu;
+
+    [Export]
+    private Control _lobbyMenu;
 
     [ExportCategory("PackedScene")]
     [Export]
@@ -45,11 +58,20 @@ public partial class SceneManager : CanvasLayer
 
     private string _address;
 
+    [Signal]
+    public delegate void OnServerClosingEventHandler();
+
+    
+
     public override void _Ready()
     {
         SteamManager.OnLobbyListRefreshedCompleted += OnLobbyListRefreshedCompletedCallback;
         SteamManager.OnPlayerJoinedLobby += OnPlayerJoinedLobbyCallback;
         SteamManager.OnPlayerLeftLobby += OnPlayerLeftLobbyCallback;
+
+        SteamMatchmaking.OnLobbyEntered += (lobby) => _startMenu.Visible = false;
+        SteamMatchmaking.OnLobbyEntered += (lobby) => _lobbyMenu.Visible = true;
+
         DataParser.OnJoin += JoinServer;
 
         //UI
@@ -57,10 +79,36 @@ public partial class SceneManager : CanvasLayer
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
         StartGameButton.Pressed += StartGameButtonPressed;
+        BackButton.Pressed += BackButtonPressed;
+        _quitButton.Pressed += QuitGame;
 
         Multiplayer.PeerConnected += _playerIDs.Add;
         Multiplayer.PeerConnected += AddPlayer;
+        Multiplayer.PeerDisconnected +=PlayerLeaving;
+
+        OnServerClosing += ServerClosing;
+
     }
+
+    private void ServerClosing()
+    {
+        GetTree().ReloadCurrentScene();
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
+
+    private void PlayerLeaving(long id)
+    {
+        if (id == 1)
+        {
+            _playerIDs.Remove(id);
+            EmitSignal(SignalName.OnServerClosing);
+        }
+        else
+        {
+            GetNodeOrNull<PlayerController>(GameManager.PlayerInstanceName + id.ToString())?.QueueFree();
+        }
+    }
+
 
     private void OnLobbyListRefreshedCompletedCallback(List<Lobby> lobbies)
     {
@@ -119,9 +167,32 @@ public partial class SceneManager : CanvasLayer
                 { "DataType", "Join" },
                 { "Data", _address }
             }));
-
+            GameManager.States = GameManager.GameState.InGame;
+            SteamManager.Instance.hostedLobby.SetData("lobbyState", GameManager.States.ToString());
+            SteamManager.Instance.hostedLobby.SetJoinable(false);
             StartGame();
         }
+    }
+
+    public void BackButtonPressed()
+    {
+        GD.Print("BackButtonPressed");
+
+        foreach (var item in PlayerListContainer.GetChildren())
+        {
+            item.QueueFree();
+        }
+
+        _startMenu.Visible = true;
+        _lobbyMenu.Visible = false;
+
+        _peer.Close();
+        SteamManager.Instance.LeaveLobby();
+    }
+
+    private void QuitGame()
+    {
+        GetTree().Quit();
     }
 
     public void StartGame()
@@ -137,11 +208,10 @@ public partial class SceneManager : CanvasLayer
 
     private void AddPlayer(long id = 1)
     {
-        var player = PlayerScene.Instantiate() as PlayerMovement;
+        var player = PlayerScene.Instantiate() as PlayerController;
         player.Name = id.ToString();
         player.FriendData = GameManager.Players[_playerIDs.Count - 1].FriendData;
         _level.GetChild(0).AddChild(player);
-        player.GlobalPosition += new Vector3(0, 10, 0);
     }
 
     private ENetMultiplayerPeer _peer = new();

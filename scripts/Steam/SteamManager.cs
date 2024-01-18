@@ -99,6 +99,11 @@ public partial class SteamManager : Node
 
     private void OnLobbyEntered(Lobby lobby)
     {
+        if (lobby.GetData("lobbyState") != GameManager.GameState.Lobby.ToString())
+        {
+            GD.PrintErr("Lobby is not in lobby state");
+            return;
+        }
         if (lobby.MemberCount > 0)
         {
             GD.Print($"You have entered {lobby.Owner.Name}'s lobby");
@@ -135,6 +140,7 @@ public partial class SteamManager : Node
             hostedLobby.SetPublic();
             hostedLobby.SetJoinable(true);
             hostedLobby.SetData("ownerNameDataString", PlayerName); //equivalent du dictionnaire des player id / dico infos
+            hostedLobby.SetData("lobbyState", GameManager.GameState.Lobby.ToString());
 
             GD.Print("Lobby created with id " + hostedLobby.Id);
             return true;
@@ -148,6 +154,12 @@ public partial class SteamManager : Node
 
     private async void OnGameLobbyJoinRequested(Lobby lobby, SteamId steamIDFriend)
     {
+        if (lobby.GetData("lobbyState") != GameManager.GameState.Lobby.ToString())
+        {
+            GD.PrintErr("Lobby is not in lobby state");
+            return;
+        }
+        
         RoomEnter joinSuccessful = await lobby.Join();
         if (joinSuccessful != RoomEnter.Success)
         {
@@ -197,10 +209,10 @@ public partial class SteamManager : Node
     {
         try
         {
-            Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithSlotsAvailable(1).RequestAsync();
+            Lobby[] lobbies = await SteamMatchmaking.LobbyList.WithKeyValue("lobbyState", GameManager.GameState.Lobby.ToString()).WithSlotsAvailable(1).RequestAsync();
+            availableLobbies.Clear();
             if (lobbies != null)
             {
-                availableLobbies.Clear();
                 foreach (Lobby lobby in lobbies)
                 {
                     GD.Print("Lobby found with id " + lobby.Id);
@@ -274,6 +286,12 @@ public partial class SteamManager : Node
     {
         SteamClient.Shutdown();
     }
+
+    internal void LeaveLobby()
+    {     
+        hostedLobby.Leave();
+    }
+
 
     #endregion Godot Methods
 }

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b2hio1hj1x2iu"]
 
-[ext_resource type="Script" path="res://scripts/interface/multiplayer/PlayerCard.cs" id="1_kt76m"]
+[ext_resource type="Script" path="res://scripts/ux/multiplayer/PlayerCard.cs" id="1_kt76m"]
 
 [node name="PlayerCard" type="HBoxContainer" node_paths=PackedStringArray("PlayerNameLabel", "PlayerAvatar")]
 offset_right = 89.0

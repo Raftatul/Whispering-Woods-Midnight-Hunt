@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://becyt0ajbw0ee"]
+
+[ext_resource type="Script" path="res://scripts/items/Item.cs" id="1_vvil5"]
+[ext_resource type="Script" path="res://scripts/interfaces/IInteractable.cs" id="2_7aunm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oop3x"]
+size = Vector3(0.25, 0.25, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cr83j"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_s4uvk"]
+size = Vector3(0.25, 0.25, 0.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iaia1"]
+size = Vector3(0.25, 0.25, 0.25)
+
+[node name="RigidBody3D" type="RigidBody3D" node_paths=PackedStringArray("_interactable")]
+collision_layer = 2147483649
+script = ExtResource("1_vvil5")
+_interactable = NodePath("IInteractable")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_oop3x")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_cr83j")
+mesh = SubResource("BoxMesh_s4uvk")
+skeleton = NodePath("")
+
+[node name="IInteractable" type="Area3D" parent="."]
+script = ExtResource("2_7aunm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="IInteractable"]
+shape = SubResource("BoxShape3D_iaia1")
+
+[connection signal="Interacted" from="IInteractable" to="." method="Interact"]

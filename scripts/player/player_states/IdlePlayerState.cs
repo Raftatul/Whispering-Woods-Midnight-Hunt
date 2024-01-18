@@ -32,7 +32,7 @@ public partial class IdlePlayerState : PlayerState
         if (@event.IsActionPressed("crouch"))
         {
             Player.CameraAnimPlayer.Play("Crouch");
-            Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+            Player.AnimationManager.RequestTransition(Player.TransCrouch, "crouch");
 
             EmitSignal(SignalName.Transition, "Crouch");
         }
@@ -40,12 +40,12 @@ public partial class IdlePlayerState : PlayerState
             EmitSignal(SignalName.Transition, "Jump");
         if (@event.IsActionPressed("emote1"))
         {
-            Player.AnimationManager.Rpc(AnimationManager.MethodName.RequestOneShot, "Emote1/request", (int)AnimationNodeOneShot.OneShotRequest.Fire);
+            Player.AnimationManager.Rpc(AnimationManager.MethodName.RequestOneShot, Player.Emote1, (int)AnimationNodeOneShot.OneShotRequest.Fire);
         }
     }
 
     public override void Exit()
     {
-        Player.AnimationManager.Rpc(AnimationManager.MethodName.RequestOneShot, "Emote1/request", (int)AnimationNodeOneShot.OneShotRequest.FadeOut);
+        Player.AnimationManager.Rpc(AnimationManager.MethodName.RequestOneShot, Player.Emote1, (int)AnimationNodeOneShot.OneShotRequest.FadeOut);
     }
 }

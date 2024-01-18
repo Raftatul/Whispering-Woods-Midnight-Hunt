@@ -35,7 +35,7 @@ public partial class WalkPlayerState : PlayerState
             EmitSignal(SignalName.Transition, "Run");
         if (@event.IsActionPressed("crouch"))
         {
-            Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+            Player.AnimationManager.RequestTransition(Player.TransCrouch, "crouch");
 
             EmitSignal(SignalName.Transition, "CrouchWalk");
         }

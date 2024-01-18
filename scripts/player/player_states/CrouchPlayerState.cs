@@ -12,7 +12,7 @@ public partial class CrouchPlayerState : PlayerState
     public override void Enter()
     {
         _standUpCollider.Disabled = true;
-        Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "crouch");
+        Player.AnimationManager.RequestTransition(Player.TransCrouch, "crouch");
     }
 
     public override void PhysicsUpdate(float delta)
@@ -34,7 +34,7 @@ public partial class CrouchPlayerState : PlayerState
     {
         _standUpCollider.Disabled = false;
         Player.CameraAnimPlayer.PlayBackwards("Crouch");
-        Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+        Player.AnimationManager.RequestTransition(Player.TransCrouch, "uncrouch");
     }
 
     public override void Input(InputEvent @event)

@@ -31,6 +31,7 @@ public partial class RunPlayerState : PlayerState
         if (@event.IsActionPressed("crouch"))
         {
             Player.CameraAnimPlayer.Play("Crouch");
+            Player.AnimationManager.RequestTransition(Player.TransCrouch, "crouch");
             EmitSignal(SignalName.Transition, "CrouchWalk");
         }
         if (@event.IsActionPressed("jump") && Player.IsOnFloor())

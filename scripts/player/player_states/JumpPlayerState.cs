@@ -10,7 +10,7 @@ public partial class JumpPlayerState : PlayerState
         
         Player.CameraAnimPlayer.Pause();
 
-        Player.AnimationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "jump");
+        Player.AnimationManager.Rpc("RequestTransition", Player.TransJump, "jump");
     }
 
     public override void PhysicsUpdate(float delta)
@@ -24,6 +24,6 @@ public partial class JumpPlayerState : PlayerState
 
     public override void Exit()
     {
-        Player.AnimationManager.Rpc("RequestTransition", "Trans_Jump/transition_request", "land");
+        Player.AnimationManager.Rpc("RequestTransition", Player.TransJump, "land");
     }
 }

@@ -40,6 +40,26 @@ public partial class PlayerController : CharacterBody3D
 
     public Friend FriendData { get; set; }
 
+    [ExportCategory("AnimationParameters")]
+    
+    [Export]
+    public string TransCrouch = "parameters/Trans_Crouch/transition_request";
+
+    [Export]
+    public string TransJump = "parameters/Trans_Jump/transition_request";
+
+    [Export]
+    public string BsLook = "parameters/BS_Look/blend_position";
+
+    [Export]
+    public string BsWalk = "parameters/Walk/blend_position";
+
+    [Export]
+    public string BsCrouch = "parameters/BS_Crouch/blend_position";
+
+    [Export]
+    public string Emote1 = "parameters/Emote1/request";
+
     public override void _EnterTree()
     {
         Name = Name.ToString().Replace(GameManager.PlayerInstanceName, "");
@@ -86,13 +106,13 @@ public partial class PlayerController : CharacterBody3D
     private void UpdateBlendAnimation(Vector3 inputAxis, float delta)
     {
         float look = PlayerCamera.GlobalRotationDegrees.X / 75f;
-        AnimationManager.SetFloat("BS_Look/blend_position", look, 1f);
+        AnimationManager.SetFloat(BsLook, look, 1f);
 
         int targetBlend = MoveSpeed == PlayerData.WalkSpeed ? 1 : MoveSpeed == PlayerData.RunSpeed ? 2 : 0;
         Vector2 flatInput = new Vector2(inputAxis.X, -inputAxis.Z).Normalized();
 
-        AnimationManager.SetVector2("Walk/blend_position", flatInput * targetBlend);
-        AnimationManager.SetVector2("BS_Crouch/blend_position", flatInput);
+        AnimationManager.SetVector2(BsWalk, flatInput * targetBlend);
+        AnimationManager.SetVector2(BsCrouch, flatInput);
     }
 
     public void RegenStamina(float delta)

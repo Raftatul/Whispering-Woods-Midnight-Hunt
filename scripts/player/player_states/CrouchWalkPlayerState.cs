@@ -34,7 +34,7 @@ public partial class CrouchWalkPlayerState : PlayerState
     private void UnCrouch()
     {
         _standUpCollider.Disabled = false;
-        Player.AnimationManager.RequestTransition("Trans_Crouch/transition_request", "uncrouch");
+        Player.AnimationManager.RequestTransition(Player.TransCrouch, "uncrouch");
     }
 
     public override void Input(InputEvent @event)

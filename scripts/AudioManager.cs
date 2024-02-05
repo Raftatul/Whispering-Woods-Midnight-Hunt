@@ -20,8 +20,8 @@ public partial class AudioManager : Node
     {
         if (IsMultiplayerAuthority())
             ProcessMic();
-        
-        ProcessVoice();
+        else
+            ProcessVoice();
     }
 
     public void SetupAudio(long id)

@@ -7,6 +7,10 @@ public class DataParser
     public static Action<Dictionary<string, string>> OnChatMessageReceived;
     public static Action<Dictionary<string, string>> OnJoin;
 
+    public static Action<Dictionary<string, string>> OnPlayerReady;
+
+    public static Action<Dictionary<string, string>> OnStartGame;
+
     public static Dictionary<string, string> ParseData(IntPtr data, int size)
     {
         byte[] managedArray = new byte[size];
@@ -30,6 +34,14 @@ public class DataParser
             
             case "Join":
                 OnJoin?.Invoke(dataDictionnary);
+                break;
+
+            case "PlayerReady":
+                OnPlayerReady?.Invoke(dataDictionnary);
+                break;
+
+            case "StartGame":
+                OnStartGame?.Invoke(dataDictionnary);
                 break;
 
             default:

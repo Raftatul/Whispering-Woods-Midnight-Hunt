@@ -65,6 +65,8 @@ public partial class PlayerController : CharacterBody3D
 
     private int _playerID;
 
+    public bool IsReady;
+
     public override void _EnterTree()
     {
         Name = Name.ToString().Replace(GameManager.PlayerInstanceName, "");

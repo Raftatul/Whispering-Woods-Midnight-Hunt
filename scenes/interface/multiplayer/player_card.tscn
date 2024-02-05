@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" path="res://scripts/ux/multiplayer/PlayerCard.cs" id="1_kt76m"]
 
-[node name="PlayerCard" type="HBoxContainer" node_paths=PackedStringArray("PlayerNameLabel", "PlayerAvatar")]
-offset_right = 89.0
-offset_bottom = 23.0
+[node name="PlayerCard" type="HBoxContainer" node_paths=PackedStringArray("PlayerNameLabel", "PlayerAvatar", "PlayerStatus")]
+offset_right = 216.0
+offset_bottom = 30.0
 size_flags_horizontal = 6
 script = ExtResource("1_kt76m")
 PlayerNameLabel = NodePath("Label")
 PlayerAvatar = NodePath("TextureRect")
+PlayerStatus = NodePath("Ready")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 custom_minimum_size = Vector2(30, 30)
@@ -23,3 +24,9 @@ text = "Raftatul"
 vertical_alignment = 1
 visible_characters = 16
 visible_ratio = 2.0
+
+[node name="Ready" type="RichTextLabel" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Not Ready"
+autowrap_mode = 0

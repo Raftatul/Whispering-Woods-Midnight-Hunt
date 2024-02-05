@@ -10,13 +10,13 @@
 [ext_resource type="PackedScene" uid="uid://dljig2uc5soay" path="res://scenes/interface/general/settings.tscn" id="5_t2d84"]
 [ext_resource type="PackedScene" uid="uid://d1s842vxbge4y" path="res://scenes/interface/multiplayer/chat_multiplayer.tscn" id="9_iah38"]
 
-[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "StartGameButton", "BackButton", "_quitButton", "LobbyListContainer", "PlayerListContainer", "_startMenu", "_lobbyMenu")]
+[node name="MainMenu" type="CanvasLayer" node_paths=PackedStringArray("_level", "CreateLobbyButton", "GetallLobbiesButton", "InviteFriendButton", "ReadyButton", "BackButton", "_quitButton", "LobbyListContainer", "PlayerListContainer", "_startMenu", "_lobbyMenu")]
 script = ExtResource("1_jk5bo")
 _level = NodePath("Level")
 CreateLobbyButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/CreateLobbyButton")
 GetallLobbiesButton = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/RefreshLobbiesList")
 InviteFriendButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/InviteFriendButton")
-StartGameButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/StartGameButton")
+ReadyButton = NodePath("Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer/ReadyButton")
 BackButton = NodePath("Control/LobbyMenu/BackButton")
 _quitButton = NodePath("Control/StartMenu/VBoxContainer/PanelContainer/MarginContainer/VBoxContainer/QuitButton")
 LobbyListContainer = NodePath("Control/StartMenu/LobbiesPanel/MarginContainer/VBoxContainer/ScrollContainer/LobbiesContainer")
@@ -43,6 +43,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_use_anchors_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/StartMenu"]
 layout_mode = 1
@@ -177,9 +178,10 @@ theme_override_constants/separation = 15
 layout_mode = 2
 text = "Invite"
 
-[node name="StartGameButton" type="Button" parent="Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="ReadyButton" type="Button" parent="Control/LobbyMenu/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "buttonstartgame>w<"
+text = "Ready
+"
 
 [node name="BackButton" type="Button" parent="Control/LobbyMenu"]
 layout_mode = 1

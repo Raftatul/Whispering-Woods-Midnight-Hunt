@@ -22,7 +22,7 @@ public partial class SceneManager : CanvasLayer
     public Button InviteFriendButton { get; set; }
 
     [Export]
-    public Button StartGameButton { get; set; }
+    public Button ReadyButton { get; set; }
 
     [Export]
     public Button BackButton { get; set; }
@@ -61,6 +61,8 @@ public partial class SceneManager : CanvasLayer
     [Signal]
     public delegate void OnServerClosingEventHandler();
 
+    private bool isPlayerReady = false;
+
     
 
     public override void _Ready()
@@ -73,13 +75,16 @@ public partial class SceneManager : CanvasLayer
         SteamMatchmaking.OnLobbyEntered += (lobby) => _lobbyMenu.Visible = true;
 
         DataParser.OnJoin += JoinServer;
+        DataParser.OnStartGame += StartGameCallback;
+    
 
         //UI
         CreateLobbyButton.Pressed += CreateLobbyButtonPressed;
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
         InviteFriendButton.Pressed += InviteFriendButtonPressed;
-        StartGameButton.Pressed += StartGameButtonPressed;
         BackButton.Pressed += BackButtonPressed;
+        ReadyButton.Pressed += ReadyGameButtonPressed;
+
         _quitButton.Pressed += QuitGame;
 
         Multiplayer.PeerConnected += _playerIDs.Add;
@@ -87,6 +92,8 @@ public partial class SceneManager : CanvasLayer
         Multiplayer.PeerDisconnected +=PlayerLeaving;
 
         OnServerClosing += ServerClosing;
+
+        GameManager.SceneManager = this;
 
     }
 
@@ -142,6 +149,11 @@ public partial class SceneManager : CanvasLayer
         player.QueueFree();
     }
 
+    private void OnPlayerReadyCallback(Dictionary<string, string> data)
+    {
+        GameManager.OnPlayerReady(data);
+    }
+
     public async void CreateLobbyButtonPressed()
     {
         await SteamManager.Instance.CreateLobby();
@@ -158,7 +170,30 @@ public partial class SceneManager : CanvasLayer
         SteamManager.Instance.OpenFriendInviteOverlay();
     }
 
-    public void StartGameButtonPressed()
+    public void ReadyGameButtonPressed()
+    {
+       isPlayerReady = !isPlayerReady;
+       GD.Print("ReadyGameButtonPressed");
+       GD.Print("Ratio Raphael");
+       Dictionary<string, string> data = new Dictionary<string, string>
+       {
+           { "DataType", "PlayerReady" },
+           { "PlayerName", SteamManager.Instance.PlayerId.AccountId.ToString() },
+           { "IsReady", isPlayerReady.ToString() }
+       };
+       string str = OwnJsonParser.Serialize(data);
+       OnPlayerReadyCallback(data);
+       if (SteamManager.Instance.IsHost)
+       {
+           SteamManager.Instance.SendMessageToAll(str);
+       }
+       else
+       {
+           SteamManager.Instance.SteamConnectionManager.Connection.SendMessage(str);
+       }
+    }
+
+    public void StartGameCallback(Dictionary<string, string> data)
     {
         if (SteamManager.Instance.IsHost)
         {

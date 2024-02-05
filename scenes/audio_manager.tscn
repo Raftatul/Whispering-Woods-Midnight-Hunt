@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://eegqr416dgew"]
+
+[ext_resource type="Script" path="res://scripts/AudioManager.cs" id="1_h428b"]
+
+[node name="AudioManager" type="Node" node_paths=PackedStringArray("_input")]
+script = ExtResource("1_h428b")
+_input = NodePath("Mic")
+
+[node name="Mic" type="AudioStreamPlayer" parent="."]
+bus = &"Record2"

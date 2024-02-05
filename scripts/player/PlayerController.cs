@@ -24,6 +24,9 @@ public partial class PlayerController : CharacterBody3D
     public AnimationPlayer CameraAnimPlayer;
 
     [Export]
+    private AudioManager _audioManager;
+
+    [Export]
     private Node3D _mesh;
 
     [ExportCategory("Player Data")]
@@ -60,26 +63,25 @@ public partial class PlayerController : CharacterBody3D
     [Export]
     public string Emote1 = "parameters/Emote1/request";
 
+    private int _playerID;
+
     public override void _EnterTree()
     {
         Name = Name.ToString().Replace(GameManager.PlayerInstanceName, "");
-        SetMultiplayerAuthority(int.Parse(Name));
-        Name = GameManager.PlayerInstanceName + Name;
+        _playerID = int.Parse(Name);
+        SetMultiplayerAuthority(_playerID);
+        Name = GameManager.PlayerInstanceName + _playerID;
     }
 
     public override void _Ready()
     {
         PlayerCamera.Current = IsMultiplayerAuthority();
-
-        AudioStreamPlayer3D voiceOutput = new AudioStreamPlayer3D();
-        AddChild(voiceOutput);
-        voiceOutput.Name = "VoiceOutput";
+        _audioManager.SetupAudio(_playerID);
 
         Position = new Vector3(0f, 10f, 0f);
 
         if (IsMultiplayerAuthority())
         {
-            VoiceChat.Instance.SetAudioOutput(voiceOutput);
             _mesh.Visible = false;
         }
 

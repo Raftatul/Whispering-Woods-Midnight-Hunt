@@ -1,18 +1,17 @@
-[gd_scene load_steps=10 format=3 uid="uid://b3gphftdi5nf7"]
+[gd_scene load_steps=9 format=3 uid="uid://b3gphftdi5nf7"]
 
-[ext_resource type="PackedScene" uid="uid://dibk1vj0nup7d" path="res://scenes/voice_chat.tscn" id="2_brv5t"]
 [ext_resource type="Script" path="res://scripts/misc/KillZone.cs" id="3_og6dh"]
 [ext_resource type="PackedScene" uid="uid://becyt0ajbw0ee" path="res://scenes/items/item.tscn" id="3_v6c13"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l6net"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lcjbs"]
 
-[sub_resource type="Sky" id="Sky_68ouc"]
-sky_material = SubResource("ProceduralSkyMaterial_l6net")
+[sub_resource type="Sky" id="Sky_rsy3k"]
+sky_material = SubResource("ProceduralSkyMaterial_lcjbs")
 
 [sub_resource type="Environment" id="Environment_074gb"]
 background_mode = 2
 background_color = Color(0.164706, 0.686275, 0.862745, 1)
-sky = SubResource("Sky_68ouc")
+sky = SubResource("Sky_rsy3k")
 tonemap_mode = 3
 sdfgi_use_occlusion = true
 glow_enabled = true
@@ -52,8 +51,6 @@ shape = SubResource("ConcavePolygonShape3D_00qao")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/player.tscn")
 spawn_path = NodePath("..")
-
-[node name="VoiceChat" parent="." instance=ExtResource("2_brv5t")]
 
 [node name="RigidBody3D" parent="." instance=ExtResource("3_v6c13")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.45962, 1.4526, -2.03034)

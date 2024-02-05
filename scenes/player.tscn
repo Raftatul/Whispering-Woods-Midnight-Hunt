@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://cj8vo15g1p7td"]
+[gd_scene load_steps=71 format=3 uid="uid://cj8vo15g1p7td"]
 
 [ext_resource type="Script" path="res://scripts/player/PlayerController.cs" id="1_s3cn5"]
 [ext_resource type="Resource" uid="uid://be08gke13o4u1" path="res://datas/player_data.tres" id="2_dqpa7"]
@@ -31,6 +31,7 @@
 [ext_resource type="Script" path="res://scripts/player/player_states/CrouchPlayerState.cs" id="27_h47li"]
 [ext_resource type="Script" path="res://scripts/player/player_states/CrouchWalkPlayerState.cs" id="28_2as15"]
 [ext_resource type="Script" path="res://scripts/player/player_states/JumpPlayerState.cs" id="29_uqk21"]
+[ext_resource type="PackedScene" uid="uid://eegqr416dgew" path="res://scenes/audio_manager.tscn" id="32_71ueh"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ldhqg"]
 properties/0/path = NodePath(".:position")
@@ -403,7 +404,9 @@ node_connections = [&"B_Look", 0, &"Trans_Jump", &"B_Look", 1, &"BS_Look", &"Ble
 outline_size = 5
 outline_color = Color(0, 0, 0, 1)
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_canvasLayer", "_interactionRaycast", "AnimationManager", "CameraAnimPlayer", "_mesh")]
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_8a88o"]
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("PlayerCamera", "_canvasLayer", "_interactionRaycast", "AnimationManager", "CameraAnimPlayer", "_audioManager", "_mesh")]
 collision_layer = 1073741824
 axis_lock_angular_x = true
 axis_lock_angular_y = true
@@ -414,6 +417,7 @@ _canvasLayer = NodePath("CanvasLayer")
 _interactionRaycast = NodePath("CameraController/Camera3D/InteractRaycast")
 AnimationManager = NodePath("Root Scene/AnimationTree")
 CameraAnimPlayer = NodePath("CameraController/CameraAnimPlayer")
+_audioManager = NodePath("AudioManager")
 _mesh = NodePath("Root Scene")
 PlayerData = ExtResource("2_dqpa7")
 
@@ -455,18 +459,18 @@ blend_times = [&"Walk", &"CrouchWalk", 0.25, &"CrouchWalk", &"Walk", 0.25]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="GeneralSkeleton" parent="Root Scene/RootNode" index="0"]
-bones/0/position = Vector3(-0.00410285, 1.03444, 0.0209196)
-bones/0/rotation = Quaternion(-0.0350959, -0.0441386, -0.025208, 0.998091)
-bones/1/rotation = Quaternion(0.0258445, 0.01489, 0.0256665, 0.999226)
-bones/2/rotation = Quaternion(0.00911774, 0.00370404, 0.0143003, 0.999849)
-bones/3/rotation = Quaternion(0.00897467, 0.00391709, 0.014295, 0.99985)
-bones/4/rotation = Quaternion(0.0457039, -0.00215741, 0.00553158, 0.998937)
-bones/5/rotation = Quaternion(-0.0673658, 0.00971338, -0.00187364, 0.997679)
+bones/0/position = Vector3(-0.00586745, 1.0332, 0.0219832)
+bones/0/rotation = Quaternion(-0.0361633, -0.0447443, -0.02762, 0.997962)
+bones/1/rotation = Quaternion(0.0379591, 0.0178188, 0.0280303, 0.998727)
+bones/2/rotation = Quaternion(0.0119684, 0.00470382, 0.014745, 0.999809)
+bones/3/rotation = Quaternion(0.0120279, 0.00492759, 0.0148826, 0.999805)
+bones/4/rotation = Quaternion(0.0556468, -0.00187311, 0.0024469, 0.998446)
+bones/5/rotation = Quaternion(-0.0765623, 0.00788199, -0.000585175, 0.997033)
 bones/5/scale = Vector3(1.00048, 1.00048, 1.00048)
-bones/7/rotation = Quaternion(0.476512, -0.478957, -0.633898, -0.376445)
-bones/8/rotation = Quaternion(-0.151176, 0.828289, -0.49485, 0.214959)
-bones/9/rotation = Quaternion(0.0407494, 0.705932, -0.0407492, 0.705932)
-bones/10/rotation = Quaternion(0.0414655, -0.572011, 0.0356603, 0.818421)
+bones/7/rotation = Quaternion(0.473129, -0.481146, -0.638685, -0.36977)
+bones/8/rotation = Quaternion(-0.145697, 0.829507, -0.496611, 0.209923)
+bones/9/rotation = Quaternion(0.0409857, 0.705918, -0.0409856, 0.705918)
+bones/10/rotation = Quaternion(0.0401233, -0.567644, 0.0314102, 0.821696)
 bones/11/rotation = Quaternion(-0.0367837, 0.0144657, 0.00205623, 0.999216)
 bones/12/rotation = Quaternion(-0.121712, -0.819574, 0.0371682, 0.558662)
 bones/13/rotation = Quaternion(0.0455454, 0.0460794, 0.161693, 0.984712)
@@ -486,10 +490,10 @@ bones/26/rotation = Quaternion(-5.96046e-08, -5.96046e-08, -5.96046e-08, 1)
 bones/27/rotation = Quaternion(0.228493, 0.00340284, 0.0429808, 0.97259)
 bones/28/rotation = Quaternion(0.151548, 1.49012e-08, 0.0123456, 0.988373)
 bones/29/rotation = Quaternion(0.143773, 4.47035e-08, 0.011712, 0.989541)
-bones/31/rotation = Quaternion(0.458184, 0.500507, 0.627389, -0.382024)
-bones/32/rotation = Quaternion(0.124182, 0.797961, -0.576221, -0.125726)
-bones/33/rotation = Quaternion(0.00984851, -0.707038, 0.0098486, 0.707038)
-bones/34/rotation = Quaternion(0.0556935, 0.480744, -0.0196771, 0.87487)
+bones/31/rotation = Quaternion(0.456291, 0.499861, 0.636368, -0.370099)
+bones/32/rotation = Quaternion(0.130074, 0.805579, -0.565481, -0.11981)
+bones/33/rotation = Quaternion(0.010445, -0.70703, 0.010445, 0.70703)
+bones/34/rotation = Quaternion(0.0534042, 0.46943, -0.00363007, 0.881346)
 bones/35/rotation = Quaternion(-0.0420415, -0.0049842, -0.0190791, 0.998921)
 bones/36/rotation = Quaternion(-0.152845, 0.81215, -0.014813, 0.562877)
 bones/37/rotation = Quaternion(0.0400129, -0.0528763, -0.128588, 0.989479)
@@ -510,13 +514,13 @@ bones/51/rotation = Quaternion(0.233867, -0.00350587, -0.0490091, 0.971026)
 bones/52/rotation = Quaternion(0.151258, -2.5332e-07, -0.0155007, 0.988373)
 bones/53/rotation = Quaternion(0.143498, -1.3411e-07, -0.0147054, 0.989541)
 bones/54/rotation = Quaternion(1.49012e-08, -1.49012e-08, -4.47035e-08, 1)
-bones/55/rotation = Quaternion(-0.093457, -0.00945344, 0.995258, -0.0252622)
-bones/56/rotation = Quaternion(0.0343226, 0.993602, -0.0684206, -0.0830354)
-bones/57/rotation = Quaternion(0.0101528, 0.679035, -0.733439, -0.0295906)
-bones/58/rotation = Quaternion(-1.57634e-08, 0.998148, 0.0608381, 1.88622e-08)
-bones/60/rotation = Quaternion(0.135174, 0.0682272, 0.985795, -0.0726753)
-bones/61/rotation = Quaternion(-0.0386277, 0.994565, -0.0958943, 0.0123641)
-bones/62/rotation = Quaternion(-0.0415038, 0.715928, -0.695221, 0.04892)
+bones/55/rotation = Quaternion(-0.0932236, -0.00759848, 0.995227, -0.027852)
+bones/56/rotation = Quaternion(0.0353551, 0.99297, -0.0768321, -0.0828083)
+bones/57/rotation = Quaternion(0.0111247, 0.675298, -0.73689, -0.0290326)
+bones/58/rotation = Quaternion(-3.79431e-08, 0.998063, 0.0622114, -8.06285e-09)
+bones/60/rotation = Quaternion(0.139993, 0.0725894, 0.984497, -0.0767986)
+bones/61/rotation = Quaternion(-0.0384689, 0.993554, -0.106388, 0.00722305)
+bones/62/rotation = Quaternion(-0.0414565, 0.711597, -0.699632, 0.0492489)
 bones/63/rotation = Quaternion(-8.69504e-08, 0.999075, 0.0429962, 3.86257e-09)
 
 [node name="AnimationPlayer" parent="Root Scene" index="1"]
@@ -663,5 +667,13 @@ _standUpCollider = NodePath("../../StandUpCollider")
 
 [node name="Jump" type="Node" parent="StateMachine"]
 script = ExtResource("29_uqk21")
+
+[node name="AudioManager" parent="." node_paths=PackedStringArray("AudioOutput") instance=ExtResource("32_71ueh")]
+AudioOutput = NodePath("../VoiceOutput")
+
+[node name="VoiceOutput" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49077, 0)
+stream = SubResource("AudioStreamGenerator_8a88o")
+autoplay = true
 
 [editable path="Root Scene"]

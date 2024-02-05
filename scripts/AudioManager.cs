@@ -20,8 +20,7 @@ public partial class AudioManager : Node
     {
         if (IsMultiplayerAuthority())
             ProcessMic();
-        else
-            ProcessVoice();
+        ProcessVoice();
     }
 
     public void SetupAudio(long id)
@@ -42,16 +41,16 @@ public partial class AudioManager : Node
 
     private void ProcessMic()
     {
-        var sterioData = _effect.GetBuffer(_effect.GetFramesAvailable());
+        var stereoData = _effect.GetBuffer(_effect.GetFramesAvailable());
 
-        if (sterioData.Length > 0)
+        if (stereoData.Length > 0)
         {
-            var data = new float[sterioData.Length];
+            var data = new float[stereoData.Length];
 
             float maxAmplitude = 0f;
             for (int i = 0; i < data.Length; i++)
             {
-                var value = (sterioData[i].X * sterioData[i].Y) / 2;
+                var value = (stereoData[i].X * stereoData[i].Y) / 2;
                 maxAmplitude = Mathf.Max(value, maxAmplitude);
 
                 data[i] = value;

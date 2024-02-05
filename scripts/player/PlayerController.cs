@@ -76,12 +76,12 @@ public partial class PlayerController : CharacterBody3D
     public override void _Ready()
     {
         PlayerCamera.Current = IsMultiplayerAuthority();
+        _audioManager.SetupAudio(Multiplayer.GetUniqueId());
 
         Position = new Vector3(0f, 10f, 0f);
 
         if (IsMultiplayerAuthority())
         {
-            _audioManager.SetupAudio(Multiplayer.GetUniqueId());
             _mesh.Visible = false;
         }
 

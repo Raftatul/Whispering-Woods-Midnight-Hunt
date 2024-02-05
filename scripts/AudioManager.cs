@@ -60,8 +60,7 @@ public partial class AudioManager : Node
             if (maxAmplitude < _inputThreashold)
                 return;
 
-            SendData(data);
-            // Rpc(MethodName.SendData, data);
+            Rpc(MethodName.SendData, data);
         }
     }
 

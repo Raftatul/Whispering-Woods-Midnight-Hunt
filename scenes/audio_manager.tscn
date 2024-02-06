@@ -7,4 +7,4 @@ script = ExtResource("1_h428b")
 _input = NodePath("Mic")
 
 [node name="Mic" type="AudioStreamPlayer" parent="."]
-bus = &"Record2"
+bus = &"Record"

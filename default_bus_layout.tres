@@ -1,7 +1,4 @@
-[gd_resource type="AudioBusLayout" load_steps=3 format=3 uid="uid://t7wekxe4ypbi"]
-
-[sub_resource type="AudioEffectRecord" id="AudioEffectRecord_fddgt"]
-resource_name = "Record"
+[gd_resource type="AudioBusLayout" load_steps=2 format=3 uid="uid://t7wekxe4ypbi"]
 
 [sub_resource type="AudioEffectCapture" id="AudioEffectCapture_dm3nb"]
 resource_name = "Capture"
@@ -19,25 +16,17 @@ bus/2/mute = false
 bus/2/bypass_fx = false
 bus/2/volume_db = 0.0
 bus/2/send = &"Master"
-bus/3/name = &"Record"
+bus/3/name = &"Mute Bus"
 bus/3/solo = false
 bus/3/mute = true
 bus/3/bypass_fx = false
 bus/3/volume_db = 0.0
 bus/3/send = &"Master"
-bus/3/effect/0/effect = SubResource("AudioEffectRecord_fddgt")
-bus/3/effect/0/enabled = true
-bus/4/name = &"Mute Bus"
+bus/4/name = &"Record"
 bus/4/solo = false
 bus/4/mute = false
 bus/4/bypass_fx = false
 bus/4/volume_db = 0.0
-bus/4/send = &"Master"
-bus/5/name = &"Record2"
-bus/5/solo = false
-bus/5/mute = false
-bus/5/bypass_fx = false
-bus/5/volume_db = 0.0
-bus/5/send = &"Mute Bus"
-bus/5/effect/0/effect = SubResource("AudioEffectCapture_dm3nb")
-bus/5/effect/0/enabled = true
+bus/4/send = &"Mute Bus"
+bus/4/effect/0/effect = SubResource("AudioEffectCapture_dm3nb")
+bus/4/effect/0/enabled = true

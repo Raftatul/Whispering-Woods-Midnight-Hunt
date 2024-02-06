@@ -1,6 +1,5 @@
 using Godot;
 using Godot.Collections;
-using System;
 
 public partial class AudioManager : Node
 {
@@ -26,13 +25,14 @@ public partial class AudioManager : Node
     public void SetupAudio(long id)
     {
         SetMultiplayerAuthority(((int)id));
+        GD.Print("SetupAudio: " + id);
 
         if (IsMultiplayerAuthority())
         {
             _input.Stream = new AudioStreamMicrophone();
             _input.Play();
 
-            _index = AudioServer.GetBusIndex("Record2");
+            _index = AudioServer.GetBusIndex("Record");
             _effect = AudioServer.GetBusEffect(_index, 0) as AudioEffectCapture;
         }
 
@@ -46,7 +46,6 @@ public partial class AudioManager : Node
         if (stereoData.Length > 0)
         {
             var data = new float[stereoData.Length];
-
             float maxAmplitude = 0f;
             for (int i = 0; i < data.Length; i++)
             {
@@ -59,6 +58,7 @@ public partial class AudioManager : Node
             if (maxAmplitude < _inputThreashold)
                 return;
 
+            // SendData(data);
             Rpc(MethodName.SendData, data);
         }
     }
@@ -67,6 +67,8 @@ public partial class AudioManager : Node
     {
         if (_receiveBuffer.Count <= 0)
             return;
+        
+        GD.Print("ProcessVoice: " + _receiveBuffer.Count);
         
         for (int i = 0; i < Mathf.Min(_playback.GetFramesAvailable(), _receiveBuffer.Count); i++)
         {

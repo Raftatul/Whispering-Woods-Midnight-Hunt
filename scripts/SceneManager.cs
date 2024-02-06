@@ -76,6 +76,7 @@ public partial class SceneManager : CanvasLayer
 
         DataParser.OnJoin += JoinServer;
         DataParser.OnStartGame += StartGameCallback;
+        DataParser.OnPlayerReady += OnPlayerReadyCallback;
     
 
         //UI

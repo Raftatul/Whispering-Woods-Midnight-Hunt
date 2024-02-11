@@ -58,7 +58,6 @@ public partial class AudioManager : Node
             if (maxAmplitude < _inputThreashold)
                 return;
 
-            // SendData(data);
             Rpc(MethodName.SendData, data);
         }
     }
@@ -68,8 +67,6 @@ public partial class AudioManager : Node
         if (_receiveBuffer.Count <= 0)
             return;
         
-        GD.Print("ProcessVoice: " + _receiveBuffer.Count);
-        
         for (int i = 0; i < Mathf.Min(_playback.GetFramesAvailable(), _receiveBuffer.Count); i++)
         {
             Vector2 value = new Vector2(_receiveBuffer[0], _receiveBuffer[0]);
@@ -78,7 +75,7 @@ public partial class AudioManager : Node
         }
     }
 
-    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
     private void SendData(float[] data)
     {
         _receiveBuffer.AddRange(data);

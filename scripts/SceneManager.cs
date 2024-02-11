@@ -78,7 +78,6 @@ public partial class SceneManager : CanvasLayer
         DataParser.OnStartGame += StartGameCallback;
         DataParser.OnPlayerReady += OnPlayerReadyCallback;
     
-
         //UI
         CreateLobbyButton.Pressed += CreateLobbyButtonPressed;
         GetallLobbiesButton.Pressed += GetallLobbiesButtonPressed;
@@ -95,7 +94,6 @@ public partial class SceneManager : CanvasLayer
         OnServerClosing += ServerClosing;
 
         GameManager.SceneManager = this;
-
     }
 
     private void ServerClosing()
